@@ -45,4 +45,4 @@ interface UserInstance extends Model<UserAttributes, UserCreationAttributes>,
     }
   )
 
-  export default User;
+export default User;
