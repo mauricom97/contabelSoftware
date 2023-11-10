@@ -1,17 +1,20 @@
-import express from 'express';
-import { Router, Request, Response } from 'express';
-const app = express();
-const route = Router();
-const port = 4450;
+// import { Sequelize, sequelize } from './db/models';
+import express from 'express'
+import dotenv from 'dotenv';
 
-app.use(express.json());
+dotenv.config();
+
+import { Router, Request, Response } from 'express';
+
+const app = express();
+
+const route = Router()
+
+app.use(express.json())
 
 route.get('/', (req: Request, res: Response) => {
-  res.send('Hello World!');
-});
+  res.json({ message: 'hello world with Typescript' })
+})
 
-app.use(route);
-
-app.listen(3000, () => {
-  console.log(`Example app listening on port ${port}!`);
-});
+app.use(route)
+app.listen(3333, () => 'server running on port 3333')
