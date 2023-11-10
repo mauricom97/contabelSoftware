@@ -1,11 +1,8 @@
 import { Sequelize } from "sequelize";
-
 const env = process.env.NODE_ENV || "development";
+const config = require('../config/config')[env]
 
-const sequelize = new Sequelize('postgres', 'postgres', 'postgres', {
-  host: 'localhost',
-  dialect: 'postgres'
-});
+const sequelize = new Sequelize(config);
 
 
 async function testarConexao() {

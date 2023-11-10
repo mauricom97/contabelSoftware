@@ -1,10 +1,10 @@
-export default {
+const config = {
   "development": {
-    "username": "root",
-    "password": null,
-    "database": "database_development",
-    "host": "127.0.0.1",
-    "dialect": "mysql"
+    "username": "postgres",
+    "password": "postgres",
+    "database": "postgres",
+    "host": "localhost",
+    "dialect": "postgres"
   },
   "test": {
     "username": "root",
@@ -21,3 +21,5 @@ export default {
     "dialect": "mysql"
   }
 }
+
+module.exports = config;
