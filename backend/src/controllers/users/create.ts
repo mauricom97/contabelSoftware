@@ -24,5 +24,3 @@ async function createUser(user: {name: string, email: string, password: string})
   const newUser = await User.create(user);
   return newUser;
 }
-
-// module.exports = { create }
