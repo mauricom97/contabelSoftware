@@ -1,3 +1,5 @@
+const dotenv = require('dotenv');
+dotenv.config();
 const config = {
   "development": {
     "username": process.env.PG_DEV_USER,
