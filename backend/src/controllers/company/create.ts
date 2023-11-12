@@ -2,15 +2,16 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 import { Request, Response, NextFunction } from "express";
 
-async function create(req: Request, res: Response, next: NextFunction) {
+async function create(req: any, res: Response, next: NextFunction) {
   try {
     const requestData = extractData(req);
     await analyseData(requestData);
     const newCompany = await createNewCompany(requestData);
     res.send(newCompany);
-  } catch (error) {
+    await associateCompanyWithUser(newCompany.id, req.user.id);
+  } catch (error: any) {
     console.error(error);
-    res.status(500).send({ error: 'An error occurred while creating the company.' });
+    res.status(404).send({ error: error.message });
   }
 }
 
@@ -47,5 +48,17 @@ async function createNewCompany(requestData: { sampleName: string; registerName:
   });
   return newCompany;
 }
+
+async function associateCompanyWithUser(companyId: number, userId: number) {
+  const assignedBy = "someValue"; // Substitua "someValue" pelo valor apropriado ou lógica de atribuição
+  await prisma.companiesOnUsers.create({
+    data: {
+      companyId,
+      userId,
+      assignedBy,
+    },
+  });
+}
+
 
 export default create;
