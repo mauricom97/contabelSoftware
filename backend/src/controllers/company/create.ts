@@ -7,8 +7,8 @@ async function create(req: any, res: Response, next: NextFunction) {
     const requestData = extractData(req);
     await analyseData(requestData);
     const newCompany = await createNewCompany(requestData);
-    res.send(newCompany);
     await associateCompanyWithUser(newCompany.id, req.user.id);
+    res.send(newCompany);
   } catch (error: any) {
     console.error(error);
     res.status(404).send({ error: error.message });
