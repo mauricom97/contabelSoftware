@@ -43,7 +43,7 @@ async function findUser(requestData: { email: string }) {
     },
   });
   if (!user) {
-    throw new Error("User not found");
+    throw new Error("This user does not exist");
   }
   return user;
 }

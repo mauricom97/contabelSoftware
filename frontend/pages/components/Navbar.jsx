@@ -1,14 +1,27 @@
-import BorderIcons from "../components/BorderIcons"
+// components/Navbar.js
 
-function Navbar (props) {
+import Link from 'next/link';
+
+const Navbar = () => {
   return (
-    <div className="flex items-center w-screen h-20 bg-purple-950 rounded-b-md">
-      <div className=" ml-3">
-        {/* <BorderIcons /> */}
+    <nav className="bg-gray-800 p-4">
+      <div className="container mx-auto flex justify-between items-center">
+        <div>
+          <Link href="/">
+            <button className="bg-green-500 text-white p-2 rounded hover:bg-green-700">Pagina inicial</button>
+          </Link>
+        </div>
+        <div className="flex space-x-4">
+          <Link href="/createuser">
+          <button className="bg-green-500 text-white p-2 rounded hover:bg-green-700">Criar usuario</button>
+          </Link>
+          <Link href="/login">
+            <button className="bg-green-500 text-white p-2 rounded hover:bg-green-700">Entrar</button>
+          </Link>
+        </div>
       </div>
-    </div>
-  )
-}
+    </nav>
+  );
+};
 
-
-export default Navbar
+export default Navbar;

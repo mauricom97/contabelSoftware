@@ -33,6 +33,7 @@ model Company {
   city        String
   state       String
   users       CompaniesOnUsers[]
+  accountsPayable AccountsPayable[]
 }
 
 model CompaniesOnUsers {
@@ -44,4 +45,30 @@ model CompaniesOnUsers {
   assignedBy String
 
   @@id([userId, companyId])
+}
+
+model Entity {
+  id          Int      @id @default(autoincrement())
+  name        String
+  cnpj        String   @unique
+  ie          String   @unique
+  phone       String   @unique
+  email       String   @unique
+  address     String
+  city        String
+  state       String
+  createdBy   String
+  createdAt   DateTime @default(now())
+}
+
+model AccountsPayable {
+  id          Int             @id @default(autoincrement())
+  description String
+  amount      Float
+  dueDate     DateTime
+  status      String
+  company     Company         @relation(fields: [companyId], references: [id])
+  companyId   Int
+  createdAt   DateTime        @default(now())
+  @@index([companyId])
 }

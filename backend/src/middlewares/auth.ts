@@ -38,7 +38,7 @@ async function findUser(decodedToken: { id: number, email: string, iat: number }
     },
   });
   if (!user) {
-    throw new Error('User not found');
+    throw new Error('This token does not match any user');
   }
   return user;
 }

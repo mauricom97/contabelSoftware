@@ -1,76 +1,78 @@
-// pages/components/Login.js
-import { useState } from 'react';
-import axios from 'axios';
+import { useState } from "react";
+import {
+    Button,
+    Input,
+    FormControl,
+    FormLabel,
+    VStack,
+} from "@chakra-ui/react";
+import axios from "axios";
+import { useRouter } from "next/router";
 
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const router = useRouter();
 
-  const handleLogin = async () => {
-    try {
-      const response = await axios.post('http://localhost:4356/user/login', {
-        email,
-        password,
-      });
+    const handleLogin = async () => {
+        try {
+            const response = await axios.post(
+                "http://localhost:4356/user/login",
+                {
+                    email,
+                    password,
+                },
+            );
 
-      console.log(response.data);
-      localStorage.setItem('token', response.data.token);
-      // Adicione lógica adicional após o login, se necessário
-    } catch (error) {
-      console.error(error);
-      // Trate os erros conforme necessário
-    }
-  };
+            console.log(response.data);
+            localStorage.setItem("token", response.data.token);
+            router.push("/dashboard");
 
-  return (
-    <div className="flex items-center justify-center h-screen">
-      <div className="w-full max-w-md">
-        <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-          <div className="mb-4">
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="email"
+            // Add additional logic after login if necessary
+        } catch (error) {
+            console.error(error);
+            // Handle errors as needed
+        }
+    };
+
+    return (
+        <VStack justify="center" height="100vh">
+            <FormControl
+                w="full"
+                maxW="md"
+                bg="white"
+                p={8}
+                rounded="md"
+                boxShadow="md"
             >
-              Email
-            </label>
-            <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              id="email"
-              type="text"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
-          <div className="mb-6">
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="password"
-            >
-              Password
-            </label>
-            <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              id="password"
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
-          <div className="flex items-center justify-between">
-            <button
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-              type="button"
-              onClick={handleLogin}
-            >
-              Sign In
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
+                <VStack spacing={4}>
+                    <FormLabel>Email</FormLabel>
+                    <Input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        variant="filled"
+                        placeholder="Email"
+                    />
+                    <FormLabel>Password</FormLabel>
+                    <Input
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        variant="filled"
+                        placeholder="Password"
+                    />
+                    <Button
+                        colorScheme="blue"
+                        onClick={handleLogin}
+                        _hover={{ bg: "blue.700" }}
+                    >
+                        Sign In
+                    </Button>
+                </VStack>
+            </FormControl>
+        </VStack>
+    );
 };
 
 export default Login;
