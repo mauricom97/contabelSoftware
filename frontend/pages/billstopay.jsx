@@ -1,6 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import Sidebar from "./components/Sidebar";
 import CreateBillToPay from "./components/financial/CreateBillToPay";
+import { EditIcon, DeleteIcon } from "@chakra-ui/icons";
+
 import {
     Table,
     Thead,
@@ -8,21 +11,22 @@ import {
     Tr,
     Th,
     Td,
-    chakra,
     Box,
     Flex,
     Center,
     Button,
     Input,
-    Grid,
-    GridItem,
-    Icon,
+    Badge,
+    IconButton,
 } from "@chakra-ui/react";
 
 import moment from "moment";
 
 const DataTable = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [billData, setBillData] = useState([]);
+    const [totalAmount, setTotalAmount] = useState(0);
+
     // const [companiesList, setCompaniesList] = useState([]);
 
     const handleOpenModal = () => {
@@ -32,52 +36,41 @@ const DataTable = () => {
     const handleCloseModal = () => {
         setIsModalOpen(false);
     };
-    const data = [
-        {
-            id: 1,
-            description: "Conta de luz",
-            company: {
-                id: 1,
-                name: "Empresa 1",
-            },
-            amount: 100,
-            dueDate: "2021-09-20",
-            status: "PENDING",
-            companyId: 1,
-            createdAt: "2021-09-20T12:00:00",
-        },
-        {
-            id: 2,
-            description: "Conta de água",
-            company: {
-                id: 2,
-                name: "Empresa 2",
-            },
-            amount: 200,
-            dueDate: "2021-09-20",
-            status: "PENDING",
-            companyId: 1,
-            createdAt: "2021-09-20T12:00:00",
-        },
-        {
-            id: 3,
-            description: "Conta de telefone",
-            company: {
-                id: 3,
-                name: "Empresa 3",
-            },
-            amount: 300,
-            dueDate: "2021-09-20",
-            status: "PENDING",
-            companyId: 1,
-            createdAt: "2021-09-20T12:00:00",
-        },
-    ];
+    let token;
+    if (typeof window !== "undefined") {
+        token = window.localStorage.getItem("token");
+    }
+    const fetchBillData = async (filters) => {
+        try {
+            const response = await axios.get(
+                `http://localhost:4356/billstopay?${filters}`,
+                {
+                    headers: {
+                        token: token,
+                    },
+                },
+            );
+            setBillData(response.data);
+
+            // Atualize os totais sempre que os dados da conta mudarem
+            let total = 0;
+            response.data.forEach((item) => {
+                total += parseFloat(item.amount);
+            });
+            setTotalAmount(total);
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchBillData(`status=1`);
+    }, []);
     return (
         <Box>
             <Sidebar />
             <Center>
-                <Box position="absolute" top="10%" w="60%">
+                <Box position="absolute" top="10%" w="60%" minH="50%">
                     <Box>
                         <Flex justifyContent="flex-end">
                             <Button mb="4" onClick={handleOpenModal}>
@@ -99,28 +92,84 @@ const DataTable = () => {
                             <Tr>
                                 <Th>Descrição</Th>
                                 <Th>Valor</Th>
-                                <Th>Empresa</Th>
+                                <Th>Fornecedor</Th>
                                 <Th>Data de Vencimento</Th>
                                 <Th>Status</Th>
+                                <Th>Ações</Th>
                             </Tr>
                         </Thead>
                         <Tbody>
-                            {data.map((item) => (
+                            {billData.map((item) => (
                                 <Tr key={item.id}>
                                     <Td>{item.description}</Td>
                                     <Td>R$: {item.amount}</Td>
-                                    <Td>{item.company.name}</Td>
+                                    <Td>{item.companyId}</Td>
                                     <Td>
-                                        {moment(
-                                            item.dueDate,
-                                            "YYYY-MM-DD",
-                                        ).format("DD/MM/YYYY")}
+                                        {(() => {
+                                            if (
+                                                moment().format("DD/MM/YYYY") >
+                                                moment(item.dueDate).format(
+                                                    "DD/MM/YYYY",
+                                                )
+                                            )
+                                                return (
+                                                    <Badge colorScheme="red">
+                                                        {moment(
+                                                            item.dueDate,
+                                                        ).format("DD/MM/YYYY")}
+                                                    </Badge>
+                                                );
+                                            else
+                                                return moment(
+                                                    item.dueDate,
+                                                ).format("DD/MM/YYYY");
+                                        })()}
                                     </Td>
-                                    <Td>{item.status}</Td>
+                                    <Td>
+                                        {(() => {
+                                            if (item.status === "1")
+                                                return <Badge>Em aberto</Badge>;
+                                            else if (item.status === "2")
+                                                return (
+                                                    <Badge
+                                                        variant="outline"
+                                                        colorScheme="green"
+                                                    >
+                                                        Parcialmente pago
+                                                    </Badge>
+                                                );
+                                            else if (item.status === "3")
+                                                return (
+                                                    <Badge colorScheme="green">
+                                                        Pago
+                                                    </Badge>
+                                                );
+                                            else return "Status desconhecido";
+                                        })()}
+                                    </Td>
+                                    <Td>
+                                        <IconButton
+                                            size="sm"
+                                            colorScheme="blue"
+                                            mr="2"
+                                            aria-label="Editar"
+                                            icon={<EditIcon />}
+                                        />
+                                        <IconButton
+                                            size="sm"
+                                            colorScheme="red"
+                                            mr="2"
+                                            aria-label="Excluir"
+                                            icon={<DeleteIcon />}
+                                        />
+                                    </Td>
                                 </Tr>
                             ))}
                         </Tbody>
                     </Table>
+                    <div>
+                        <strong>Total:</strong> R$: {totalAmount}
+                    </div>
                 </Box>
             </Center>
             <CreateBillToPay

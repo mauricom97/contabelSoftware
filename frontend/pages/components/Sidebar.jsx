@@ -18,7 +18,9 @@ import {
     Flex,
     Divider,
 } from "@chakra-ui/react";
-import { AiOutlineDollar, AiOutlineArrowRight } from "react-icons/ai";
+import { GiReceiveMoney, GiPayMoney } from "react-icons/gi";
+import { MdAttachMoney } from "react-icons/md";
+import { FaMoneyBillTrendUp } from "react-icons/fa6";
 
 const Sidebar = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -74,7 +76,7 @@ const Sidebar = () => {
             boxShadow="md"
             p="6"
             w="15%"
-            maxW="15%"
+            maxW="20%"
             h="100vh"
             rounded="md"
             bg="white"
@@ -84,7 +86,7 @@ const Sidebar = () => {
                     <Avatar
                         size="xl"
                         name="Dan Abrahmov"
-                        src="https://bit.ly/sage-adebayo"
+                        src="https://bit.ly/ryan-florence"
                     />
                 </WrapItem>
             </Center>
@@ -121,34 +123,69 @@ const Sidebar = () => {
             />
             <Divider mt="5" />
             <Box
-                mt="3"
-                as="div"
-                p="4"
-                border="1"
-                borderRadius="md"
-                _hover={{ bg: "gray.100" }}
+                overflowY="auto"
+                maxHeight="90vh" // Ajuste este valor conforme necessário
             >
-                <Link href="/billstopay">
-                    <Flex align="center" cursor="pointer">
-                        <AiOutlineDollar size={20} />
-                        <Text ml="2">Contas a Pagar</Text>
-                    </Flex>
-                </Link>
-            </Box>
+                <Box
+                    mt="3"
+                    as="div"
+                    p="4"
+                    border="1"
+                    borderRadius="md"
+                    _hover={{ bg: "gray.100" }}
+                >
+                    <Link href="/billstopay">
+                        <Flex align="center" cursor="pointer">
+                            <GiPayMoney size={20} />
+                            <Text ml="2">Contas a Pagar</Text>
+                        </Flex>
+                    </Link>
+                </Box>
 
-            <Box
-                as="div"
-                p="4"
-                border="1"
-                borderRadius="md"
-                _hover={{ bg: "gray.100" }}
-            >
-                <Link href="/billstoreceive">
-                    <Flex align="center" cursor="pointer">
-                        <AiOutlineArrowRight size={20} />
-                        <Text ml="2">Contas a Receber</Text>
-                    </Flex>
-                </Link>
+                <Box
+                    as="div"
+                    p="4"
+                    border="1"
+                    borderRadius="md"
+                    _hover={{ bg: "gray.100" }}
+                >
+                    <Link href="/billstoreceive">
+                        <Flex align="center" cursor="pointer">
+                            <GiReceiveMoney size={20} />
+                            <Text ml="2">Contas a Receber</Text>
+                        </Flex>
+                    </Link>
+                </Box>
+
+                <Box
+                    as="div"
+                    p="4"
+                    border="1"
+                    borderRadius="md"
+                    _hover={{ bg: "gray.100" }}
+                >
+                    <Link href="/paymentCounter">
+                        <Flex align="center" cursor="pointer">
+                            <MdAttachMoney size={20} />
+                            <Text ml="2">Caixa</Text>
+                        </Flex>
+                    </Link>
+                </Box>
+
+                <Box
+                    as="div"
+                    p="4"
+                    border="1"
+                    borderRadius="md"
+                    _hover={{ bg: "gray.100" }}
+                >
+                    <Link href="/reports">
+                        <Flex align="center" cursor="pointer">
+                            <FaMoneyBillTrendUp size={20} />
+                            <Text ml="2">Relatorios financeiros</Text>
+                        </Flex>
+                    </Link>
+                </Box>
             </Box>
         </Box>
     );

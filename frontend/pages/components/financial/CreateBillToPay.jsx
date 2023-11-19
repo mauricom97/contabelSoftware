@@ -12,6 +12,7 @@ import {
     FormControl,
     FormLabel,
     Input,
+    Select,
 } from "@chakra-ui/react";
 
 const CreateBillToPay = ({ isOpen, onOpen, onClose }) => {
@@ -130,11 +131,15 @@ const CreateBillToPay = ({ isOpen, onOpen, onClose }) => {
 
                         <FormControl mt={4}>
                             <FormLabel>Status</FormLabel>
-                            <Input
-                                placeholder="Status"
+                            <Select
+                                placeholder="Selecione o status"
                                 value={status}
                                 onChange={(e) => setStatus(e.target.value)}
-                            />
+                            >
+                                <option value="1">Em aberto</option>
+                                <option value="2">Parcialmente pago</option>
+                                <option value="3">Pago</option>
+                            </Select>
                         </FormControl>
                     </ModalBody>
 
