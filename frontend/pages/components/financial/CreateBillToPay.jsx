@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useToast } from "@chakra-ui/react";
 import {
     Modal,
     ModalOverlay,
@@ -26,6 +27,7 @@ const CreateBillToPay = ({ isOpen, onOpen, onClose }) => {
     const [entity, setEntity] = useState("");
     const [qtde, setQtde] = useState("");
 
+    const toast = useToast();
     const registerBill = () => {
         // Construa o objeto com os dados a serem enviados
         const expenseData = {
@@ -45,7 +47,7 @@ const CreateBillToPay = ({ isOpen, onOpen, onClose }) => {
             method: "post",
             url: "http://localhost:4356/billstopay",
             headers: {
-                token: token, // Substitua pelo token do usuário logado
+                token: token,
                 "Content-Type": "application/json",
             },
             data: expenseData,
@@ -55,8 +57,15 @@ const CreateBillToPay = ({ isOpen, onOpen, onClose }) => {
         axios
             .request(config)
             .then((response) => {
-                console.log("Despesa cadastrada com sucesso:", response.data);
-                onClose(); // Feche o modal após o cadastro (ajuste conforme necessário)
+                toast({
+                    title: "Conta criada com sucesso.",
+                    description: "Sua nova despesa foi criada com sucesso.",
+                    status: "success",
+                    duration: 9000,
+                    isClosable: true,
+                });
+
+                onClose();
             })
             .catch((error) => {
                 console.error("Erro ao cadastrar despesa:", error);
@@ -95,7 +104,6 @@ const CreateBillToPay = ({ isOpen, onOpen, onClose }) => {
                                 onChange={(e) => setDueDate(e.target.value)}
                             />
                         </FormControl>
-
                         <FormControl mt={4}>
                             <FormLabel>Quantidade</FormLabel>
                             <Input
@@ -106,7 +114,6 @@ const CreateBillToPay = ({ isOpen, onOpen, onClose }) => {
                                 onChange={(e) => setQtde(e.target.value)}
                             />
                         </FormControl>
-
                         <FormControl mt={4}>
                             <FormLabel>Valor</FormLabel>
                             <Input
@@ -117,7 +124,6 @@ const CreateBillToPay = ({ isOpen, onOpen, onClose }) => {
                                 onChange={(e) => setAmount(e.target.value)}
                             />
                         </FormControl>
-
                         <FormControl mt={4}>
                             <FormLabel>Fornecedor</FormLabel>
                             <Input
@@ -128,7 +134,6 @@ const CreateBillToPay = ({ isOpen, onOpen, onClose }) => {
                                 onChange={(e) => setEntity(e.target.value)}
                             />
                         </FormControl>
-
                         <FormControl mt={4}>
                             <FormLabel>Status</FormLabel>
                             <Select

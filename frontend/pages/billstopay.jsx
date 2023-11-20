@@ -102,7 +102,7 @@ const DataTable = () => {
                             {billData.map((item) => (
                                 <Tr key={item.id}>
                                     <Td>{item.description}</Td>
-                                    <Td>R$: {item.amount}</Td>
+                                    <Td>R$: {item.amount.toFixed(2)}</Td>
                                     <Td>{item.companyId}</Td>
                                     <Td>
                                         {(() => {
@@ -168,7 +168,7 @@ const DataTable = () => {
                         </Tbody>
                     </Table>
                     <div>
-                        <strong>Total:</strong> R$: {totalAmount}
+                        <strong>Total:</strong> R$: {totalAmount.toFixed(2)}
                     </div>
                 </Box>
             </Center>
