@@ -5,10 +5,9 @@ import { Request, Response, NextFunction } from "express";
 async function create(req: any, res: Response, next: NextFunction) {
   try {
     const requestData = extractData(req);
-    console.log(requestData);
     await analyseData(requestData);
-    const newCompany = await createNewCompany(requestData);
-    await associateCompanyWithUser(newCompany.id, req.user.id);
+    const newCompany = await createNewCompany(req, requestData);
+    await associateCompanyWithUser(req, newCompany.id);
     res.send(newCompany);
   } catch (error: any) {
     console.error(error);
@@ -79,17 +78,20 @@ async function analyseData(requestData: {
   }
 }
 
-async function createNewCompany(requestData: {
-  sampleName: string;
-  registerName: string;
-  cnpj: string;
-  ie: string;
-  phone: string;
-  email: string;
-  address: string;
-  city: string;
-  state: string;
-}) {
+async function createNewCompany(
+  req: any,
+  requestData: {
+    sampleName: string;
+    registerName: string;
+    cnpj: string;
+    ie: string;
+    phone: string;
+    email: string;
+    address: string;
+    city: string;
+    state: string;
+  }
+) {
   const {
     sampleName,
     registerName,
@@ -102,7 +104,7 @@ async function createNewCompany(requestData: {
     state,
   } = requestData;
 
-  const newCompany = await prisma.company.create({
+  const newCompany = await req.prisma.company.create({
     data: {
       sampleName,
       registerName,
@@ -118,12 +120,12 @@ async function createNewCompany(requestData: {
   return newCompany;
 }
 
-async function associateCompanyWithUser(companyId: number, userId: number) {
+async function associateCompanyWithUser(req: any, companyId: number) {
   const assignedBy = "someValue"; // Substitua "someValue" pelo valor apropriado ou lógica de atribuição
-  await prisma.companiesOnUsers.create({
+  await req.prisma.companiesOnUsers.create({
     data: {
       companyId,
-      userId,
+      userId: req.user.id,
       assignedBy,
     },
   });

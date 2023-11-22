@@ -74,9 +74,9 @@ const Sidebar = () => {
 
     return (
         <Box
-            boxShadow="md"
+            boxShadow="xs"
             p="6"
-            w="15%"
+            w="25%"
             maxW="20%"
             h="100vh"
             rounded="md"

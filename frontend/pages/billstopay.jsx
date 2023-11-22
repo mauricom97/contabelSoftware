@@ -3,6 +3,7 @@ import axios from "axios";
 import Sidebar from "./components/Sidebar";
 import CreateBillToPay from "./components/financial/CreateBillToPay";
 import { EditIcon, DeleteIcon } from "@chakra-ui/icons";
+import io from "socket.io-client";
 
 import {
     Table,
@@ -64,13 +65,29 @@ const DataTable = () => {
     };
 
     useEffect(() => {
-        fetchBillData(`status=1`);
+        fetchBillData();
+        const socket = io("http://localhost:4356");
+
+        socket.on("newAccountPayable", (data) => {
+            console.log(data);
+            fetchBillData();
+        });
+        // Limpar o socket quando o componente for desmontado
+        return () => {
+            socket.disconnect();
+        };
     }, []);
     return (
         <Box>
             <Sidebar />
             <Center>
-                <Box position="absolute" top="10%" w="60%" minH="50%">
+                <Box
+                    position="absolute"
+                    left="30%"
+                    top="10%"
+                    w="60%"
+                    minH="50%"
+                >
                     <Box>
                         <Flex justifyContent="flex-end">
                             <Button mb="4" onClick={handleOpenModal}>
@@ -102,15 +119,21 @@ const DataTable = () => {
                             {billData.map((item) => (
                                 <Tr key={item.id}>
                                     <Td>{item.description}</Td>
-                                    <Td>R$: {item.amount.toFixed(2)}</Td>
+                                    <Td>
+                                        {item.amount.toLocaleString("pt-br", {
+                                            style: "currency",
+                                            currency: "BRL",
+                                        })}
+                                    </Td>
                                     <Td>{item.companyId}</Td>
                                     <Td>
                                         {(() => {
                                             if (
                                                 moment().format("DD/MM/YYYY") >
-                                                moment(item.dueDate).format(
-                                                    "DD/MM/YYYY",
-                                                )
+                                                    moment(item.dueDate).format(
+                                                        "DD/MM/YYYY",
+                                                    ) &&
+                                                item.status === "1"
                                             )
                                                 return (
                                                     <Badge colorScheme="red">
@@ -168,7 +191,11 @@ const DataTable = () => {
                         </Tbody>
                     </Table>
                     <div>
-                        <strong>Total:</strong> R$: {totalAmount.toFixed(2)}
+                        <strong>Total:</strong>
+                        {totalAmount.toLocaleString("pt-br", {
+                            style: "currency",
+                            currency: "BRL",
+                        })}
                     </div>
                 </Box>
             </Center>
