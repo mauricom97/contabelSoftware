@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import urlApi from "../../../utils/urlApi";
 import {
     Modal,
     ModalOverlay,
@@ -47,7 +48,7 @@ const CreateCompany = ({ isOpen, onOpen, onClose }) => {
         let config = {
             method: "post",
             maxBodyLength: Infinity,
-            url: "http://localhost:4356/company",
+            url: `${urlApi}/company`,
             headers: {
                 token: token,
                 "Content-Type": "application/json",

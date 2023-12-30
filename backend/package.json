@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "npx nodemon src/server.ts --watch 'src/' -e ts",
+    "dev": "npx nodemon src/app.ts --watch 'src/' -e ts",
     "compile": "npx tsc",
-    "start": "node ./dist/server.js",
+    "start": "node ./dist/app.js",
     "prisma": "npx prisma"
   },
   "keywords": [],
@@ -23,7 +23,8 @@
     "express-async-errors": "^3.1.1",
     "helmet": "^7.1.0",
     "jsonwebtoken": "^9.0.2",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "socket.io": "^4.7.2"
   },
   "devDependencies": {
     "@types/cors": "^2.8.16",

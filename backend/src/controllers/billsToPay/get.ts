@@ -1,12 +1,10 @@
 import { Request, Response } from "express";
-import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
 
 export default async (req: Request, res: Response) => {
   try {
     const requestData = extractData(req);
     await analyseData(requestData);
-    const billsToPay = await getBillsToPay(requestData);
+    const billsToPay = await getBillsToPay(req, requestData);
     res.send(billsToPay);
   } catch (error) {
     console.log(error);
@@ -30,7 +28,7 @@ async function analyseData(filters: any) {
   }
 }
 
-async function getBillsToPay(filters: any) {
+async function getBillsToPay(req: any, filters: any) {
   const filter: any = {};
   if (filters.id) {
     filter.id = parseInt(filters.id);
@@ -41,7 +39,7 @@ async function getBillsToPay(filters: any) {
   if (filters.status) {
     filter.status = filters.status;
   }
-  const billsToPay = await prisma.accountsPayable.findMany({
+  const billsToPay = await req.prisma.accountsPayable.findMany({
     where: filter,
     orderBy: {
       dueDate: "asc",

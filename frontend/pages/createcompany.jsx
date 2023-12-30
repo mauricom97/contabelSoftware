@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import axios from "axios";
+import urlApi from "../utils/urlApi";
 
 const CreateCompany = () => {
     const [formData, setFormData] = useState({
@@ -28,10 +29,7 @@ const CreateCompany = () => {
         e.preventDefault();
 
         try {
-            const response = await axios.post(
-                "http://localhost:4356/company",
-                formData,
-            );
+            const response = await axios.post(`${urlApi}/company`, formData);
             console.log("Empresa criada com sucesso:", response.data);
             // Adicione lógica adicional, como redirecionamento ou mensagem de sucesso.
         } catch (error) {

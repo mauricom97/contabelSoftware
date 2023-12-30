@@ -1,5 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useToast } from "@chakra-ui/react";
+import urlApi from "../../../utils/urlApi";
+
 import {
     Modal,
     ModalOverlay,
@@ -12,8 +15,10 @@ import {
     FormControl,
     FormLabel,
     Input,
-    Select,
+    Select as ChakraSelect,
+    Box,
 } from "@chakra-ui/react";
+import { Select } from "chakra-react-select";
 
 const CreateBillToPay = ({ isOpen, onOpen, onClose }) => {
     const initialRef = React.useRef(null);
@@ -23,44 +28,87 @@ const CreateBillToPay = ({ isOpen, onOpen, onClose }) => {
     const [dueDate, setDueDate] = useState("");
     const [amount, setAmount] = useState("");
     const [status, setStatus] = useState("");
-    const [entity, setEntity] = useState("");
-    const [qtde, setQtde] = useState("");
+    const [queryFindSuppliers, setQueryFindSuppliers] = useState("");
+    const [suppliers, setSuppliers] = useState([]);
+    const [selectedSupplier, setSelectedSupplier] = useState(null);
+    const [selectedTypeExpense, setSelectedTypeExpense] = useState(null);
+    const [typesExpenses, setTypesExpenses] = useState([]);
 
+    useEffect(() => {
+        const delayDebounceFn = setTimeout(() => {
+            if (queryFindSuppliers) {
+                performSearch();
+            }
+        }, 300);
+
+        return () => clearTimeout(delayDebounceFn);
+    }, [queryFindSuppliers]);
+
+    const performSearch = async () => {
+        try {
+            await axios
+                .get(`${urlApi}/entity/filters`, {
+                    headers: {
+                        token: localStorage.getItem("token"),
+                    },
+                    params: {
+                        search: queryFindSuppliers,
+                        type: "supplier",
+                    },
+                })
+                .then((response) => {
+                    console.log(response.data);
+                    setSuppliers(
+                        response.data.map((s) => ({
+                            value: s.id,
+                            label: s.sampleName,
+                        })),
+                    );
+                });
+        } catch (error) {
+            console.error("Erro na busca:", error);
+        }
+    };
+
+    const toast = useToast();
     const registerBill = () => {
-        // Construa o objeto com os dados a serem enviados
         const expenseData = {
             description: description,
             amount: parseFloat(amount),
             dueDate: dueDate,
             status: status,
-            companyId: 2, // Supondo que companyId seja uma constante ou variável apropriada
+            companyId: 2,
         };
 
         let token;
         if (typeof window !== "undefined") {
             token = window.localStorage.getItem("token");
         }
-        // Configuração do Axios
         const config = {
             method: "post",
-            url: "http://localhost:4356/billstopay",
+            url: `${urlApi}/billstopay`,
             headers: {
-                token: token, // Substitua pelo token do usuário logado
+                token: token,
                 "Content-Type": "application/json",
             },
             data: expenseData,
         };
 
-        // Envia a requisição usando Axios
         axios
             .request(config)
             .then((response) => {
-                console.log("Despesa cadastrada com sucesso:", response.data);
-                onClose(); // Feche o modal após o cadastro (ajuste conforme necessário)
+                toast({
+                    title: "Conta criada com sucesso.",
+                    description: "Sua nova despesa foi criada com sucesso.",
+                    status: "success",
+                    duration: 9000,
+                    isClosable: true,
+                });
+
+                onClose();
             })
             .catch((error) => {
                 console.error("Erro ao cadastrar despesa:", error);
-                // Adicione lógica para lidar com o erro, se necessário
             });
     };
 
@@ -77,6 +125,22 @@ const CreateBillToPay = ({ isOpen, onOpen, onClose }) => {
                     <ModalHeader>Informações da nova despesa</ModalHeader>
                     <ModalCloseButton />
                     <ModalBody pb={6}>
+                        <FormControl>
+                            <FormLabel>Fornecedor</FormLabel>
+                            <Box
+                                onChange={(e) =>
+                                    setQueryFindSuppliers(e.target.value)
+                                }
+                            >
+                                <Select
+                                    placeholder="Busque pelo fornecedor"
+                                    value={selectedSupplier}
+                                    options={suppliers}
+                                    onChange={setSelectedSupplier}
+                                />
+                            </Box>
+                        </FormControl>
+
                         <FormControl>
                             <FormLabel>Descrição</FormLabel>
                             <Input
@@ -95,18 +159,15 @@ const CreateBillToPay = ({ isOpen, onOpen, onClose }) => {
                                 onChange={(e) => setDueDate(e.target.value)}
                             />
                         </FormControl>
-
                         <FormControl mt={4}>
-                            <FormLabel>Quantidade</FormLabel>
-                            <Input
-                                type="number"
-                                step="0.01"
-                                placeholder="Quantidade de parcelas"
-                                value={qtde}
-                                onChange={(e) => setQtde(e.target.value)}
+                            <FormLabel>Tipo de despesa</FormLabel>
+                            <Select
+                                placeholder="Tipo de despesa"
+                                value={selectedTypeExpense}
+                                options={typesExpenses}
+                                onChange={setSelectedTypeExpense}
                             />
                         </FormControl>
-
                         <FormControl mt={4}>
                             <FormLabel>Valor</FormLabel>
                             <Input
@@ -119,19 +180,8 @@ const CreateBillToPay = ({ isOpen, onOpen, onClose }) => {
                         </FormControl>
 
                         <FormControl mt={4}>
-                            <FormLabel>Fornecedor</FormLabel>
-                            <Input
-                                type="text"
-                                step="0.01"
-                                placeholder="Fornecedor"
-                                value={entity}
-                                onChange={(e) => setEntity(e.target.value)}
-                            />
-                        </FormControl>
-
-                        <FormControl mt={4}>
                             <FormLabel>Status</FormLabel>
-                            <Select
+                            <ChakraSelect
                                 placeholder="Selecione o status"
                                 value={status}
                                 onChange={(e) => setStatus(e.target.value)}
@@ -139,7 +189,7 @@ const CreateBillToPay = ({ isOpen, onOpen, onClose }) => {
                                 <option value="1">Em aberto</option>
                                 <option value="2">Parcialmente pago</option>
                                 <option value="3">Pago</option>
-                            </Select>
+                            </ChakraSelect>
                         </FormControl>
                     </ModalBody>
 

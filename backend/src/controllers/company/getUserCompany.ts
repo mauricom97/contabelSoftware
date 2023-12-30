@@ -1,5 +1,3 @@
-import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
 import { Request, Response } from "express";
 const getCompany = async (req: Request, res: Response) => {
   try {
@@ -13,7 +11,7 @@ const getCompany = async (req: Request, res: Response) => {
 
 async function getUserCompany(req: any) {
   try {
-    return await prisma.companiesOnUsers.findMany({
+    return await req.prisma.companiesOnUsers.findMany({
       where: {
         userId: req.user.id,
       },

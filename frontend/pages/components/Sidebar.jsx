@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import axios from "axios";
-import { TbBuilding } from "react-icons/tb";
-import { FaRegPlusSquare } from "react-icons/fa";
 import CreateCompany from "../components/company/create";
 import {
     Menu,
@@ -18,9 +16,14 @@ import {
     Flex,
     Divider,
 } from "@chakra-ui/react";
+import urlApi from "../../utils/urlApi";
+import { TbBuilding } from "react-icons/tb";
+import { FaRegPlusSquare, FaHome } from "react-icons/fa";
 import { GiReceiveMoney, GiPayMoney } from "react-icons/gi";
 import { MdAttachMoney } from "react-icons/md";
 import { FaMoneyBillTrendUp } from "react-icons/fa6";
+import { BiSolidUserCircle } from "react-icons/bi";
+import { SettingsIcon } from "@chakra-ui/icons";
 
 const Sidebar = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -38,12 +41,11 @@ const Sidebar = () => {
     if (typeof window !== "undefined") {
         token = window.localStorage.getItem("token");
     }
-
     useEffect(() => {
         let config = {
             method: "get",
             maxBodyLength: Infinity,
-            url: "http://localhost:4356/company",
+            url: `${urlApi}/company`,
             headers: {
                 token: token,
             },
@@ -73,13 +75,14 @@ const Sidebar = () => {
 
     return (
         <Box
-            boxShadow="md"
+            boxShadow="xs"
             p="6"
-            w="15%"
+            w="25%"
             maxW="20%"
             h="100vh"
             rounded="md"
             bg="white"
+            position="fixed"
         >
             <Center mb="4">
                 <WrapItem>
@@ -122,10 +125,35 @@ const Sidebar = () => {
                 onClose={handleCloseModal}
             />
             <Divider mt="5" />
-            <Box
-                overflowY="auto"
-                maxHeight="90vh" // Ajuste este valor conforme necessário
-            >
+            <Box>
+                <Box
+                    as="div"
+                    p="4"
+                    border="1"
+                    borderRadius="md"
+                    _hover={{ bg: "gray.100" }}
+                >
+                    <Link href="/dashboard">
+                        <Flex align="center" cursor="pointer">
+                            <FaHome size={20} />
+                            <Text ml="2">Home</Text>
+                        </Flex>
+                    </Link>
+                </Box>
+                <Box
+                    as="div"
+                    p="4"
+                    border="1"
+                    borderRadius="md"
+                    _hover={{ bg: "gray.100" }}
+                >
+                    <Link href="/entities">
+                        <Flex align="center" cursor="pointer">
+                            <BiSolidUserCircle size={20} />
+                            <Text ml="2">Entidades</Text>
+                        </Flex>
+                    </Link>
+                </Box>
                 <Box
                     mt="3"
                     as="div"
@@ -183,6 +211,21 @@ const Sidebar = () => {
                         <Flex align="center" cursor="pointer">
                             <FaMoneyBillTrendUp size={20} />
                             <Text ml="2">Relatorios financeiros</Text>
+                        </Flex>
+                    </Link>
+                </Box>
+
+                <Box
+                    as="div"
+                    p="4"
+                    border="1"
+                    borderRadius="md"
+                    _hover={{ bg: "gray.100" }}
+                >
+                    <Link href="/reports">
+                        <Flex align="center" cursor="pointer">
+                            <SettingsIcon size={20} />
+                            <Text ml="2">Configurações</Text>
                         </Flex>
                     </Link>
                 </Box>

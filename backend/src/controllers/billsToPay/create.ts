@@ -1,10 +1,10 @@
-import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
-const prisma = new PrismaClient();
+import { io } from "../../app";
 
 async function createAccountPayable(req: Request, res: Response) {
   const requestData = extractData(req);
-  const newAccountPayable = await createAccount(requestData);
+  const newAccountPayable = await createAccount(req, requestData);
+  io.emit("newAccountPayable", newAccountPayable);
   return res.send(newAccountPayable);
 }
 
@@ -20,8 +20,8 @@ function extractData(req: any) {
     createdBy: req.user.name,
   };
 }
-async function createAccount(newAccount: any) {
-  const accountPayable = await prisma.accountsPayable.create({
+async function createAccount(req: any, newAccount: any) {
+  const accountPayable = await req.prisma.accountsPayable.create({
     data: newAccount,
   });
   return accountPayable;
