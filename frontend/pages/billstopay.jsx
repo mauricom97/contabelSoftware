@@ -4,6 +4,7 @@ import Sidebar from "./components/Sidebar";
 import CreateBillToPay from "./components/financial/CreateBillToPay";
 import { EditIcon, DeleteIcon } from "@chakra-ui/icons";
 import io from "socket.io-client";
+import urlApi from "../utils/urlApi";
 
 import {
     Table,
@@ -44,7 +45,7 @@ const DataTable = () => {
     const fetchBillData = async (filters) => {
         try {
             const response = await axios.get(
-                `http://localhost:4356/billstopay?${filters}`,
+                `${urlApi}/billstopay?${filters}`,
                 {
                     headers: {
                         token: token,
@@ -66,7 +67,7 @@ const DataTable = () => {
 
     useEffect(() => {
         fetchBillData();
-        const socket = io("http://localhost:4356");
+        const socket = io(urlApi);
 
         socket.on("newAccountPayable", (data) => {
             console.log(data);

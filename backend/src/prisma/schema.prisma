@@ -11,36 +11,36 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
+  id        Int                @id @default(autoincrement())
   firstname String
   lastname  String
   birthdate DateTime
   phone     String
-  email     String   @unique
+  email     String             @unique
   password  String
   companies CompaniesOnUsers[]
 }
 
 model Company {
-  id          Int      @id @default(autoincrement())
-  sampleName  String
-  registerName String   @unique
-  cnpj        String   @unique
-  ie          String   @unique
-  phone       String   @unique
-  email       String   @unique
-  address     String
-  city        String
-  state       String
-  users       CompaniesOnUsers[]
+  id              Int                @id @default(autoincrement())
+  sampleName      String
+  registerName    String             @unique
+  cnpj            String             @unique
+  ie              String             @unique
+  phone           String             @unique
+  email           String             @unique
+  address         String
+  city            String
+  state           String
+  users           CompaniesOnUsers[]
   accountsPayable AccountsPayable[]
 }
 
 model CompaniesOnUsers {
-  user    User     @relation(fields: [userId], references: [id])
-  userId  Int
-  company Company  @relation(fields: [companyId], references: [id])
-  companyId Int
+  user       User     @relation(fields: [userId], references: [id])
+  userId     Int
+  company    Company  @relation(fields: [companyId], references: [id])
+  companyId  Int
   assignedAt DateTime @default(now())
   assignedBy String
 
@@ -48,27 +48,60 @@ model CompaniesOnUsers {
 }
 
 model Entity {
-  id          Int      @id @default(autoincrement())
-  name        String
-  cnpj        String   @unique
-  ie          String   @unique
-  phone       String   @unique
-  email       String   @unique
-  address     String
-  city        String
-  state       String
-  createdBy   String
-  createdAt   DateTime @default(now())
+  id        Int      @id @default(autoincrement())
+  type      String
+  registerName      String
+  sampleName        String
+  cpfCnpj      String   @unique
+  ie        String   @unique
+  phone     String   @unique
+  email     String   @unique
+  address   String
+  city      String
+  state     String
+  suppliers Suppliers[]
+  createdBy String
+  createdAt DateTime @default(now())
+}
+
+model Suppliers {
+  id        Int      @id @default(autoincrement())
+  entityId  Int
+  entity    Entity   @relation(fields: [entityId], references: [id])
 }
 
 model AccountsPayable {
-  id          Int             @id @default(autoincrement())
-  description String
-  amount      Float
-  dueDate     DateTime
-  status      String
-  company     Company         @relation(fields: [companyId], references: [id])
-  companyId   Int
-  createdAt   DateTime        @default(now())
-  @@index([companyId])
+  id                             Int                              @id @default(autoincrement())
+  description                    String
+  amount                         Float
+  dueDate                        DateTime
+  status                         String
+  expenseCategoryId              Int?
+  expenseCategory                ExpenseCategory?                 @relation(fields: [expenseCategoryId], references: [id])
+  company                        Company                          @relation(fields: [companyId], references: [id])
+  companyId                      Int
+  createdAt                      DateTime                         @default(now())
+  entityId                       Int
+  entity                         Entity                           @relation(fields: [entityId], references: [id])
+  AccountsPayableExpenseCategory AccountsPayableExpenseCategory[]
+  @@index([companyId, entityId])
 }
+
+model ExpenseCategory {
+  id                             Int                              @id @default(autoincrement())
+  name                           String
+  description                    String
+  accountsPayable                AccountsPayable[]
+  createdAt                      DateTime                         @default(now())
+  AccountsPayableExpenseCategory AccountsPayableExpenseCategory[]
+}
+
+model AccountsPayableExpenseCategory {
+  accountsPayableId Int
+  expenseCategoryId Int
+  accountsPayable   AccountsPayable @relation(fields: [accountsPayableId], references: [id])
+  expenseCategory   ExpenseCategory @relation(fields: [expenseCategoryId], references: [id])
+
+  @@id([accountsPayableId, expenseCategoryId])
+}
+

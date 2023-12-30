@@ -1,28 +1,38 @@
 import { useState } from "react";
+import urlApi from "../utils/urlApi";
+
 import {
     Button,
     Input,
     FormControl,
     FormLabel,
     VStack,
+    Image,
+    Link,
+    Box,
 } from "@chakra-ui/react";
+import { ExternalLinkIcon } from "@chakra-ui/icons";
+
+import { InputGroup, InputRightElement, IconButton } from "@chakra-ui/react";
+import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
+
 import axios from "axios";
 import { useRouter } from "next/router";
 
 const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
+
+    const handleClick = () => setShowPassword(!showPassword);
     const router = useRouter();
 
     const handleLogin = async () => {
         try {
-            const response = await axios.post(
-                "http://localhost:4356/user/login",
-                {
-                    email,
-                    password,
-                },
-            );
+            const response = await axios.post(`${urlApi}/user/login`, {
+                email,
+                password,
+            });
 
             console.log(response.data);
             localStorage.setItem("token", response.data.token);
@@ -46,22 +56,48 @@ const Login = () => {
                 boxShadow="md"
             >
                 <VStack spacing={4}>
-                    <FormLabel>Email</FormLabel>
+                    <Image
+                        borderRadius="full"
+                        boxSize="150px"
+                        src="https://bit.ly/dan-abramov"
+                        alt="Dan Abramov"
+                    />
                     <Input
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         variant="filled"
-                        placeholder="Email"
+                        placeholder="example@domain.com"
                     />
-                    <FormLabel>Password</FormLabel>
-                    <Input
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        variant="filled"
-                        placeholder="Password"
-                    />
+                    <InputGroup size="md">
+                        <Input
+                            pr="4.5rem"
+                            type={showPassword ? "text" : "password"}
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            variant="filled"
+                            placeholder="Password"
+                        />
+                        <InputRightElement width="4.5rem">
+                            <IconButton
+                                h="1.75rem"
+                                size="sm"
+                                onClick={handleClick}
+                                icon={
+                                    showPassword ? (
+                                        <ViewOffIcon />
+                                    ) : (
+                                        <ViewIcon />
+                                    )
+                                }
+                            />
+                        </InputRightElement>
+                    </InputGroup>
+                    <Box textAlign="left">
+                        <Link href="https://chakra-ui.com" isExternal>
+                            Esqueci minha senha <ExternalLinkIcon mx="2px" />
+                        </Link>
+                    </Box>
                     <Button
                         colorScheme="blue"
                         onClick={handleLogin}

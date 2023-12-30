@@ -2,6 +2,8 @@
 import axios from "axios";
 import { useState } from "react";
 import { useRouter } from "next/router";
+import urlApi from "../utils/urlApi";
+
 const RegisterForm = () => {
     const [formData, setFormData] = useState({
         firstname: "",
@@ -26,7 +28,7 @@ const RegisterForm = () => {
         e.preventDefault();
 
         try {
-            await axios.post("http://localhost:4356/user", formData);
+            await axios.post(`${urlApi}/user`, formData);
             router.push("/signupSuccess");
         } catch (error) {
             console.error("Erro ao cadastrar:", error);
