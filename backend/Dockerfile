@@ -15,6 +15,7 @@ RUN npm install cors
 COPY . .
 
 # Gere os artefatos do Prisma
+RUN cd src && npx prisma format
 RUN cd src && npx prisma generate
 
 # Exponha a porta 3000, que é a porta padrão do Next.js
