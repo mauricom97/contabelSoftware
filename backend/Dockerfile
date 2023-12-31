@@ -20,4 +20,5 @@ COPY . .
 EXPOSE 4356
 
 # Comando para iniciar o servidor
-CMD ["npm", "run", "dev"]
+# CMD ["npm", "run", "dev"]
+RUN npm run start
