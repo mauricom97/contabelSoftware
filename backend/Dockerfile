@@ -10,7 +10,6 @@ COPY package*.json ./
 # Instale as dependências
 RUN npm install
 RUN npm install cors
-RUN npm run build
 RUN npx prisma generate
 
 # Copie todos os arquivos do projeto para o diretório de trabalho
@@ -19,6 +18,7 @@ COPY . .
 # Exponha a porta 3000, que é a porta padrão do Next.js
 EXPOSE 4356
 
+RUN npm run build
+
 # Comando para iniciar o servidor
-# CMD ["npm", "run", "dev"]
-RUN npm run start
+CMD ["npm", "start"]
