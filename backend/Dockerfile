@@ -10,6 +10,7 @@ COPY package*.json ./
 # Instale as dependências
 RUN npm install
 RUN npm install cors
+RUN npm run build
 RUN npx prisma generate
 
 # Copie todos os arquivos do projeto para o diretório de trabalho
