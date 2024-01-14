@@ -37,7 +37,7 @@ const ListagemEntidades = () => {
             maxBodyLength: Infinity,
             url: `${urlApi}/entity`,
             headers: {
-                token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJjb250YXRvLm1hdXJpY2lvbnVuZXNAZ21haWwuY29tIiwiaWF0IjoxNzAxNTE2ODgzfQ.HgCkfe2LELWRDbIN51QTjzx09fE2-XnUUXVtMUuhqUo",
+                token: localStorage.getItem("token"),
                 "Content-Type": "application/json",
             },
         };

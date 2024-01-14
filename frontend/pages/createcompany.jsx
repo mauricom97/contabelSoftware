@@ -1,10 +1,21 @@
-// pages/CreateCompany.js
-
 import { useState } from "react";
-import axios from "axios";
 import urlApi from "../utils/urlApi";
+import { useRouter } from "next/router";
 
-const CreateCompany = () => {
+import {
+    Box,
+    FormControl,
+    FormLabel,
+    Input,
+    Button,
+    Heading,
+    VStack,
+} from "@chakra-ui/react";
+import axios from "axios";
+
+export default function Company() {
+    const router = useRouter();
+
     const [formData, setFormData] = useState({
         sampleName: "",
         registerName: "",
@@ -19,146 +30,112 @@ const CreateCompany = () => {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData((prevData) => ({
-            ...prevData,
-            [name]: value,
-        }));
+        setFormData({ ...formData, [name]: value });
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        try {
-            const response = await axios.post(`${urlApi}/company`, formData);
-            console.log("Empresa criada com sucesso:", response.data);
-            // Adicione lógica adicional, como redirecionamento ou mensagem de sucesso.
-        } catch (error) {
-            console.error("Erro ao criar empresa:", error.response.data);
-            // Trate erros, exiba mensagens de erro, etc.
-        }
+    const handleSubmit = async () => {
+        await axios
+            .post(`${urlApi}/company`, formData, {
+                headers: {
+                    token: localStorage.getItem("token"),
+                },
+            })
+            .then((response) => {
+                router.push("/dashboard");
+                localStorage.setItem("company", response.data.id);
+            });
     };
 
     return (
-        <div className="max-w-md mx-auto mt-8">
-            <form onSubmit={handleSubmit}>
-                <div className="mb-4">
-                    <label htmlFor="registerName">Razão Social:</label>
-                    <input
-                        type="text"
-                        id="registerName"
+        <Box p={4}>
+            <VStack spacing={4} align="stretch" mx="auto" maxW="400px">
+                <Heading as="h2" size="xl">
+                    Crie sua empresa
+                </Heading>
+                <FormControl>
+                    <Input
+                        placeholder="Razão social"
                         name="registerName"
                         value={formData.registerName}
                         onChange={handleChange}
-                        className="w-full p-2 border rounded"
                     />
-                </div>
-                <div className="mb-4">
-                    <label htmlFor="sampleName">Nome Fantasia:</label>
-                    <input
-                        type="text"
-                        id="sampleName"
+                </FormControl>
+                <FormControl>
+                    <Input
+                        placeholder="Nome fantazia"
                         name="sampleName"
                         value={formData.sampleName}
                         onChange={handleChange}
-                        className="w-full p-2 border rounded"
                     />
-                </div>
+                </FormControl>
 
-                <div className="mb-4">
-                    <label htmlFor="cnpj">CNPJ:</label>
-                    <input
-                        type="text"
-                        id="cnpj"
+                <FormControl>
+                    <Input
+                        placeholder="CNPJ"
                         name="cnpj"
                         value={formData.cnpj}
                         onChange={handleChange}
-                        className="w-full p-2 border rounded"
                     />
-                </div>
+                </FormControl>
 
-                <div className="mb-4">
-                    <label htmlFor="ie">Inscrição Estadual:</label>
-                    <input
-                        type="text"
-                        id="ie"
+                <FormControl>
+                    <Input
+                        placeholder="Inscrição social"
                         name="ie"
                         value={formData.ie}
                         onChange={handleChange}
-                        className="w-full p-2 border rounded"
                     />
-                </div>
+                </FormControl>
 
-                <div className="mb-4">
-                    <label htmlFor="phone">Telefone:</label>
-                    <input
-                        type="text"
-                        id="phone"
+                <FormControl>
+                    <Input
+                        placeholder="Telefone"
                         name="phone"
                         value={formData.phone}
                         onChange={handleChange}
-                        className="w-full p-2 border rounded"
                     />
-                </div>
+                </FormControl>
 
-                <div className="mb-4">
-                    <label htmlFor="email">Email:</label>
-                    <input
-                        type="text"
-                        id="email"
+                <FormControl>
+                    <Input
+                        placeholder="E-mail"
                         name="email"
                         value={formData.email}
                         onChange={handleChange}
-                        className="w-full p-2 border rounded"
                     />
-                </div>
+                </FormControl>
 
-                <div className="mb-4">
-                    <label htmlFor="address">Endereço:</label>
-                    <input
-                        type="text"
-                        id="address"
+                <FormControl>
+                    <Input
+                        placeholder="Endereço"
                         name="address"
                         value={formData.address}
                         onChange={handleChange}
-                        className="w-full p-2 border rounded"
                     />
-                </div>
+                </FormControl>
 
-                <div className="mb-4">
-                    <label htmlFor="city">Cidade:</label>
-                    <input
-                        type="text"
-                        id="city"
+                <FormControl>
+                    <Input
+                        placeholder="Cidade"
                         name="city"
                         value={formData.city}
                         onChange={handleChange}
-                        className="w-full p-2 border rounded"
                     />
-                </div>
+                </FormControl>
 
-                <div className="mb-4">
-                    <label htmlFor="state">Estado:</label>
-                    <input
-                        type="text"
-                        id="state"
+                <FormControl>
+                    <Input
+                        placeholder="Estado"
                         name="state"
                         value={formData.state}
                         onChange={handleChange}
-                        className="w-full p-2 border rounded"
                     />
-                </div>
+                </FormControl>
 
-                <div className="mt-8">
-                    <button
-                        type="submit"
-                        className="bg-green-500 text-white p-2 rounded hover:bg-green-700"
-                    >
-                        Criar Empresa
-                    </button>
-                </div>
-            </form>
-        </div>
+                <Button colorScheme="blue" onClick={handleSubmit}>
+                    Criar minha empresa
+                </Button>
+            </VStack>
+        </Box>
     );
-};
-
-export default CreateCompany;
+}

@@ -4,7 +4,7 @@ import Sidebar from "./components/Sidebar";
 const Home = () => {
     return (
         <Box>
-            <Sidebar />
+            <Sidebar></Sidebar>
         </Box>
     );
 };

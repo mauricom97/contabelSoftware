@@ -14,8 +14,8 @@ async function login(req: Request, res: Response) {
       throw new Error("Password is not valid");
     }
     const token = generateToken(user);
-    return res.send({token: token});
-    
+    const { id } = user;
+    return res.send({ token: token, id });
   } catch (error: any) {
     console.log(error);
     return res.status(400).send({ error: error.message });
@@ -41,6 +41,11 @@ async function findUser(requestData: { email: string }) {
     where: {
       email,
     },
+    select: {
+      id: true,
+      email: true,
+      password: true,
+    },
   });
   if (!user) {
     throw new Error("This user does not exist");
@@ -60,7 +65,10 @@ async function comparePassword(
 }
 
 function generateToken(user: { id: number; email: string }) {
-  const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET as string);
+  const token = jwt.sign(
+    { id: user.id, email: user.email },
+    process.env.JWT_SECRET as string
+  );
   return token;
 }
 

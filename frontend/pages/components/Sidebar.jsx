@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import axios from "axios";
+import urlApi from "../../utils/urlApi";
+
 import CreateCompany from "../components/company/create";
 import {
     Menu,
@@ -16,7 +18,6 @@ import {
     Flex,
     Divider,
 } from "@chakra-ui/react";
-import urlApi from "../../utils/urlApi";
 import { TbBuilding } from "react-icons/tb";
 import { FaRegPlusSquare, FaHome } from "react-icons/fa";
 import { GiReceiveMoney, GiPayMoney } from "react-icons/gi";
@@ -28,6 +29,8 @@ import { SettingsIcon } from "@chakra-ui/icons";
 const Sidebar = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [companiesList, setCompaniesList] = useState([]);
+    const [companyName, setCompanyName] = useState("");
+    const [user, setUser] = useState({});
 
     const handleOpenModal = () => {
         setIsModalOpen(true);
@@ -37,12 +40,17 @@ const Sidebar = () => {
         setIsModalOpen(false);
     };
 
+    const setCompany = (e) => {
+        localStorage.setItem("company", e);
+        window.location.reload();
+    };
+
     let token;
     if (typeof window !== "undefined") {
         token = window.localStorage.getItem("token");
     }
     useEffect(() => {
-        let config = {
+        let configCompany = {
             method: "get",
             maxBodyLength: Infinity,
             url: `${urlApi}/company`,
@@ -52,9 +60,50 @@ const Sidebar = () => {
         };
 
         axios
-            .request(config)
+            .request(configCompany)
             .then((response) => {
                 setCompaniesList(response.data);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+
+        const companyId = window.localStorage.getItem("company");
+        let configFindCompany = {
+            method: "get",
+            maxBodyLength: Infinity,
+            url: `${urlApi}/company/findCompany?id=${companyId}`,
+            headers: {
+                token: token,
+            },
+        };
+
+        axios
+            .request(configFindCompany)
+            .then((response) => {
+                console.log(JSON.stringify(response.data));
+                setCompanyName(response.data.sampleName);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+
+        const userId = window.localStorage.getItem("user");
+
+        let configGetUser = {
+            method: "get",
+            maxBodyLength: Infinity,
+            url: `${urlApi}/user/getUser?id=${userId}`,
+            headers: {
+                token: token,
+            },
+        };
+
+        axios
+            .request(configGetUser)
+            .then((response) => {
+                console.log(JSON.stringify(response.data));
+                setUser(response.data);
             })
             .catch((error) => {
                 console.log(error);
@@ -64,7 +113,10 @@ const Sidebar = () => {
     const mappedCompanies =
         companiesList.length > 0 ? (
             companiesList.map((company) => (
-                <MenuItem key={company.companyId}>
+                <MenuItem
+                    onClick={() => setCompany(company.companyId)}
+                    key={company.companyId}
+                >
                     <TbBuilding />
                     <span m="3"> {company.company.sampleName} </span>
                 </MenuItem>
@@ -94,7 +146,7 @@ const Sidebar = () => {
                 </WrapItem>
             </Center>
             <Center mb="5">
-                <span>Mauricio Nunes</span>
+                <span>{user.firstname}</span>
             </Center>
             <Menu>
                 <MenuButton w="100%" as={Button}>
@@ -102,7 +154,7 @@ const Sidebar = () => {
                         <Flex>
                             <Center>
                                 <TbBuilding mr="4" />
-                                Fredy Pneus
+                                {companyName}
                             </Center>
                         </Flex>
                     </Center>

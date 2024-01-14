@@ -77,7 +77,8 @@ const CreateBillToPay = ({ isOpen, onOpen, onClose }) => {
             amount: parseFloat(amount),
             dueDate: dueDate,
             status: status,
-            companyId: 2,
+            companyId: parseInt(window.localStorage.getItem("company")),
+            entityId: selectedSupplier.value,
         };
 
         let token;

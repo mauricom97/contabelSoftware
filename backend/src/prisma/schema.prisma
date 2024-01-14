@@ -19,6 +19,8 @@ model User {
   email     String             @unique
   password  String
   companies CompaniesOnUsers[]
+  defaultCompany  Int               @default(1)
+
 }
 
 model Company {
@@ -48,26 +50,27 @@ model CompaniesOnUsers {
 }
 
 model Entity {
-  id        Int      @id @default(autoincrement())
-  type      String
-  registerName      String
-  sampleName        String
-  cpfCnpj      String   @unique
-  ie        String   @unique
-  phone     String   @unique
-  email     String   @unique
-  address   String
-  city      String
-  state     String
-  suppliers Suppliers[]
-  createdBy String
-  createdAt DateTime @default(now())
+  id              Int               @id @default(autoincrement())
+  type            String
+  registerName    String
+  sampleName      String
+  cpfCnpj         String            @unique
+  ie              String            @unique
+  phone           String            @unique
+  email           String            @unique
+  address         String
+  city            String
+  state           String
+  suppliers       Suppliers[]
+  createdBy       String
+  createdAt       DateTime          @default(now())
+  accountsPayables AccountsPayable[]
 }
 
 model Suppliers {
-  id        Int      @id @default(autoincrement())
-  entityId  Int
-  entity    Entity   @relation(fields: [entityId], references: [id])
+  id       Int    @id @default(autoincrement())
+  entityId Int
+  entity   Entity @relation(fields: [entityId], references: [id])
 }
 
 model AccountsPayable {
@@ -81,9 +84,10 @@ model AccountsPayable {
   company                        Company                          @relation(fields: [companyId], references: [id])
   companyId                      Int
   createdAt                      DateTime                         @default(now())
-  entityId                       Int
+  entityId                       Int                              @default(1)
   entity                         Entity                           @relation(fields: [entityId], references: [id])
   AccountsPayableExpenseCategory AccountsPayableExpenseCategory[]
+
   @@index([companyId, entityId])
 }
 
@@ -104,4 +108,3 @@ model AccountsPayableExpenseCategory {
 
   @@id([accountsPayableId, expenseCategoryId])
 }
-

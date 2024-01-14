@@ -42,18 +42,29 @@ const DataTable = () => {
     if (typeof window !== "undefined") {
         token = window.localStorage.getItem("token");
     }
-    const fetchBillData = async (filters) => {
+    const fetchBillData = async () => {
         try {
-            const response = await axios.get(
-                `${urlApi}/billstopay?${filters}`,
-                {
-                    headers: {
-                        token: token,
-                    },
+            let config = {
+                method: "get",
+                maxBodyLength: Infinity,
+                url: `${urlApi}/billstopay/filters?companyId=${window.localStorage.getItem(
+                    "company",
+                )}`,
+                headers: {
+                    token: token,
                 },
-            );
-            setBillData(response.data);
+            };
 
+            const response = await axios
+                .request(config)
+                .then((response) => {
+                    return response;
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+
+            setBillData(response.data);
             // Atualize os totais sempre que os dados da conta mudarem
             let total = 0;
             response.data.forEach((item) => {
@@ -82,13 +93,7 @@ const DataTable = () => {
         <Box>
             <Sidebar />
             <Center>
-                <Box
-                    position="absolute"
-                    left="30%"
-                    top="10%"
-                    w="60%"
-                    minH="50%"
-                >
+                <Box position="absolute" w="70%" top={30} left={300}>
                     <Box>
                         <Flex justifyContent="flex-end">
                             <Button mb="4" onClick={handleOpenModal}>
@@ -105,92 +110,106 @@ const DataTable = () => {
                             />
                         </Flex>
                     </Box>
-                    <Table size="sm" boxShadow="xs" rounded="md" bg="white">
-                        <Thead>
-                            <Tr>
-                                <Th>Descrição</Th>
-                                <Th>Valor</Th>
-                                <Th>Fornecedor</Th>
-                                <Th>Data de Vencimento</Th>
-                                <Th>Status</Th>
-                                <Th>Ações</Th>
-                            </Tr>
-                        </Thead>
-                        <Tbody>
-                            {billData.map((item) => (
-                                <Tr key={item.id}>
-                                    <Td>{item.description}</Td>
-                                    <Td>
-                                        {item.amount.toLocaleString("pt-br", {
-                                            style: "currency",
-                                            currency: "BRL",
-                                        })}
-                                    </Td>
-                                    <Td>{item.companyId}</Td>
-                                    <Td>
-                                        {(() => {
-                                            if (
-                                                moment().format("DD/MM/YYYY") >
-                                                    moment(item.dueDate).format(
-                                                        "DD/MM/YYYY",
-                                                    ) &&
-                                                item.status === "1"
-                                            )
-                                                return (
-                                                    <Badge colorScheme="red">
-                                                        {moment(
-                                                            item.dueDate,
-                                                        ).format("DD/MM/YYYY")}
-                                                    </Badge>
-                                                );
-                                            else
-                                                return moment(
-                                                    item.dueDate,
-                                                ).format("DD/MM/YYYY");
-                                        })()}
-                                    </Td>
-                                    <Td>
-                                        {(() => {
-                                            if (item.status === "1")
-                                                return <Badge>Em aberto</Badge>;
-                                            else if (item.status === "2")
-                                                return (
-                                                    <Badge
-                                                        variant="outline"
-                                                        colorScheme="green"
-                                                    >
-                                                        Parcialmente pago
-                                                    </Badge>
-                                                );
-                                            else if (item.status === "3")
-                                                return (
-                                                    <Badge colorScheme="green">
-                                                        Pago
-                                                    </Badge>
-                                                );
-                                            else return "Status desconhecido";
-                                        })()}
-                                    </Td>
-                                    <Td>
-                                        <IconButton
-                                            size="sm"
-                                            colorScheme="blue"
-                                            mr="2"
-                                            aria-label="Editar"
-                                            icon={<EditIcon />}
-                                        />
-                                        <IconButton
-                                            size="sm"
-                                            colorScheme="red"
-                                            mr="2"
-                                            aria-label="Excluir"
-                                            icon={<DeleteIcon />}
-                                        />
-                                    </Td>
+                    <Box>
+                        <Table size="sm" boxShadow="xs" rounded="md" bg="white">
+                            <Thead>
+                                <Tr>
+                                    <Th>Descrição</Th>
+                                    <Th>Valor</Th>
+                                    <Th>Fornecedor</Th>
+                                    <Th>Data de Vencimento</Th>
+                                    <Th>Status</Th>
+                                    <Th>Ações</Th>
                                 </Tr>
-                            ))}
-                        </Tbody>
-                    </Table>
+                            </Thead>
+                            <Tbody>
+                                {billData.map((item) => (
+                                    <Tr key={item.id}>
+                                        <Td>{item.description}</Td>
+                                        <Td>
+                                            {item.amount.toLocaleString(
+                                                "pt-br",
+                                                {
+                                                    style: "currency",
+                                                    currency: "BRL",
+                                                },
+                                            )}
+                                        </Td>
+                                        <Td>{item.entityId}</Td>
+                                        <Td>
+                                            {(() => {
+                                                if (
+                                                    moment().format(
+                                                        "DD/MM/YYYY",
+                                                    ) >
+                                                        moment(
+                                                            item.dueDate,
+                                                        ).format(
+                                                            "DD/MM/YYYY",
+                                                        ) &&
+                                                    item.status === "1"
+                                                )
+                                                    return (
+                                                        <Badge colorScheme="red">
+                                                            {moment(
+                                                                item.dueDate,
+                                                            ).format(
+                                                                "DD/MM/YYYY",
+                                                            )}
+                                                        </Badge>
+                                                    );
+                                                else
+                                                    return moment(
+                                                        item.dueDate,
+                                                    ).format("DD/MM/YYYY");
+                                            })()}
+                                        </Td>
+                                        <Td>
+                                            {(() => {
+                                                if (item.status === "1")
+                                                    return (
+                                                        <Badge>Em aberto</Badge>
+                                                    );
+                                                else if (item.status === "2")
+                                                    return (
+                                                        <Badge
+                                                            variant="outline"
+                                                            colorScheme="green"
+                                                        >
+                                                            Parcialmente pago
+                                                        </Badge>
+                                                    );
+                                                else if (item.status === "3")
+                                                    return (
+                                                        <Badge colorScheme="green">
+                                                            Pago
+                                                        </Badge>
+                                                    );
+                                                else
+                                                    return "Status desconhecido";
+                                            })()}
+                                        </Td>
+                                        <Td>
+                                            <IconButton
+                                                size="sm"
+                                                colorScheme="blue"
+                                                mr="2"
+                                                aria-label="Editar"
+                                                icon={<EditIcon />}
+                                            />
+                                            <IconButton
+                                                size="sm"
+                                                colorScheme="red"
+                                                mr="2"
+                                                aria-label="Excluir"
+                                                icon={<DeleteIcon />}
+                                            />
+                                        </Td>
+                                    </Tr>
+                                ))}
+                            </Tbody>
+                        </Table>
+                    </Box>
                     <div>
                         <strong>Total:</strong>
                         {totalAmount.toLocaleString("pt-br", {

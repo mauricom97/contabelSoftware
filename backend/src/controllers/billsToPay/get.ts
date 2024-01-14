@@ -13,17 +13,18 @@ export default async (req: Request, res: Response) => {
 };
 
 function extractData(req: any) {
-  const { id, dueDate, status } = req.query;
+  const { id, dueDate, status, companyId } = req.query;
 
   return {
     id,
     dueDate: dueDate ? new Date(dueDate).toISOString() : null,
     status,
+    companyId,
   };
 }
 
 async function analyseData(filters: any) {
-  if (!filters.id && !filters.dueDate && !filters.status) {
+  if (!filters.companyId) {
     throw new Error("You must provide at least one filter");
   }
 }
@@ -39,6 +40,8 @@ async function getBillsToPay(req: any, filters: any) {
   if (filters.status) {
     filter.status = filters.status;
   }
+  filter.companyId = parseInt(filters.companyId);
+  console.log(filter);
   const billsToPay = await req.prisma.accountsPayable.findMany({
     where: filter,
     orderBy: {

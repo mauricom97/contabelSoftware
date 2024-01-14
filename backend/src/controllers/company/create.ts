@@ -8,7 +8,7 @@ async function create(req: any, res: Response, next: NextFunction) {
     await analyseData(requestData);
     const newCompany = await createNewCompany(req, requestData);
     await associateCompanyWithUser(req, newCompany.id);
-    res.send(newCompany);
+    return res.send(newCompany);
   } catch (error: any) {
     console.error(error);
     res.status(404).send({ error: error.message });
@@ -128,6 +128,11 @@ async function associateCompanyWithUser(req: any, companyId: number) {
       userId: req.user.id,
       assignedBy,
     },
+  });
+
+  await req.prisma.user.update({
+    where: { id: req.user.id },
+    data: { defaultCompany: companyId },
   });
 }
 
