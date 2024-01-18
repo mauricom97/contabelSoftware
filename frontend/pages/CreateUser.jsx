@@ -3,12 +3,12 @@ import axios from "axios";
 import urlApi from "../utils/urlApi";
 import React, { useState } from "react";
 import { useRouter } from "next/router";
+import InputMask from "react-input-mask";
 
 import {
     Box,
     Heading,
     FormControl,
-    FormLabel,
     Input,
     Button,
     VStack,
@@ -95,16 +95,22 @@ const SignUp = () => {
                     />
                 </FormControl>
                 <FormControl>
-                    <Input
-                        type="text"
-                        placeholder="Celular"
-                        value={celular}
+                    <InputMask
+                        mask="(99) 99999-9999"
+                        maskChar="_"
                         onChange={(e) => setCelular(e.target.value)}
-                    />
+                    >
+                        {(inputProps) => (
+                            <Input
+                                {...inputProps}
+                                placeholder="Telefone celular"
+                            />
+                        )}
+                    </InputMask>
                 </FormControl>
                 <FormControl>
                     <Input
-                        type="email"
+                        type="e-mail"
                         placeholder="Seu email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}

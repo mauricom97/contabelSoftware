@@ -129,12 +129,12 @@ const Sidebar = () => {
         <Box
             boxShadow="xs"
             p="6"
-            w="25%"
-            maxW="20%"
+            w="300px"
+            maxW="250px"
             h="100vh"
             rounded="md"
             bg="white"
-            position="fixed"
+            position="absolute"
         >
             <Center mb="4">
                 <WrapItem>
@@ -202,7 +202,7 @@ const Sidebar = () => {
                     <Link href="/entities">
                         <Flex align="center" cursor="pointer">
                             <BiSolidUserCircle size={20} />
-                            <Text ml="2">Entidades</Text>
+                            <Text ml="2">Parceiros comerciais</Text>
                         </Flex>
                     </Link>
                 </Box>

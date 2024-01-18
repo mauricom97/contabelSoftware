@@ -32,7 +32,7 @@ const Dashboard = () => {
 
                 <StatGroup>
                     <Stat>
-                        <StatLabel>Sent</StatLabel>
+                        <StatLabel>Enviados</StatLabel>
                         <StatNumber>345,670</StatNumber>
                         <StatHelpText>
                             <StatArrow type="increase" />
