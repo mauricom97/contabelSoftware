@@ -1,9 +1,15 @@
 const index = async (req: any, res: any) => {
   try {
-    const data = await req.prisma.Entity.findMany({
-      orderBy: {
-        sampleName: "asc",
+    let entities = await req.prisma.CompanyEntity.findMany({
+      where: {
+        idCompany: parseInt(req.company),
       },
+      select: {
+        Entity: true,
+      },
+    });
+    let data = entities.map((entity: any) => {
+      return entity.Entity;
     });
     return res.send(data);
   } catch (error) {

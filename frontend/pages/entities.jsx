@@ -40,6 +40,9 @@ const ListagemEntidades = () => {
                 token: localStorage.getItem("token"),
                 "Content-Type": "application/json",
             },
+            params: {
+                company: localStorage.getItem("company"),
+            },
         };
         axios
             .request(config)

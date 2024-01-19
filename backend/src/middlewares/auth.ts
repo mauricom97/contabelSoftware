@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { Console } from "console";
 const pgDatabase =
   process.env.NODE_ENV === "prod"
     ? process.env.DATABASE_URL
@@ -21,6 +22,7 @@ async function auth(req: any, res: Response, next: NextFunction) {
     const user = await findUser(decodedToken);
     req.prisma = prisma;
     req.user = user;
+    req.company = req.query.company;
     next();
   } catch (error: any) {
     console.log(error);

@@ -53,6 +53,7 @@ const DataTable = () => {
                 headers: {
                     token: token,
                 },
+                params: { company: localStorage.getItem("company") },
             };
 
             const response = await axios
@@ -68,7 +69,7 @@ const DataTable = () => {
             // Atualize os totais sempre que os dados da conta mudarem
             let total = 0;
             response.data.forEach((item) => {
-                total += parseFloat(item.amount);
+                total += parseFloat(item.value);
             });
             setTotalAmount(total);
         } catch (error) {
@@ -127,7 +128,7 @@ const DataTable = () => {
                                     <Tr key={item.id}>
                                         <Td>{item.description}</Td>
                                         <Td>
-                                            {item.amount.toLocaleString(
+                                            {item.value.toLocaleString(
                                                 "pt-br",
                                                 {
                                                     style: "currency",
