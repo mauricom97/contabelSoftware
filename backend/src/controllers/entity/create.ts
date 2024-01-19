@@ -6,6 +6,7 @@ const create = async (req: Request, res: Response) => {
   try {
     const requestData = extractData(req);
     const entity = await createEntity(req, requestData);
+    await createCompanyEntity(req, entity);
     if (requestData.isSupplier) await createSupplier(req, entity);
     io.emit("newEntity", entity);
     res.send(entity);
@@ -56,7 +57,7 @@ function extractData(request: any) {
 
 async function createEntity(req: any, requestData: interfaceEntity) {
   try {
-    const entity = await req.prisma.entity.create({
+    return await req.prisma.Entity.create({
       data: {
         type: requestData.type,
         registerName: requestData.registerName,
@@ -72,22 +73,33 @@ async function createEntity(req: any, requestData: interfaceEntity) {
         neighborhood: requestData.neighborhood,
         city: requestData.city,
         state: requestData.state,
-        createdBy: req.user.id.toString(),
-        observation: requestData.observation,
       },
     });
-    return entity;
   } catch (error: any) {
+    console.log(error);
+    throw new Error(error);
+  }
+}
+
+async function createCompanyEntity(req: any, entityCompany: any) {
+  try {
+    return await req.prisma.CompanyEntity.create({
+      data: {
+        idCompany: parseInt(req.company),
+        idEntity: entityCompany.id,
+      },
+    });
+  } catch (error: any) {
+    console.log(error);
     throw new Error(error);
   }
 }
 
 async function createSupplier(req: any, entity: any) {
   try {
-    console.log(entity);
-    return await req.prisma.suppliers.create({
+    return await req.prisma.EntitySupplier.create({
       data: {
-        entityId: entity.id,
+        idEntity: entity.id,
       },
     });
   } catch (error: any) {

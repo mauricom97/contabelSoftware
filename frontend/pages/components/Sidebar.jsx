@@ -114,11 +114,11 @@ const Sidebar = () => {
         companiesList.length > 0 ? (
             companiesList.map((company) => (
                 <MenuItem
-                    onClick={() => setCompany(company.companyId)}
-                    key={company.companyId}
+                    onClick={() => setCompany(company.id)}
+                    key={company.id}
                 >
                     <TbBuilding />
-                    <span m="3"> {company.company.sampleName} </span>
+                    <span m="3"> {company.sampleName} </span>
                 </MenuItem>
             ))
         ) : (

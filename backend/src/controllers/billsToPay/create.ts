@@ -14,22 +14,20 @@ async function createAccountPayable(req: Request, res: Response) {
 }
 
 function extractData(req: any) {
-  const { description, amount, dueDate, status, companyId, entityId } =
-    req.body;
+  const { description, value, dueDate, status, companyId } = req.body;
 
   return {
     description,
-    amount,
+    value,
     dueDate: new Date(dueDate).toISOString(),
     status,
     companyId,
-    entityId,
   };
 }
 async function createAccount(req: any, newAccount: any) {
   try {
     console.log(newAccount);
-    const accountPayable = await req.prisma.accountsPayable.create({
+    const accountPayable = await req.prisma.BillsToPay.create({
       data: newAccount,
     });
     return accountPayable;

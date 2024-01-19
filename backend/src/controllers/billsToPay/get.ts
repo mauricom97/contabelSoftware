@@ -40,13 +40,13 @@ async function getBillsToPay(req: any, filters: any) {
   if (filters.status) {
     filter.status = filters.status;
   }
-  filter.companyId = parseInt(filters.companyId);
-  console.log(filter);
-  const billsToPay = await req.prisma.accountsPayable.findMany({
+  filter.companyId = parseInt(req.company);
+  const billsToPay = await req.prisma.BillsToPay.findMany({
     where: filter,
     orderBy: {
       dueDate: "asc",
     },
   });
+  console.log(billsToPay);
   return billsToPay;
 }

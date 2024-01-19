@@ -121,18 +121,22 @@ async function createNewCompany(
 }
 
 async function associateCompanyWithUser(req: any, companyId: number) {
-  const assignedBy = "someValue"; // Substitua "someValue" pelo valor apropriado ou lógica de atribuição
-  await req.prisma.companiesOnUsers.create({
+  console.log(req.user);
+  await req.prisma.UserCompany.create({
     data: {
-      companyId,
-      userId: req.user.id,
-      assignedBy,
+      idUser: req.user.id,
+      idCompany: companyId,
+      permission: 1,
+      defaultCompany: true,
     },
   });
 
-  await req.prisma.user.update({
-    where: { id: req.user.id },
-    data: { defaultCompany: companyId },
+  await req.prisma.UserCompany.updateMany({
+    where: {
+      idUser: req.user.id,
+      idCompany: { not: companyId },
+    },
+    data: { defaultCompany: false },
   });
 }
 

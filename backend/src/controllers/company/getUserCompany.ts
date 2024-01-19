@@ -11,14 +11,16 @@ const getCompany = async (req: Request, res: Response) => {
 
 async function getUserCompany(req: any) {
   try {
-    return await req.prisma.companiesOnUsers.findMany({
+    let companies = await req.prisma.UserCompany.findMany({
       where: {
-        userId: req.user.id,
+        idUser: req.user.id,
       },
-      include: {
-        company: true,
+      select: {
+        Company: true,
       },
     });
+    companies = companies.map((company: any) => company.Company);
+    return companies;
   } catch (error) {
     console.log(error);
   }

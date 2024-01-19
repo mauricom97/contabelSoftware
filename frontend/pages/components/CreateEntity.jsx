@@ -72,6 +72,7 @@ function CreateEntity({ isOpen, onOpen, onClose }) {
                 "Content-Type": "application/json",
             },
             data: data,
+            params: { company: localStorage.getItem("company") },
         };
 
         axios
