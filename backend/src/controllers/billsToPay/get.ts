@@ -43,6 +43,18 @@ async function getBillsToPay(req: any, filters: any) {
   filter.companyId = parseInt(req.company);
   const billsToPay = await req.prisma.BillsToPay.findMany({
     where: filter,
+    select: {
+      id: true,
+      description: true,
+      value: true,
+      dueDate: true,
+      status: true,
+      Supplier: {
+        select: {
+          Entity: true,
+        },
+      },
+    },
     orderBy: {
       dueDate: "asc",
     },
