@@ -18,6 +18,7 @@ const io = new Server(server, {
     origin: [
       "http://localhost:3000",
       "https://app-frontend-qrcodebar.onrender.com",
+      "https://contabel-software.vercel.app",
     ], // Adicione os IPs ou domínios permitidos aqui
     methods: ["GET", "POST", "PUT", "DELETE"], // Métodos HTTP permitidos
     allowedHeaders: ["Content-Type", "Authorization, token"], // Cabeçalhos permitidos
