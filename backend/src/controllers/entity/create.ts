@@ -97,7 +97,7 @@ async function createCompanyEntity(req: any, entityCompany: any) {
 
 async function createSupplier(req: any, entity: any) {
   try {
-    return await req.prisma.EntitySupplier.create({
+    return await req.prisma.Supplier.create({
       data: {
         idEntity: entity.id,
       },

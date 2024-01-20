@@ -23,7 +23,6 @@ import {
 } from "@chakra-ui/react";
 
 import moment from "moment";
-
 const DataTable = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [billData, setBillData] = useState([]);
@@ -42,6 +41,20 @@ const DataTable = () => {
     if (typeof window !== "undefined") {
         token = window.localStorage.getItem("token");
     }
+
+    const formatarData = (dueDate) => {
+        // Converte a string de data para um objeto Date
+        dueDate = moment(dueDate.slice(0, 10), "YYYY-MM-DD").format(
+            "DD/MM/YYYY",
+        );
+        return dueDate;
+    };
+
+    // Função auxiliar para adicionar zero à esquerda, se necessário
+    const padZero = (numero) => {
+        return numero < 10 ? `0${numero}` : numero;
+    };
+
     const fetchBillData = async () => {
         try {
             let config = {
@@ -136,42 +149,42 @@ const DataTable = () => {
                                                 },
                                             )}
                                         </Td>
-                                        <Td>{item.entityId}</Td>
+                                        <Td>
+                                            {item.Supplier.Entity.sampleName}
+                                        </Td>
                                         <Td>
                                             {(() => {
                                                 if (
-                                                    moment().format(
-                                                        "DD/MM/YYYY",
+                                                    formatarData(
+                                                        moment().format(
+                                                            "YYYY/MM/DD",
+                                                        ),
                                                     ) >
-                                                        moment(
+                                                        formatarData(
                                                             item.dueDate,
-                                                        ).format(
-                                                            "DD/MM/YYYY",
                                                         ) &&
-                                                    item.status === "1"
+                                                    item.status === 1
                                                 )
                                                     return (
                                                         <Badge colorScheme="red">
-                                                            {moment(
+                                                            {formatarData(
                                                                 item.dueDate,
-                                                            ).format(
-                                                                "DD/MM/YYYY",
                                                             )}
                                                         </Badge>
                                                     );
                                                 else
-                                                    return moment(
+                                                    return formatarData(
                                                         item.dueDate,
-                                                    ).format("DD/MM/YYYY");
+                                                    );
                                             })()}
                                         </Td>
                                         <Td>
                                             {(() => {
-                                                if (item.status === "1")
+                                                if (item.status === 1)
                                                     return (
                                                         <Badge>Em aberto</Badge>
                                                     );
-                                                else if (item.status === "2")
+                                                else if (item.status === 2)
                                                     return (
                                                         <Badge
                                                             variant="outline"
@@ -180,7 +193,7 @@ const DataTable = () => {
                                                             Parcialmente pago
                                                         </Badge>
                                                     );
-                                                else if (item.status === "3")
+                                                else if (item.status === 3)
                                                     return (
                                                         <Badge colorScheme="green">
                                                             Pago

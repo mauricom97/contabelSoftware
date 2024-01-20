@@ -47,13 +47,12 @@ const CreateBillToPay = ({ isOpen, onOpen, onClose }) => {
     const performSearch = async () => {
         try {
             await axios
-                .get(`${urlApi}/entity/filters`, {
+                .get(`${urlApi}/suppliers/filter`, {
                     headers: {
                         token: localStorage.getItem("token"),
                     },
                     params: {
-                        search: queryFindSuppliers,
-                        type: "supplier",
+                        filter: queryFindSuppliers,
                     },
                 })
                 .then((response) => {
@@ -72,13 +71,14 @@ const CreateBillToPay = ({ isOpen, onOpen, onClose }) => {
 
     const toast = useToast();
     const registerBill = () => {
+        console.log(selectedSupplier);
         const expenseData = {
             description: description,
-            amount: parseFloat(amount),
+            value: parseFloat(amount),
             dueDate: dueDate,
-            status: status,
+            status: parseInt(status),
             companyId: parseInt(window.localStorage.getItem("company")),
-            entityId: selectedSupplier.value,
+            idSupplier: parseInt(selectedSupplier.value),
         };
 
         let token;

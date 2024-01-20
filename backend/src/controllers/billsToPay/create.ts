@@ -14,7 +14,8 @@ async function createAccountPayable(req: Request, res: Response) {
 }
 
 function extractData(req: any) {
-  const { description, value, dueDate, status, companyId } = req.body;
+  const { description, value, dueDate, status, companyId, idSupplier } =
+    req.body;
 
   return {
     description,
@@ -22,6 +23,7 @@ function extractData(req: any) {
     dueDate: new Date(dueDate).toISOString(),
     status,
     companyId,
+    idSupplier,
   };
 }
 async function createAccount(req: any, newAccount: any) {

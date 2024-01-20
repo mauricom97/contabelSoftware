@@ -52,8 +52,8 @@ model Entity {
   neighborhood   String?          @db.VarChar
   observation    String?          @db.VarChar
   CompanyEntity  CompanyEntity[]
-  EntityClient   EntityClient[]
-  EntitySupplier EntitySupplier[]
+  Client         Client?
+  Supplier       Supplier?
 }
 
 model CompanyEntity {
@@ -65,16 +65,17 @@ model CompanyEntity {
   @@id([idCompany, idEntity])
 }
 
-model EntityClient {
-  id       Int     @id @default(autoincrement())
-  idEntity Int?
-  Entity   Entity? @relation(fields: [idEntity], references: [id], onDelete: NoAction, onUpdate: NoAction)
+model Client {
+  idEntity Int
+  Entity Entity @relation(fields: [idEntity], references: [id])
+  @@id([idEntity])
 }
 
-model EntitySupplier {
-  id       Int     @id @default(autoincrement())
-  idEntity Int?
-  Entity   Entity? @relation(fields: [idEntity], references: [id], onDelete: NoAction, onUpdate: NoAction)
+model Supplier {
+  idEntity Int
+  Entity Entity @relation(fields: [idEntity], references: [id])
+  BillsToPay  BillsToPay[]
+  @@id([idEntity])
 }
 
 model UserCompany {
@@ -94,6 +95,8 @@ model BillsToPay {
   dueDate     DateTime
   value       Float
   status      Int
-  company     Company  @relation(fields: [companyId], references: [id])
   companyId   Int
+  idSupplier    Int      @default(0)
+  Company     Company  @relation(fields: [companyId], references: [id])
+  Supplier    Supplier @relation(fields: [idSupplier], references: [idEntity])
 }
