@@ -14,22 +14,23 @@ async function createAccountPayable(req: Request, res: Response) {
 }
 
 function extractData(req: any) {
-  const { description, value, dueDate, status, companyId, idSupplier } =
-    req.body;
+  const bills = req.body.map((bill: bill) => {
+    return {
+      description: bill.description,
+      value: bill.value,
+      dueDate: new Date(bill.dueDate).toISOString(),
+      status: bill.status,
+      companyId: bill.companyId,
+      idSupplier: bill.idSupplier,
+    };
+  });
 
-  return {
-    description,
-    value,
-    dueDate: new Date(dueDate).toISOString(),
-    status,
-    companyId,
-    idSupplier,
-  };
+  return bills;
 }
 async function createAccount(req: any, newAccount: any) {
   try {
     console.log(newAccount);
-    const accountPayable = await req.prisma.BillsToPay.create({
+    const accountPayable = await req.prisma.BillsToPay.createMany({
       data: newAccount,
     });
     return accountPayable;
@@ -40,3 +41,12 @@ async function createAccount(req: any, newAccount: any) {
 }
 
 export default createAccountPayable;
+
+interface bill {
+  description: string;
+  value: number;
+  dueDate: string;
+  status: string;
+  companyId: number;
+  idSupplier: number;
+}

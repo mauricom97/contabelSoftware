@@ -134,7 +134,7 @@ const Sidebar = () => {
             h="100vh"
             rounded="md"
             bg="white"
-            position="absolute"
+            position="Fixed"
         >
             <Center mb="4">
                 <WrapItem>
