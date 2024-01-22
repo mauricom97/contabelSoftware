@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useToast } from "@chakra-ui/react";
+import { useFormControlStyles, useToast } from "@chakra-ui/react";
 import urlApi from "../../../utils/urlApi";
 
 import {
@@ -17,8 +17,24 @@ import {
     Input,
     Select as ChakraSelect,
     Box,
+    Separator,
+    Grid,
+    GridItem,
+    Center,
+    Menu,
+    MenuButton,
+    MenuList,
+    MenuItem,
+    Divider,
+    MenuItemOption,
+    MenuGroup,
+    MenuOptionGroup,
+    MenuDivider,
 } from "@chakra-ui/react";
+// import ChevronDownIcon from "@material-ui/icons/ChevronDown";
+
 import { Select } from "chakra-react-select";
+import moment from "moment";
 
 const CreateBillToPay = ({ isOpen, onOpen, onClose }) => {
     const initialRef = React.useRef(null);
@@ -33,6 +49,8 @@ const CreateBillToPay = ({ isOpen, onOpen, onClose }) => {
     const [selectedSupplier, setSelectedSupplier] = useState(null);
     const [selectedTypeExpense, setSelectedTypeExpense] = useState(null);
     const [typesExpenses, setTypesExpenses] = useState([]);
+    const [intervalBill, setIntervalBill] = useState("Intervalo");
+    const [numberReleases, setNumberReleases] = useState(1);
 
     useEffect(() => {
         const delayDebounceFn = setTimeout(() => {
@@ -71,15 +89,42 @@ const CreateBillToPay = ({ isOpen, onOpen, onClose }) => {
 
     const toast = useToast();
     const registerBill = () => {
-        console.log(selectedSupplier);
-        const expenseData = {
-            description: description,
-            value: parseFloat(amount),
-            dueDate: dueDate,
-            status: parseInt(status),
-            companyId: parseInt(window.localStorage.getItem("company")),
-            idSupplier: parseInt(selectedSupplier.value),
-        };
+        let releases = [];
+
+        let gap = null;
+        switch (intervalBill) {
+            case "Dias":
+                gap = "day";
+                break;
+            case "Semanas":
+                gap = "week";
+                break;
+            case "Meses":
+                gap = "month";
+                break;
+            case "Anos":
+                gap = "year";
+                break;
+            default:
+                break;
+        }
+
+        console.log(numberReleases);
+
+        for (let i = 0; i < numberReleases; i++) {
+            let day = moment(dueDate).add(i, gap).format("YYYY-MM-DD");
+            console.log(day);
+            releases.push({
+                description: description,
+                value: parseFloat(amount),
+                dueDate: day,
+                status: parseInt(status),
+                companyId: parseInt(window.localStorage.getItem("company")),
+                idSupplier: parseInt(selectedSupplier.value),
+            });
+        }
+
+        console.log(releases);
 
         let token;
         if (typeof window !== "undefined") {
@@ -92,7 +137,7 @@ const CreateBillToPay = ({ isOpen, onOpen, onClose }) => {
                 token: token,
                 "Content-Type": "application/json",
             },
-            data: expenseData,
+            data: releases,
         };
 
         axios
@@ -152,31 +197,12 @@ const CreateBillToPay = ({ isOpen, onOpen, onClose }) => {
                         </FormControl>
 
                         <FormControl mt={4}>
-                            <FormLabel>Data de validade inicial</FormLabel>
-                            <Input
-                                type="date"
-                                placeholder="Data de validade"
-                                value={dueDate}
-                                onChange={(e) => setDueDate(e.target.value)}
-                            />
-                        </FormControl>
-                        <FormControl mt={4}>
                             <FormLabel>Tipo de despesa</FormLabel>
                             <Select
                                 placeholder="Tipo de despesa"
                                 value={selectedTypeExpense}
                                 options={typesExpenses}
                                 onChange={setSelectedTypeExpense}
-                            />
-                        </FormControl>
-                        <FormControl mt={4}>
-                            <FormLabel>Valor</FormLabel>
-                            <Input
-                                type="number"
-                                step="0.01"
-                                placeholder="Valor"
-                                value={amount}
-                                onChange={(e) => setAmount(e.target.value)}
                             />
                         </FormControl>
 
@@ -191,6 +217,83 @@ const CreateBillToPay = ({ isOpen, onOpen, onClose }) => {
                                 <option value="2">Parcialmente pago</option>
                                 <option value="3">Pago</option>
                             </ChakraSelect>
+                        </FormControl>
+
+                        <FormControl mt={4}>
+                            <FormLabel>Data de validade inicial</FormLabel>
+                            <Input
+                                type="date"
+                                placeholder="Data de validade"
+                                value={dueDate}
+                                onChange={(e) => setDueDate(e.target.value)}
+                            />
+                        </FormControl>
+                        <FormControl mt={4}>
+                            <Grid templateColumns="repeat(4, 1fr)" gap={1}>
+                                <GridItem w="100%" h="10">
+                                    <Input
+                                        w="100%"
+                                        type="number"
+                                        step="0.01"
+                                        placeholder="R$ 0.00"
+                                        value={amount}
+                                        onChange={(e) =>
+                                            setAmount(e.target.value)
+                                        }
+                                    />
+                                </GridItem>
+                                <GridItem w="100%" h="10">
+                                    <Input
+                                        htmlSize={4}
+                                        placeholder="Qtde"
+                                        width="auto"
+                                        value={numberReleases}
+                                        onChange={(e) =>
+                                            setNumberReleases(e.target.value)
+                                        }
+                                    />
+                                </GridItem>
+                                <GridItem w="100%" h="10">
+                                    <Center p="2">X</Center>
+                                </GridItem>
+                                <GridItem w="100%" h="10">
+                                    <Menu>
+                                        <MenuButton as={Button}>
+                                            {intervalBill}
+                                        </MenuButton>
+                                        <MenuList>
+                                            <MenuItem
+                                                onClick={() =>
+                                                    setIntervalBill("Dias")
+                                                }
+                                            >
+                                                Dias
+                                            </MenuItem>
+                                            <MenuItem
+                                                onClick={() =>
+                                                    setIntervalBill("Semanas")
+                                                }
+                                            >
+                                                Semanas
+                                            </MenuItem>
+                                            <MenuItem
+                                                onClick={() =>
+                                                    setIntervalBill("Meses")
+                                                }
+                                            >
+                                                Meses
+                                            </MenuItem>
+                                            <MenuItem
+                                                onClick={() =>
+                                                    setIntervalBill("Anos")
+                                                }
+                                            >
+                                                Anos
+                                            </MenuItem>
+                                        </MenuList>
+                                    </Menu>
+                                </GridItem>
+                            </Grid>
                         </FormControl>
                     </ModalBody>
 

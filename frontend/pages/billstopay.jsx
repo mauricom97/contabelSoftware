@@ -20,6 +20,20 @@ import {
     Input,
     Badge,
     IconButton,
+    Popover,
+    PopoverTrigger,
+    PopoverContent,
+    PopoverHeader,
+    PopoverBody,
+    PopoverFooter,
+    PopoverArrow,
+    PopoverCloseButton,
+    PopoverAnchor,
+    FocusLock,
+    Stack,
+    ButtonGroup,
+    FormControl,
+    FormLabel,
 } from "@chakra-ui/react";
 
 import moment from "moment";
@@ -27,8 +41,49 @@ const DataTable = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [billData, setBillData] = useState([]);
     const [totalAmount, setTotalAmount] = useState(0);
+    const [isOpen, setIsOpen] = useState(false);
+    const onClose = () => setIsOpen(false);
+    const onOpen = () => setIsOpen(true);
+    const firstFieldRef = React.useRef(null);
 
-    // const [companiesList, setCompaniesList] = useState([]);
+    // import  FocusLock from "react-focus-lock"
+
+    // 1. Create a text input component
+    const TextInput = React.forwardRef((props, ref) => {
+        return (
+            <FormControl>
+                <FormLabel htmlFor={props.id}>{props.label}</FormLabel>
+                <Input ref={ref} id={props.id} {...props} />
+            </FormControl>
+        );
+    });
+
+    // 2. Create the form
+    const Form = ({ firstFieldRef, onCancel }) => {
+        return (
+            <Stack spacing={4}>
+                <TextInput
+                    label="First name"
+                    id="first-name"
+                    ref={firstFieldRef}
+                    defaultValue="John"
+                />
+                <TextInput
+                    label="Last name"
+                    id="last-name"
+                    defaultValue="Smith"
+                />
+                <ButtonGroup display="flex" justifyContent="flex-end">
+                    <Button variant="outline" onClick={onCancel}>
+                        Cancel
+                    </Button>
+                    <Button isDisabled colorScheme="teal">
+                        Save
+                    </Button>
+                </ButtonGroup>
+            </Stack>
+        );
+    };
 
     const handleOpenModal = () => {
         setIsModalOpen(true);
@@ -50,9 +105,32 @@ const DataTable = () => {
         return dueDate;
     };
 
-    // Função auxiliar para adicionar zero à esquerda, se necessário
-    const padZero = (numero) => {
-        return numero < 10 ? `0${numero}` : numero;
+    const deleteBill = async (id) => {
+        console.log(id);
+        try {
+            let config = {
+                method: "delete",
+                maxBodyLength: Infinity,
+                url: `${urlApi}/billstopay`,
+                headers: {
+                    token: token,
+                },
+                params: { id: id },
+            };
+
+            const response = await axios
+                .request(config)
+                .then((response) => {
+                    return response;
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+
+            fetchBillData();
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
     };
 
     const fetchBillData = async () => {
@@ -138,7 +216,18 @@ const DataTable = () => {
                             </Thead>
                             <Tbody>
                                 {billData.map((item) => (
-                                    <Tr key={item.id}>
+                                    <Tr
+                                        key={item.id}
+                                        bg={
+                                            moment(item.dueDate).format(
+                                                "DD/MM/YYYY",
+                                            ) >=
+                                                moment().format("DD/MM/YYYY") &&
+                                            item.status === 1
+                                                ? "#FFB6C1"
+                                                : "#FFF"
+                                        }
+                                    >
                                         <Td>{item.description}</Td>
                                         <Td>
                                             {item.value.toLocaleString(
@@ -152,32 +241,7 @@ const DataTable = () => {
                                         <Td>
                                             {item.Supplier.Entity.sampleName}
                                         </Td>
-                                        <Td>
-                                            {(() => {
-                                                if (
-                                                    formatarData(
-                                                        moment().format(
-                                                            "YYYY/MM/DD",
-                                                        ),
-                                                    ) >
-                                                        formatarData(
-                                                            item.dueDate,
-                                                        ) &&
-                                                    item.status === 1
-                                                )
-                                                    return (
-                                                        <Badge colorScheme="red">
-                                                            {formatarData(
-                                                                item.dueDate,
-                                                            )}
-                                                        </Badge>
-                                                    );
-                                                else
-                                                    return formatarData(
-                                                        item.dueDate,
-                                                    );
-                                            })()}
-                                        </Td>
+                                        <Td>{formatarData(item.dueDate)}</Td>
                                         <Td>
                                             {(() => {
                                                 if (item.status === 1)
@@ -204,20 +268,54 @@ const DataTable = () => {
                                             })()}
                                         </Td>
                                         <Td>
-                                            <IconButton
-                                                size="sm"
-                                                colorScheme="blue"
-                                                mr="2"
-                                                aria-label="Editar"
-                                                icon={<EditIcon />}
-                                            />
-                                            <IconButton
-                                                size="sm"
-                                                colorScheme="red"
-                                                mr="2"
-                                                aria-label="Excluir"
-                                                icon={<DeleteIcon />}
-                                            />
+                                            <Center>
+                                                <Popover
+                                                    isOpen={isOpen}
+                                                    initialFocusRef={
+                                                        firstFieldRef
+                                                    }
+                                                    onOpen={onOpen}
+                                                    onClose={onClose}
+                                                    placement="right"
+                                                    closeOnBlur={false}
+                                                >
+                                                    <PopoverTrigger>
+                                                        <IconButton
+                                                            size="sm"
+                                                            icon={<EditIcon />}
+                                                            mr="2"
+                                                        />
+                                                    </PopoverTrigger>
+                                                    <PopoverContent p={5}>
+                                                        <FocusLock
+                                                            returnFocus
+                                                            persistentFocus={
+                                                                false
+                                                            }
+                                                        >
+                                                            <PopoverArrow />
+                                                            <PopoverCloseButton />
+                                                            <Form
+                                                                firstFieldRef={
+                                                                    firstFieldRef
+                                                                }
+                                                                onCancel={
+                                                                    onClose
+                                                                }
+                                                            />
+                                                        </FocusLock>
+                                                    </PopoverContent>
+                                                </Popover>
+                                                <IconButton
+                                                    size="sm"
+                                                    colorScheme="red"
+                                                    aria-label="Excluir"
+                                                    icon={<DeleteIcon />}
+                                                    onClick={() =>
+                                                        deleteBill(item.id)
+                                                    }
+                                                />
+                                            </Center>
                                         </Td>
                                     </Tr>
                                 ))}
