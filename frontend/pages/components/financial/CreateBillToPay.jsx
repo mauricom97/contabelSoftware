@@ -113,7 +113,6 @@ const CreateBillToPay = ({ isOpen, onOpen, onClose }) => {
 
         for (let i = 0; i < numberReleases; i++) {
             let day = moment(dueDate).add(i, gap).format("YYYY-MM-DD");
-            console.log(day);
             releases.push({
                 description: description,
                 value: parseFloat(amount),
@@ -123,8 +122,6 @@ const CreateBillToPay = ({ isOpen, onOpen, onClose }) => {
                 idSupplier: parseInt(selectedSupplier.value),
             });
         }
-
-        console.log(releases);
 
         let token;
         if (typeof window !== "undefined") {
@@ -168,7 +165,7 @@ const CreateBillToPay = ({ isOpen, onOpen, onClose }) => {
             >
                 <ModalOverlay />
                 <ModalContent>
-                    <ModalHeader>Informações da nova despesa</ModalHeader>
+                    <ModalHeader>Lançar nova despesa(s)</ModalHeader>
                     <ModalCloseButton />
                     <ModalBody pb={6}>
                         <FormControl>
