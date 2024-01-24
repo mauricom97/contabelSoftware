@@ -2,9 +2,10 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Sidebar from "./components/Sidebar";
 import CreateBillToPay from "./components/financial/CreateBillToPay";
-import { EditIcon, DeleteIcon } from "@chakra-ui/icons";
+import { DeleteIcon } from "@chakra-ui/icons";
 import io from "socket.io-client";
 import urlApi from "../utils/urlApi";
+import InputMask from "react-input-mask";
 
 import {
     Table,
@@ -23,67 +24,100 @@ import {
     Popover,
     PopoverTrigger,
     PopoverContent,
-    PopoverHeader,
-    PopoverBody,
-    PopoverFooter,
     PopoverArrow,
-    PopoverCloseButton,
-    PopoverAnchor,
-    FocusLock,
-    Stack,
-    ButtonGroup,
     FormControl,
     FormLabel,
 } from "@chakra-ui/react";
 
+import { EditIcon } from "@chakra-ui/icons";
+
 import moment from "moment";
+
+const status = {
+    1: "Em aberto",
+    2: "Parcialmente pago",
+    3: "Pago",
+};
+const InputsEditInstallment = (item) => {
+    return (
+        <Box p={5}>
+            <FormControl id="supplier">
+                <FormLabel>Fornecedor</FormLabel>
+                <Input
+                    placeholder="Fornecedor"
+                    size="md"
+                    mb="2"
+                    defaultValue={item.Supplier.Entity.sampleName}
+                />
+            </FormControl>
+
+            <FormControl id="description">
+                <FormLabel>Descrição</FormLabel>
+                <Input
+                    placeholder="Descrição"
+                    size="md"
+                    mb="2"
+                    defaultValue={item.description}
+                />
+            </FormControl>
+
+            <FormControl id="value">
+                <FormLabel>Valor</FormLabel>
+                <InputMask
+                    mask="9999999999.99"
+                    maskChar={null}
+                    defaultValue={item.value}
+                >
+                    {() => (
+                        <Input
+                            placeholder="Valor"
+                            size="md"
+                            mb="2"
+                            defaultValue={item.value}
+                        />
+                    )}
+                </InputMask>
+            </FormControl>
+
+            <FormControl id="dueDate">
+                <FormLabel>Data de vencimento</FormLabel>
+
+                <InputMask
+                    mask="99/99/9999"
+                    maskChar={null}
+                    defaultValue={moment(item.dueDate).format("DD/MM/YYYY")}
+                >
+                    {() => (
+                        <Input
+                            placeholder="Data de vencimento"
+                            size="md"
+                            mb="2"
+                        />
+                    )}
+                </InputMask>
+            </FormControl>
+
+            <FormControl id="status">
+                <FormLabel>Status</FormLabel>
+                <Input
+                    placeholder="Status"
+                    size="md"
+                    mb="2"
+                    defaultValue={status[item.status]}
+                />
+            </FormControl>
+            <Button colorScheme="blue" mr={3}>
+                Salvar
+            </Button>
+            <Button colorScheme="red">Cancelar</Button>
+        </Box>
+    );
+};
+
 const DataTable = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [billData, setBillData] = useState([]);
     const [totalAmount, setTotalAmount] = useState(0);
-    const [isOpen, setIsOpen] = useState(false);
-    const onClose = () => setIsOpen(false);
-    const onOpen = () => setIsOpen(true);
-    const firstFieldRef = React.useRef(null);
-
-    // import  FocusLock from "react-focus-lock"
-
-    // 1. Create a text input component
-    const TextInput = React.forwardRef((props, ref) => {
-        return (
-            <FormControl>
-                <FormLabel htmlFor={props.id}>{props.label}</FormLabel>
-                <Input ref={ref} id={props.id} {...props} />
-            </FormControl>
-        );
-    });
-
-    // 2. Create the form
-    const Form = ({ firstFieldRef, onCancel }) => {
-        return (
-            <Stack spacing={4}>
-                <TextInput
-                    label="First name"
-                    id="first-name"
-                    ref={firstFieldRef}
-                    defaultValue="John"
-                />
-                <TextInput
-                    label="Last name"
-                    id="last-name"
-                    defaultValue="Smith"
-                />
-                <ButtonGroup display="flex" justifyContent="flex-end">
-                    <Button variant="outline" onClick={onCancel}>
-                        Cancel
-                    </Button>
-                    <Button isDisabled colorScheme="teal">
-                        Save
-                    </Button>
-                </ButtonGroup>
-            </Stack>
-        );
-    };
 
     const handleOpenModal = () => {
         setIsModalOpen(true);
@@ -106,7 +140,6 @@ const DataTable = () => {
     };
 
     const deleteBill = async (id) => {
-        console.log(id);
         try {
             let config = {
                 method: "delete",
@@ -189,7 +222,7 @@ const DataTable = () => {
                     <Box>
                         <Flex justifyContent="flex-end">
                             <Button mb="4" onClick={handleOpenModal}>
-                                Criar conta
+                                Lançar conta(s)
                             </Button>
                             <Button mb="4" ml="5">
                                 Filtros
@@ -269,44 +302,24 @@ const DataTable = () => {
                                         </Td>
                                         <Td>
                                             <Center>
-                                                <Popover
-                                                    isOpen={isOpen}
-                                                    initialFocusRef={
-                                                        firstFieldRef
-                                                    }
-                                                    onOpen={onOpen}
-                                                    onClose={onClose}
-                                                    placement="right"
-                                                    closeOnBlur={false}
-                                                >
+                                                <Popover>
                                                     <PopoverTrigger>
                                                         <IconButton
                                                             size="sm"
-                                                            icon={<EditIcon />}
-                                                            mr="2"
+                                                            icon={<EditIcon />} // Adiciona o ícone de edição
+                                                            aria-label="Editar"
                                                         />
                                                     </PopoverTrigger>
-                                                    <PopoverContent p={5}>
-                                                        <FocusLock
-                                                            returnFocus
-                                                            persistentFocus={
-                                                                false
-                                                            }
-                                                        >
-                                                            <PopoverArrow />
-                                                            <PopoverCloseButton />
-                                                            <Form
-                                                                firstFieldRef={
-                                                                    firstFieldRef
-                                                                }
-                                                                onCancel={
-                                                                    onClose
-                                                                }
-                                                            />
-                                                        </FocusLock>
+                                                    <PopoverContent>
+                                                        <PopoverArrow />
+                                                        {/* Conteúdo do Popover para edição */}
+                                                        {InputsEditInstallment(
+                                                            item,
+                                                        )}
                                                     </PopoverContent>
                                                 </Popover>
                                                 <IconButton
+                                                    ml="10px"
                                                     size="sm"
                                                     colorScheme="red"
                                                     aria-label="Excluir"
