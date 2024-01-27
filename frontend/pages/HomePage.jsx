@@ -7,6 +7,7 @@ import {
     Heading,
     Text,
     Image,
+    Tooltip,
 } from "@chakra-ui/react";
 import Header from "./components/Header";
 import React, { useState } from "react";
@@ -25,10 +26,13 @@ const HomePage = () => {
                     <Header />
 
                     <Box w="100%" h="100vh" flex="1">
-                        <ContactUs />
+                        <CreateAccount />
+                        <Benefits />
+                        <ContactInfo />
+                        <WhatsappButton />
                     </Box>
 
-                    <Footer position="fixed" w="100%" zIndex="1" bottom="0" />
+                    {/* <Footer position="fixed" w="100%" zIndex="1" bottom="0" /> */}
                 </Box>
             </Flex>
         </ChakraProvider>
@@ -37,14 +41,14 @@ const HomePage = () => {
 
 export default HomePage;
 
-const ContactUs = () => {
+const CreateAccount = () => {
     const [emojiMoneyFinan, setEmojiMoneyFinan] = useState("💰");
     const [isLargerThan768] = useMediaQuery("(min-width: 768px)");
 
     return (
         <Box
             p={isLargerThan768 ? "5%" : "10%"} // Ajuste de padding responsivo
-            style={{ position: "absolute" }}
+            style={{ position: "relative" }}
             mt={isLargerThan768 ? "0" : "10%"}
             bg="rgba(177, 134, 199, 0.5)"
             color="white"
@@ -52,7 +56,7 @@ const ContactUs = () => {
             justifyContent={isLargerThan768 ? "space-between" : "center"} // Ajuste de alinhamento responsivo
             alignItems="center"
             w="100%"
-            h="100%"
+            h="85%"
             flexDirection={isLargerThan768 ? "row" : "column"} // Ajuste de direção responsivo
         >
             <Box
@@ -85,7 +89,7 @@ const ContactUs = () => {
                     lineHeight="1.2"
                     mb={4}
                 >
-                    Crie sua conta e inicie a gestão financeira da sua empresa{" "}
+                    CRIE SUA CONTA E INICIE A GESTÃO FINANCEIRA DA SUA EMPRESA{" "}
                     {emojiMoneyFinan}
                 </Box>
 
@@ -109,12 +113,13 @@ const Benefits = () => {
     return (
         <Box
             p={10}
-            bg="rgba(87, 169, 197, 0.5)"
-            color="white"
+            bg="#F5F5F5"
+            color="#8046A2"
             textAlign="center"
+            position="relative"
         >
             <Heading fontSize="3xl" mb={6}>
-                Benefícios
+                BENEFÍCIOS
             </Heading>
             <Flex
                 flexDirection={{ base: "column", md: "row" }}
@@ -123,47 +128,46 @@ const Benefits = () => {
             >
                 <Box flex="1" mb={{ base: 6, md: 0 }}>
                     <Image
-                        src="/imgs/benefit1.svg"
+                        src="/imgs/control-finan.svg"
                         alt="Benefício 1"
                         mx="auto"
                         mb={4}
                     />
                     <Heading fontSize="xl" mb={2}>
-                        Benefício 1
+                        Controle financeiro
                     </Heading>
                     <Text>
-                        Descreva aqui os detalhes do primeiro benefício
-                        oferecido.
+                        Tenha controle total sobre as finanças da sua empresa.
                     </Text>
                 </Box>
                 <Box flex="1" mb={{ base: 6, md: 0 }}>
                     <Image
-                        src="/imgs/benefit2.svg"
+                        src="/imgs/financial-strategies.svg"
                         alt="Benefício 2"
                         mx="auto"
                         mb={4}
                     />
                     <Heading fontSize="xl" mb={2}>
-                        Benefício 2
+                        Visualizações estrategicas financeira
                     </Heading>
                     <Text>
-                        Descreva aqui os detalhes do segundo benefício
-                        oferecido.
+                        Tenha acesso a visualizações estratégicas sobre as
+                        finanças da sua empresa.
                     </Text>
                 </Box>
                 <Box flex="1">
                     <Image
-                        src="/imgs/benefit3.svg"
+                        src="/imgs/consultative-finance.svg"
                         alt="Benefício 3"
                         mx="auto"
                         mb={4}
                     />
                     <Heading fontSize="xl" mb={2}>
-                        Benefício 3
+                        Colaboração da sua equipe na plataforma
                     </Heading>
                     <Text>
-                        Descreva aqui os detalhes do terceiro benefício
-                        oferecido.
+                        Tenha colaboração da sua equipe na plataforma, para
+                        melhorar a gestão financeira da sua empresa.
                     </Text>
                 </Box>
             </Flex>
@@ -174,11 +178,72 @@ const Benefits = () => {
                     height="48px"
                     width="200px"
                     border="2px"
-                    borderColor="#57a9c5"
+                    borderColor="#8046A2"
                 >
                     CRIAR MINHA CONTA
                 </Button>
             </Link>
         </Box>
+    );
+};
+
+const ContactInfo = () => {
+    return (
+        <Box p={10} bg="#333333" color="white" textAlign="center">
+            <Heading fontSize="3xl" mb={6}>
+                CONTATO
+            </Heading>
+            <Flex
+                flexDirection={{ base: "column", md: "row" }}
+                justifyContent="center"
+                alignItems="center"
+            >
+                <Box flex="1" mb={{ base: 6, md: 0 }}>
+                    <Heading fontSize="xl" mb={2}>
+                        Endereço
+                    </Heading>
+                    <Text>
+                        São Firmino, 603 <br />
+                        Joinville, SC <br />
+                        CEP: 89237-356
+                    </Text>
+                </Box>
+                <Box flex="1" mb={{ base: 6, md: 0 }}>
+                    <Heading fontSize="xl" mb={2}>
+                        E-mail
+                    </Heading>
+                    <Link href="mailto:contato.mauricionunes@gmail.com">
+                        <Text color="#007bff">
+                            contato.mauricionunes@gmail.com
+                        </Text>
+                    </Link>
+                </Box>
+                <Box flex="1">
+                    <Heading fontSize="xl" mb={2}>
+                        Telefone
+                    </Heading>
+                    <Text>+55 47 9-92184165</Text>
+                </Box>
+            </Flex>
+        </Box>
+    );
+};
+
+const WhatsappButton = () => {
+    return (
+        <Tooltip label="Entre em contato" fontSize="md">
+            <Image
+                onClick={() => window.open("https://wa.me/5547992184165")}
+                position="fixed"
+                bottom="20px"
+                right="20px"
+                zIndex="100"
+                src="/imgs/whats.png"
+                w="70px"
+                h="70px"
+                alt="Whatsapp"
+                cursor={"pointer"}
+            />
+        </Tooltip>
     );
 };
