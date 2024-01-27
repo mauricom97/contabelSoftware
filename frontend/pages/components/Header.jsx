@@ -6,13 +6,16 @@ const Header = () => {
     return (
         <Box
             p={4}
-            bg="teal.500"
+            bg="#8046A2"
             color="white"
             display="flex"
             justifyContent="space-between"
+            position="fixed"
+            w="100%"
+            zIndex={10}
         >
             <Heading as="h1" fontSize="2xl">
-                Contabel Software
+                ProsperPilot
             </Heading>
             <Stack direction="row" spacing={2}>
                 <Link href="/login">
