@@ -4,6 +4,7 @@ import urlApi from "../utils/urlApi";
 import React, { useState } from "react";
 import { useRouter } from "next/router";
 import InputMask from "react-input-mask";
+import ButtonBack from "./components/ButtonBack";
 
 import {
     Box,
@@ -136,6 +137,7 @@ const SignUp = () => {
                     Criar conta
                 </Button>
             </VStack>
+            <ButtonBack />
         </Box>
     );
 };
