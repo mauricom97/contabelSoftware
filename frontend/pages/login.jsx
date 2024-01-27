@@ -5,17 +5,16 @@ import {
     Button,
     Input,
     FormControl,
-    FormLabel,
     VStack,
     Image,
     Link,
     Box,
+    Heading,
 } from "@chakra-ui/react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
-
+import ButtonBack from "./components/ButtonBack";
 import { InputGroup, InputRightElement, IconButton } from "@chakra-ui/react";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
-
 import axios from "axios";
 import { useRouter } from "next/router";
 
@@ -47,22 +46,18 @@ const Login = () => {
     };
 
     return (
-        <VStack justify="center" height="100vh">
-            <FormControl
-                w="full"
-                maxW="md"
-                bg="white"
-                p={8}
-                rounded="md"
-                boxShadow="md"
-            >
+        <VStack justify="center" height="100vh" bg="#F5F5F5">
+            <FormControl w="full" maxW="md" p={8} rounded="md">
                 <VStack spacing={4}>
                     <Image
                         borderRadius="full"
-                        boxSize="150px"
-                        src="https://bit.ly/dan-abramov"
+                        boxSize="250px"
+                        src="/imgs/avatar.png"
                         alt="Dan Abramov"
                     />
+                    <Heading fontSize="3xl" mb={6}>
+                        ENTRAR
+                    </Heading>
                     <Input
                         type="email"
                         value={email}
@@ -76,6 +71,9 @@ const Login = () => {
                             type={showPassword ? "text" : "password"}
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
+                            onKeyUp={(e) => {
+                                if (e.key === "Enter") handleLogin();
+                            }}
                             variant="filled"
                             placeholder="Password"
                         />
@@ -100,14 +98,16 @@ const Login = () => {
                         </Link>
                     </Box>
                     <Button
-                        colorScheme="blue"
+                        color={"white"}
+                        bg="#8046A2"
                         onClick={handleLogin}
-                        _hover={{ bg: "blue.700" }}
+                        _hover={{ bg: "#B186C7" }}
                     >
                         Sign In
                     </Button>
                 </VStack>
             </FormControl>
+            <ButtonBack />
         </VStack>
     );
 };
