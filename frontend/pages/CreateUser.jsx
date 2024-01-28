@@ -13,6 +13,7 @@ import {
     Input,
     Button,
     VStack,
+    Image,
 } from "@chakra-ui/react";
 
 const SignUp = () => {
@@ -66,10 +67,15 @@ const SignUp = () => {
     };
 
     return (
-        <Box p={4}>
-            <VStack spacing={4} align="stretch" mx="auto" maxW="400px">
+        <Box p={4} bg="#F5F5F5">
+            <VStack spacing={4} align="center" mx="auto" maxW="400px">
+                <Image
+                    borderRadius="full"
+                    boxSize="250px"
+                    src="/imgs/avatarWhite.png"
+                />
                 <Heading as="h2" size="xl">
-                    Crie sua conta
+                    CRIE SUA CONTA
                 </Heading>
                 <FormControl>
                     <Input
@@ -133,10 +139,16 @@ const SignUp = () => {
                         onChange={(e) => setConfirmacaoSenha(e.target.value)}
                     />
                 </FormControl>
-                <Button colorScheme="blue" onClick={validityDataUser}>
-                    Criar conta
+                <Button
+                    color={"white"}
+                    bg="#8046A2"
+                    onClick={validityDataUser}
+                    _hover={{ bg: "#B186C7" }}
+                >
+                    CREATE ACCOUNT
                 </Button>
             </VStack>
+
             <ButtonBack />
         </Box>
     );

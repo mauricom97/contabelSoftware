@@ -5,13 +5,14 @@ import { useRouter } from "next/router";
 import {
     Box,
     FormControl,
-    FormLabel,
     Input,
     Button,
     Heading,
     VStack,
+    Image,
 } from "@chakra-ui/react";
 import axios from "axios";
+import ButtonBack from "./components/ButtonBack";
 
 export default function Company() {
     const router = useRouter();
@@ -47,10 +48,15 @@ export default function Company() {
     };
 
     return (
-        <Box p={4}>
-            <VStack spacing={4} align="stretch" mx="auto" maxW="400px">
+        <Box p={4} bg="#F5F5F5">
+            <VStack spacing={4} align="center" mx="auto" maxW="400px">
+                <Image
+                    borderRadius="full"
+                    boxSize="250px"
+                    src="/imgs/company.png"
+                />
                 <Heading as="h2" size="xl">
-                    Crie sua empresa
+                    CRIE SUA EMPRESA
                 </Heading>
                 <FormControl>
                     <Input
@@ -132,10 +138,16 @@ export default function Company() {
                     />
                 </FormControl>
 
-                <Button colorScheme="blue" onClick={handleSubmit}>
-                    Criar minha empresa
+                <Button
+                    color={"white"}
+                    bg="#8046A2"
+                    onClick={handleSubmit}
+                    _hover={{ bg: "#B186C7" }}
+                >
+                    CREATE COMPANY
                 </Button>
             </VStack>
+            <ButtonBack />
         </Box>
     );
 }

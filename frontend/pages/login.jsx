@@ -53,7 +53,6 @@ const Login = () => {
                         borderRadius="full"
                         boxSize="250px"
                         src="/imgs/avatar.png"
-                        alt="Dan Abramov"
                     />
                     <Heading fontSize="3xl" mb={6}>
                         ENTRAR
@@ -62,7 +61,6 @@ const Login = () => {
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        variant="filled"
                         placeholder="example@domain.com"
                     />
                     <InputGroup size="md">
@@ -74,7 +72,6 @@ const Login = () => {
                             onKeyUp={(e) => {
                                 if (e.key === "Enter") handleLogin();
                             }}
-                            variant="filled"
                             placeholder="Password"
                         />
                         <InputRightElement width="4.5rem">
@@ -103,7 +100,7 @@ const Login = () => {
                         onClick={handleLogin}
                         _hover={{ bg: "#B186C7" }}
                     >
-                        Sign In
+                        LOGIN
                     </Button>
                 </VStack>
             </FormControl>
