@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import Link from "next/link";
 import axios from "axios";
 import urlApi from "../../utils/urlApi";
@@ -27,10 +27,12 @@ import { BiSolidUserCircle } from "react-icons/bi";
 import { SettingsIcon } from "@chakra-ui/icons";
 
 const Sidebar = () => {
+    const sidebarRef = useRef();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [companiesList, setCompaniesList] = useState([]);
     const [companyName, setCompanyName] = useState("");
     const [user, setUser] = useState({});
+    const [isOpen, setIsOpen] = useState(true); // Adiciona um estado para controlar a visibilidade da barra lateral
 
     const handleOpenModal = () => {
         setIsModalOpen(true);
@@ -108,7 +110,21 @@ const Sidebar = () => {
             .catch((error) => {
                 console.log(error);
             });
-    }, []);
+
+        function handleClickOutside(event) {
+            if (
+                sidebarRef.current &&
+                !sidebarRef.current.contains(event.target)
+            ) {
+                setIsOpen(false);
+            }
+        }
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [sidebarRef]);
 
     const mappedCompanies =
         companiesList.length > 0 ? (
@@ -127,14 +143,18 @@ const Sidebar = () => {
 
     return (
         <Box
+            ref={sidebarRef}
+            border={{ base: "none", sm: "1px" }}
+            bg="#F5F5F5"
+            left={isOpen ? "0" : "-280px"}
             boxShadow="xs"
             p="6"
-            w="300px"
-            maxW="250px"
+            w={{ base: "100%", sm: "300px" }} // Tornando o width responsivo
             h="100vh"
             rounded="md"
-            bg="white"
-            position="Fixed"
+            position="fixed"
+            zIndex={10}
+            transition="left 0.5s ease-in-out" // Adiciona transição suave
         >
             <Center mb="4">
                 <WrapItem>
@@ -282,6 +302,22 @@ const Sidebar = () => {
                     </Link>
                 </Box>
             </Box>
+
+            <Button
+                onClick={() => setIsOpen(!isOpen)}
+                border={{ base: "none", sm: "1px" }}
+                style={{
+                    position: "fixed",
+                    top: "0",
+                    left: isOpen ? "280px" : "0",
+                    marginTop: "1rem",
+                }}
+                zIndex={10}
+                transition="left 0.5s ease-in-out"
+            >
+                {" "}
+                {isOpen ? "<" : ">"}
+            </Button>
         </Box>
     );
 };

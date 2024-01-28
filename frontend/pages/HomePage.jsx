@@ -89,7 +89,7 @@ const CreateAccount = () => {
                     lineHeight="1.2"
                     mb={4}
                 >
-                    CRIE SUA CONTA E INICIE A GESTÃO FINANCEIRA DA SUA EMPRESA{" "}
+                    CRIE SUA CONTA, E INICIE A GESTÃO FINANCEIRA DA SUA EMPRESA{" "}
                     {emojiMoneyFinan}
                 </Box>
 
