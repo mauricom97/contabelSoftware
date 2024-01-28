@@ -209,7 +209,6 @@ const DataTable = () => {
             console.log(data);
             fetchBillData();
         });
-        // Limpar o socket quando o componente for desmontado
         return () => {
             socket.disconnect();
         };
@@ -217,133 +216,123 @@ const DataTable = () => {
     return (
         <Box>
             <Sidebar />
-            <Center>
-                <Box position="absolute" w="70%" top={30} left={300}>
-                    <Box>
-                        <Flex justifyContent="flex-end">
-                            <Button mb="4" onClick={handleOpenModal}>
-                                Lançar conta(s)
-                            </Button>
-                            <Button mb="4" ml="5">
-                                Filtros
-                            </Button>
-                            <Input
-                                w="15"
-                                ml="4"
-                                placeholder="Pesquisar"
-                                size="md"
-                            />
-                        </Flex>
-                    </Box>
-                    <Box>
-                        <Table size="sm" boxShadow="xs" rounded="md" bg="white">
-                            <Thead>
-                                <Tr>
-                                    <Th>Descrição</Th>
-                                    <Th>Valor</Th>
-                                    <Th>Fornecedor</Th>
-                                    <Th>Data de Vencimento</Th>
-                                    <Th>Status</Th>
-                                    <Th>Ações</Th>
-                                </Tr>
-                            </Thead>
-                            <Tbody>
-                                {billData.map((item) => (
-                                    <Tr
-                                        key={item.id}
-                                        bg={
-                                            moment(item.dueDate).format(
-                                                "DD/MM/YYYY",
-                                            ) >=
-                                                moment().format("DD/MM/YYYY") &&
-                                            item.status === 1
-                                                ? "#FFB6C1"
-                                                : "#FFF"
-                                        }
-                                    >
-                                        <Td>{item.description}</Td>
-                                        <Td>
-                                            {item.value.toLocaleString(
-                                                "pt-br",
-                                                {
-                                                    style: "currency",
-                                                    currency: "BRL",
-                                                },
-                                            )}
-                                        </Td>
-                                        <Td>
-                                            {item.Supplier.Entity.sampleName}
-                                        </Td>
-                                        <Td>{formatarData(item.dueDate)}</Td>
-                                        <Td>
-                                            {(() => {
-                                                if (item.status === 1)
-                                                    return (
-                                                        <Badge>Em aberto</Badge>
-                                                    );
-                                                else if (item.status === 2)
-                                                    return (
-                                                        <Badge
-                                                            variant="outline"
-                                                            colorScheme="green"
-                                                        >
-                                                            Parcialmente pago
-                                                        </Badge>
-                                                    );
-                                                else if (item.status === 3)
-                                                    return (
-                                                        <Badge colorScheme="green">
-                                                            Pago
-                                                        </Badge>
-                                                    );
-                                                else
-                                                    return "Status desconhecido";
-                                            })()}
-                                        </Td>
-                                        <Td>
-                                            <Center>
-                                                <Popover>
-                                                    <PopoverTrigger>
-                                                        <IconButton
-                                                            size="sm"
-                                                            icon={<EditIcon />} // Adiciona o ícone de edição
-                                                            aria-label="Editar"
-                                                        />
-                                                    </PopoverTrigger>
-                                                    <PopoverContent>
-                                                        <PopoverArrow />
-                                                        {/* Conteúdo do Popover para edição */}
-                                                        {InputsEditInstallment(
-                                                            item,
-                                                        )}
-                                                    </PopoverContent>
-                                                </Popover>
-                                                <IconButton
-                                                    ml="10px"
-                                                    size="sm"
-                                                    colorScheme="red"
-                                                    aria-label="Excluir"
-                                                    icon={<DeleteIcon />}
-                                                    onClick={() =>
-                                                        deleteBill(item.id)
-                                                    }
-                                                />
-                                            </Center>
-                                        </Td>
-                                    </Tr>
-                                ))}
-                            </Tbody>
-                        </Table>
-                    </Box>
-                    <div>
-                        <strong>Total:</strong>
-                        {totalAmount.toLocaleString("pt-br", {
-                            style: "currency",
-                            currency: "BRL",
-                        })}
-                    </div>
+            <Box position="absolute" top={30} w="100%" p="40px">
+                <Box>
+                    <Flex justifyContent="flex-end">
+                        <Button mb="4" onClick={handleOpenModal}>
+                            Lançar conta(s)
+                        </Button>
+                        <Button mb="4" ml="5">
+                            Filtros
+                        </Button>
+                        <Input
+                            w="15"
+                            ml="4"
+                            placeholder="Pesquisar"
+                            size="md"
+                        />
+                    </Flex>
                 </Box>
-            </Center>
+                <Box>
+                    <Table size="sm" boxShadow="xs" rounded="md" bg="white">
+                        <Thead>
+                            <Tr>
+                                <Th>Descrição</Th>
+                                <Th>Valor</Th>
+                                <Th>Fornecedor</Th>
+                                <Th>Data de Vencimento</Th>
+                                <Th>Status</Th>
+                                <Th>Ações</Th>
+                            </Tr>
+                        </Thead>
+                        <Tbody>
+                            {billData.map((item) => (
+                                <Tr
+                                    key={item.id}
+                                    bg={
+                                        moment(item.dueDate).format(
+                                            "DD/MM/YYYY",
+                                        ) >= moment().format("DD/MM/YYYY") &&
+                                        item.status === 1
+                                            ? "#FFB6C1"
+                                            : "#FFF"
+                                    }
+                                >
+                                    <Td>{item.description}</Td>
+                                    <Td>
+                                        {item.value.toLocaleString("pt-br", {
+                                            style: "currency",
+                                            currency: "BRL",
+                                        })}
+                                    </Td>
+                                    <Td>{item.Supplier.Entity.sampleName}</Td>
+                                    <Td>{formatarData(item.dueDate)}</Td>
+                                    <Td>
+                                        {(() => {
+                                            if (item.status === 1)
+                                                return <Badge>Em aberto</Badge>;
+                                            else if (item.status === 2)
+                                                return (
+                                                    <Badge
+                                                        variant="outline"
+                                                        colorScheme="green"
+                                                    >
+                                                        Parcialmente pago
+                                                    </Badge>
+                                                );
+                                            else if (item.status === 3)
+                                                return (
+                                                    <Badge colorScheme="green">
+                                                        Pago
+                                                    </Badge>
+                                                );
+                                            else return "Status desconhecido";
+                                        })()}
+                                    </Td>
+                                    <Td>
+                                        <Center>
+                                            <Popover>
+                                                <PopoverTrigger>
+                                                    <IconButton
+                                                        size="sm"
+                                                        icon={<EditIcon />} // Adiciona o ícone de edição
+                                                        aria-label="Editar"
+                                                    />
+                                                </PopoverTrigger>
+                                                <PopoverContent>
+                                                    <PopoverArrow />
+                                                    {/* Conteúdo do Popover para edição */}
+                                                    {InputsEditInstallment(
+                                                        item,
+                                                    )}
+                                                </PopoverContent>
+                                            </Popover>
+                                            <IconButton
+                                                ml="10px"
+                                                size="sm"
+                                                colorScheme="red"
+                                                aria-label="Excluir"
+                                                icon={<DeleteIcon />}
+                                                onClick={() =>
+                                                    deleteBill(item.id)
+                                                }
+                                            />
+                                        </Center>
+                                    </Td>
+                                </Tr>
+                            ))}
+                        </Tbody>
+                    </Table>
+                </Box>
+                <div>
+                    <strong>Total:</strong>
+                    {totalAmount.toLocaleString("pt-br", {
+                        style: "currency",
+                        currency: "BRL",
+                    })}
+                </div>
+            </Box>
+
             <CreateBillToPay
                 isOpen={isModalOpen}
                 onOpen={handleOpenModal}

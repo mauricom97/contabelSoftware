@@ -5,8 +5,6 @@ import HomePage from "./HomePage";
 const Home = () => {
     return (
         <ChakraProvider>
-            {/* <Sidebar></Sidebar>
-             */}
             <HomePage />
         </ChakraProvider>
     );
