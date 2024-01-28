@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useFormControlStyles, useToast } from "@chakra-ui/react";
+import { useToast } from "@chakra-ui/react";
 import urlApi from "../../../utils/urlApi";
 
 import {
@@ -17,7 +17,6 @@ import {
     Input,
     Select as ChakraSelect,
     Box,
-    Separator,
     Grid,
     GridItem,
     Center,
@@ -25,11 +24,6 @@ import {
     MenuButton,
     MenuList,
     MenuItem,
-    Divider,
-    MenuItemOption,
-    MenuGroup,
-    MenuOptionGroup,
-    MenuDivider,
 } from "@chakra-ui/react";
 // import ChevronDownIcon from "@material-ui/icons/ChevronDown";
 
