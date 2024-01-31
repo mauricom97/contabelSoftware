@@ -214,9 +214,13 @@ const DataTable = () => {
         };
     }, []);
     return (
-        <Box>
+        <Box
+            maxH="100vh"
+            display="flex"
+            flexDirection={{ base: "column", md: "row" }}
+        >
             <Sidebar />
-            <Box position="absolute" top={30} w="100%" p="40px">
+            <Box flex="1" p={{ base: "10px", md: "40px" }} height="100vh">
                 <Box>
                     <Flex justifyContent="flex-end">
                         <Button mb="4" onClick={handleOpenModal}>
@@ -233,9 +237,24 @@ const DataTable = () => {
                         />
                     </Flex>
                 </Box>
-                <Box>
+
+                <Box
+                    maxH={"80%"}
+                    overflow="auto"
+                    style={{
+                        border: "1px solid #ccc",
+                        borderRadius: "5px",
+                    }}
+                >
                     <Table size="sm" boxShadow="xs" rounded="md" bg="white">
-                        <Thead>
+                        <Thead
+                            style={{
+                                position: "sticky",
+                                top: "0",
+                                background: "white",
+                                zIndex: "2",
+                            }}
+                        >
                             <Tr>
                                 <Th>Descrição</Th>
                                 <Th>Valor</Th>
@@ -247,17 +266,7 @@ const DataTable = () => {
                         </Thead>
                         <Tbody>
                             {billData.map((item) => (
-                                <Tr
-                                    key={item.id}
-                                    bg={
-                                        moment(item.dueDate).format(
-                                            "DD/MM/YYYY",
-                                        ) >= moment().format("DD/MM/YYYY") &&
-                                        item.status === 1
-                                            ? "#FFB6C1"
-                                            : "#FFF"
-                                    }
-                                >
+                                <Tr key={item.id} _hover={{ bg: "gray.100" }}>
                                     <Td>{item.description}</Td>
                                     <Td>
                                         {item.value.toLocaleString("pt-br", {
@@ -324,13 +333,42 @@ const DataTable = () => {
                         </Tbody>
                     </Table>
                 </Box>
-                <div>
-                    <strong>Total:</strong>
-                    {totalAmount.toLocaleString("pt-br", {
-                        style: "currency",
-                        currency: "BRL",
-                    })}
-                </div>
+                <Flex justifyContent="flex-end" mt={2}>
+                    <Box
+                        w="30vh"
+                        style={{
+                            border: "1px solid #ccc",
+                            borderRadius: "5px",
+                            padding: "10px",
+                        }}
+                    >
+                        <Box
+                            display="flex"
+                            justifyContent="space-between"
+                            mb={2}
+                        >
+                            <Box
+                                fontWeight="bold"
+                                color={
+                                    totalAmount < 0 ? "green.500" : "red.500"
+                                }
+                            >
+                                Total:
+                            </Box>
+                            <Box
+                                fontWeight="bold"
+                                color={
+                                    totalAmount < 0 ? "green.500" : "red.500"
+                                }
+                            >
+                                {totalAmount.toLocaleString("pt-br", {
+                                    style: "currency",
+                                    currency: "BRL",
+                                })}
+                            </Box>
+                        </Box>
+                    </Box>
+                </Flex>
             </Box>
 
             <CreateBillToPay
