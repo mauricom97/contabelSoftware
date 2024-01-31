@@ -145,16 +145,16 @@ const Sidebar = () => {
         <Box
             ref={sidebarRef}
             border={{ base: "none", sm: "1px" }}
-            bg="#F5F5F5"
+            bg="white"
             left={isOpen ? "0" : "-280px"}
             boxShadow="xs"
-            p="6"
+            p={{ base: "4", sm: "6" }}
             w={{ base: "100%", sm: "300px" }} // Tornando o width responsivo
             h="100vh"
             rounded="md"
             position="fixed"
             zIndex={10}
-            transition="left 0.5s ease-in-out" // Adiciona transição suave
+            transition="left 0.5s ease-in-out"
         >
             <Center mb="4">
                 <WrapItem>
@@ -306,6 +306,7 @@ const Sidebar = () => {
             <Button
                 onClick={() => setIsOpen(!isOpen)}
                 border={{ base: "none", sm: "1px" }}
+                bg={{ base: "none", sm: "white" }}
                 style={{
                     position: "fixed",
                     top: "0",
