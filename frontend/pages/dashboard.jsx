@@ -1,4 +1,5 @@
 import CardsDashboard from "./components/dashboard/Cards";
+import Sidebar from "./components/Sidebar";
 // import PieChart from "./components/dashboard/PieChart";
 const Dashboard = () => {
     const dadosContas = {
@@ -7,6 +8,7 @@ const Dashboard = () => {
     };
     return (
         <div>
+            <Sidebar />
             <CardsDashboard />
             {/* <PieChart data={dadosContas} /> */}
         </div>
