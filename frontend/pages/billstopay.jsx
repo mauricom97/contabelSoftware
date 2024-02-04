@@ -219,7 +219,7 @@ const DataTable = () => {
             display="flex"
             flexDirection={{ base: "column", md: "row" }}
         >
-            <Sidebar />
+            {/* <Sidebar /> */}
             <Box flex="1" p={{ base: "10px", md: "40px" }} height="100vh">
                 <Box>
                     <Flex justifyContent="flex-end">

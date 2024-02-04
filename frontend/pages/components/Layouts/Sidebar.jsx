@@ -1,9 +1,9 @@
 import React, { useRef, useState, useEffect } from "react";
 import Link from "next/link";
 import axios from "axios";
-import urlApi from "../../utils/urlApi";
+import urlApi from "../../../utils/urlApi";
 
-import CreateCompany from "../components/company/create";
+import CreateCompany from "../../components/company/create";
 import {
     Menu,
     MenuButton,
@@ -16,7 +16,8 @@ import {
     Box,
     Center,
     Flex,
-    Divider,
+    AvatarBadge,
+    Stack,
 } from "@chakra-ui/react";
 import { TbBuilding } from "react-icons/tb";
 import { FaRegPlusSquare, FaHome } from "react-icons/fa";
@@ -144,6 +145,7 @@ const Sidebar = () => {
     return (
         <Box
             ref={sidebarRef}
+            color={"#333333"}
             bg="linear-gradient(to right, #8046A2, #B186C7)"
             left={isOpen ? "0" : "-280px"}
             boxShadow="xs"
@@ -157,20 +159,28 @@ const Sidebar = () => {
         >
             <Center mb="4">
                 <WrapItem>
-                    <Avatar
-                        size="xl"
-                        name="Dan Abrahmov"
-                        src="https://bit.ly/ryan-florence"
-                    />
+                    <Stack direction="row" spacing={4} cursor={"pointer"}>
+                        <Avatar size="lg">
+                            <AvatarBadge boxSize="1.25em" bg="green.500" />
+                        </Avatar>
+                    </Stack>
                 </WrapItem>
             </Center>
             <Center mb="5">
-                <span>{user.firstname}</span>
+                <span
+                    style={{
+                        color: "#333333",
+                        fontSize: "20px",
+                        fontWeight: "bold",
+                    }}
+                >
+                    {user.firstname}
+                </span>
             </Center>
             <Menu>
                 <MenuButton
+                    color={"#333333"}
                     bg="#8046A2"
-                    colorScheme="#8046A2"
                     w="100%"
                     as={Button}
                     _hover={{ bg: "#B186C7" }}
@@ -334,13 +344,13 @@ const Sidebar = () => {
 
             <Box
                 onClick={() => setIsOpen(!isOpen)}
-                bg={{ base: "none", sm: "#F5F5F5" }}
-                border={{ base: "none", sm: "1px" }}
+                bg={{ base: "none", sm: "white" }}
+                border={{ base: "none", sm: "1px solid #B186C7" }}
                 style={{
                     cursor: "pointer",
                     position: "fixed",
                     top: "0",
-                    left: isOpen ? "280px" : "0",
+                    left: isOpen ? "285px" : "0",
                     marginTop: "1rem",
                     borderRadius: "50%",
                     padding: "0.2rem",
@@ -355,6 +365,7 @@ const Sidebar = () => {
                     align={"center"}
                     alignContent={"center"}
                     justifyContent={"center"}
+                    color={"#B186C7"}
                     mt="1"
                 >
                     {" "}

@@ -8,7 +8,7 @@ const Dashboard = () => {
     };
     return (
         <div>
-            <Sidebar />
+            {/* <Sidebar /> */}
             <CardsDashboard />
             {/* <PieChart data={dadosContas} /> */}
         </div>
