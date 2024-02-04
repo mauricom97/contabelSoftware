@@ -291,7 +291,8 @@ const CreateBillToPay = ({ isOpen, onOpen, onClose }) => {
                     <ModalFooter>
                         <Button
                             onClick={registerBill}
-                            colorScheme="blue"
+                            colorScheme="purple"
+                            bg={"#8046A2"}
                             mr={3}
                             disabled={
                                 !description || !dueDate || !amount || !status

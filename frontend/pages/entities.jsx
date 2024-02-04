@@ -68,7 +68,7 @@ const ListagemEntidades = () => {
 
     return (
         <Box>
-            <Sidebar />
+            {/* <Sidebar /> */}
             <Box
                 p={6}
                 position="absolute"
