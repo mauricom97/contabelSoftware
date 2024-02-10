@@ -6,10 +6,11 @@ const Dashboard = () => {
         contasAPagar: 5000,
         contasAReceber: 8000,
     };
+
     return (
         <div>
             {/* <Sidebar /> */}
-            <CardsDashboard />
+            <CardsDashboard data={dadosContas} />
             {/* <PieChart data={dadosContas} /> */}
         </div>
     );
