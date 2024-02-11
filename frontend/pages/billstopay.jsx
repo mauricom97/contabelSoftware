@@ -24,8 +24,13 @@ import {
     PopoverTrigger,
     PopoverContent,
     PopoverArrow,
+    PopoverCloseButton,
+    PopoverHeader,
+    PopoverBody,
     FormControl,
     FormLabel,
+    Checkbox,
+    CheckboxGroup,
 } from "@chakra-ui/react";
 
 import { EditIcon } from "@chakra-ui/icons";
@@ -117,6 +122,19 @@ const DataTable = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [billData, setBillData] = useState([]);
     const [totalAmount, setTotalAmount] = useState(0);
+    const [dtStartFilter, setDtStartFilter] = useState(moment().startOf('month').format("YYYY-MM-DD"));
+    const [dtEndFilter, setDtEndFilter] = useState(moment().endOf('month').format("YYYY-MM-DD"));
+    let [statusFilter, setStatusFilter] = useState([1, 2, 3]);
+    const [isOpen, setIsOpen] = useState(false);
+    const [isPartiallyPaid, setIsPartiallyPaid] = useState(false);
+    const [isPaid, setIsPaid] = useState(false);
+
+
+    const handleCheckboxChange = (setFunction) => (event) => {
+        setFunction(event.target.checked);
+      };
+
+    
 
     const handleOpenModal = () => {
         setIsModalOpen(true);
@@ -129,6 +147,57 @@ const DataTable = () => {
     if (typeof window !== "undefined") {
         token = window.localStorage.getItem("token");
     }
+
+    console.log(statusFilter)
+
+    const filterBillsToPay = async () => { 
+        let statusFilter = [];
+        if (isOpen) {
+            statusFilter.push(1);
+        }
+        if (isPartiallyPaid) {
+            statusFilter.push(2);
+        }
+        if (isPaid) {
+            statusFilter.push(3);
+        }
+
+        try {
+            
+            let config = {
+                method: "get",
+                maxBodyLength: Infinity,
+                url: `${urlApi}/billstopay/filters?companyId=${window.localStorage.getItem(
+                    "company",
+                )}`,
+                headers: {
+                    token: token,
+                },
+                params: { company: localStorage.getItem("company"), dtStart: dtStartFilter, dtEnd: dtEndFilter, status: statusFilter},
+            };
+
+            const response = await axios
+                .request(config)
+                .then((response) => {
+                    return response;
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+            
+
+            setBillData(response.data.length > 0 ? response.data : []);
+            // Atualize os totais sempre que os dados da conta mudarem
+            let total = 0;
+            response.data.forEach((item) => {
+                total += parseFloat(item.value);
+            });
+            setTotalAmount(total > 0 ? total : 0);
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    }
+
 
     const formatarData = (dueDate) => {
         // Converte a string de data para um objeto Date
@@ -150,7 +219,7 @@ const DataTable = () => {
                 params: { id: id },
             };
 
-            const response = await axios
+            await axios
                 .request(config)
                 .then((response) => {
                     return response;
@@ -176,7 +245,7 @@ const DataTable = () => {
                 headers: {
                     token: token,
                 },
-                params: { company: localStorage.getItem("company") },
+                params: { company: localStorage.getItem("company"), dtStart: dtStartFilter, dtEnd: dtEndFilter, status: statusFilter},
             };
 
             const response = await axios
@@ -188,8 +257,7 @@ const DataTable = () => {
                     console.log(error);
                 });
 
-            setBillData(response.data);
-            // Atualize os totais sempre que os dados da conta mudarem
+            setBillData(response.data.length > 0 ? response.data : []);
             let total = 0;
             response.data.forEach((item) => {
                 total += parseFloat(item.value);
@@ -218,16 +286,54 @@ const DataTable = () => {
             display="flex"
             flexDirection={{ base: "column", md: "row" }}
         >
-            {/* <Sidebar /> */}
+            
             <Box flex="1" p={{ base: "10px", md: "40px" }} height="100vh">
                 <Box>
                     <Flex justifyContent="flex-end">
-                        <Button mb="4" onClick={handleOpenModal}>
+                        <Button mb="4" mr="3" onClick={handleOpenModal}>
                             Lançar conta(s)
                         </Button>
-                        <Button mb="4" ml="5">
-                            Filtros
-                        </Button>
+                        <Popover>
+                        <PopoverTrigger>
+                            <Button>Filtros</Button>
+                        </PopoverTrigger>
+                        <PopoverContent>
+                            <PopoverArrow />
+                            <PopoverCloseButton />
+                            <PopoverHeader>Filtro de contas</PopoverHeader>
+                                <PopoverBody>
+                                    <Box>
+                                        <FormLabel>
+                                            Vencimento inicial
+                                            <Input type="date" onChange={(e) => setDtStartFilter(e.target.value)}/>
+                                            </FormLabel>
+                                        <FormLabel>
+                                            Vencimento final
+                                        <Input type="date" mt="1" onChange={(e) => setDtEndFilter(e.target.value)} />
+                                        </FormLabel>
+
+                                        <CheckboxGroup m="5" colorScheme="green" defaultChecked>
+
+                                        <Checkbox onChange={handleCheckboxChange(setIsOpen)}>
+                                            Em aberto
+                                        </Checkbox>
+                                        <Checkbox ml="5" onChange={handleCheckboxChange(setIsPartiallyPaid)}>
+                                            Pago parcialmente
+                                        </Checkbox>
+                                        <Checkbox onChange={handleCheckboxChange(setIsPaid)}>
+                                            Pago
+                                        </Checkbox>
+                                        </CheckboxGroup>
+                                    </Box>
+                                    <Box mt="5">
+                                        <Button w="100%" colorScheme="blue" mr={3} onClick={() => filterBillsToPay()}>
+                                            Filtrar
+                                        </Button>
+                                        
+                                    </Box>
+                            </PopoverBody>
+                        </PopoverContent>
+                        </Popover>
                         <Input
                             w="15"
                             ml="4"
@@ -297,6 +403,7 @@ const DataTable = () => {
                                             else return "Status desconhecido";
                                         })()}
                                     </Td>
+                                    
                                     <Td>
                                         <Center>
                                             <Popover>
