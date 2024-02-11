@@ -1,5 +1,4 @@
 import { PrismaClient } from "@prisma/client";
-import { Console } from "console";
 const pgDatabase =
   process.env.NODE_ENV === "prod"
     ? process.env.DATABASE_URL

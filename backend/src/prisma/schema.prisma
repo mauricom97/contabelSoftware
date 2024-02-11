@@ -9,12 +9,12 @@ datasource db {
 
 model User {
   id          Int           @id @default(autoincrement())
+  email       String        @unique @db.VarChar
+  birthdate   DateTime      @db.Date
   firstname   String        @db.VarChar
   lastname    String        @db.VarChar
-  birthdate   DateTime      @db.Date
-  phone       String        @unique @db.VarChar
-  email       String        @unique @db.VarChar
   password    String        @db.VarChar
+  phone       String        @unique @db.VarChar
   UserCompany UserCompany[]
 }
 
@@ -35,25 +35,25 @@ model Company {
 }
 
 model Entity {
-  id             Int              @id @default(autoincrement())
-  type           String           @db.VarChar
-  registerName   String           @unique @db.VarChar
-  sampleName     String           @db.VarChar
-  cpfCnpj        String           @unique @db.VarChar
-  ie             String?          @db.VarChar
-  phone          String?          @db.VarChar
-  email          String?          @db.VarChar
-  address        String?          @db.VarChar
-  city           String?          @db.VarChar
-  state          String?          @db.VarChar
-  cep            String?          @db.VarChar
-  number         Int?             
-  complement     String?          @db.VarChar
-  neighborhood   String?          @db.VarChar
-  observation    String?          @db.VarChar
-  CompanyEntity  CompanyEntity[]
-  Client         Client?
-  Supplier       Supplier?
+  id            Int             @id @default(autoincrement())
+  ie            String?         @db.VarChar
+  phone         String?         @db.VarChar
+  email         String?         @db.VarChar
+  address       String?         @db.VarChar
+  city          String?         @db.VarChar
+  state         String?         @db.VarChar
+  cpfCnpj       String          @unique @db.VarChar
+  registerName  String          @unique @db.VarChar
+  sampleName    String          @db.VarChar
+  type          String          @db.VarChar
+  cep           String?         @db.VarChar
+  complement    String?         @db.VarChar
+  neighborhood  String?         @db.VarChar
+  number        Int?
+  observation   String?         @db.VarChar
+  Client        Client?
+  CompanyEntity CompanyEntity[]
+  Supplier      Supplier?
 }
 
 model CompanyEntity {
@@ -66,16 +66,14 @@ model CompanyEntity {
 }
 
 model Client {
-  idEntity Int
-  Entity Entity @relation(fields: [idEntity], references: [id])
-  @@id([idEntity])
+  idEntity Int    @id
+  Entity   Entity @relation(fields: [idEntity], references: [id])
 }
 
 model Supplier {
-  idEntity Int
-  Entity Entity @relation(fields: [idEntity], references: [id])
-  BillsToPay  BillsToPay[]
-  @@id([idEntity])
+  idEntity   Int          @id
+  BillsToPay BillsToPay[]
+  Entity     Entity       @relation(fields: [idEntity], references: [id])
 }
 
 model UserCompany {
@@ -96,7 +94,7 @@ model BillsToPay {
   value       Float
   status      Int
   companyId   Int
-  idSupplier    Int      @default(0)
+  idSupplier  Int      @default(0)
   Company     Company  @relation(fields: [companyId], references: [id])
   Supplier    Supplier @relation(fields: [idSupplier], references: [idEntity])
 }

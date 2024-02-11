@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 export default async (req: Request, res: Response) => {
   try {
     const requestData = extractData(req);
-    await analyseData(requestData);
+    // await analyseData(requestData);
     const billsToPay = await getBillsToPay(req, requestData);
     res.send(billsToPay);
   } catch (error) {
@@ -13,34 +13,36 @@ export default async (req: Request, res: Response) => {
 };
 
 function extractData(req: any) {
-  const { id, dueDate, status, companyId } = req.query;
+  const { id, dtStart, dtEnd, status } = req.query;
 
   return {
     id,
-    dueDate: dueDate ? new Date(dueDate).toISOString() : null,
-    status,
-    companyId,
+    dtStart: dtStart ? new Date(dtStart).toISOString() : null,
+    dtEnd: dtEnd ? new Date(dtEnd).toISOString() : null,
+    status
   };
 }
 
-async function analyseData(filters: any) {
-  if (!filters.companyId) {
-    throw new Error("You must provide at least one filter");
-  }
-}
 
 async function getBillsToPay(req: any, filters: any) {
   const filter: any = {};
   if (filters.id) {
     filter.id = parseInt(filters.id);
   }
-  if (filters.dueDate) {
-    filter.dueDate = filters.dueDate;
+  if (filters.dtStart && filters.dtEnd) {
+    filter.dueDate = {
+      gte: new Date(filters.dtStart),
+      lte: new Date(filters.dtEnd),
+    };
   }
-  if (filters.status) {
-    filter.status = filters.status;
+  filters.status = filters.status.map((s: any) => parseInt(s))
+  if (filters.status.length > 0) {
+    filter.status = {
+      in: filters.status,
+    };
   }
   filter.companyId = parseInt(req.company);
+  console.log(filter)
   const billsToPay = await req.prisma.BillsToPay.findMany({
     where: filter,
     select: {
