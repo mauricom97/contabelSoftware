@@ -29,7 +29,7 @@ const HomePage = () => {
                         <CreateAccount />
                         <Benefits />
                         <ContactInfo />
-                        <WhatsappButton />
+                        {/* <WhatsappButton /> */}
                     </Box>
 
                     {/* <Footer position="fixed" w="100%" zIndex="1" bottom="0" /> */}
@@ -229,21 +229,21 @@ const ContactInfo = () => {
     );
 };
 
-const WhatsappButton = () => {
-    return (
-        <Tooltip label="Entre em contato" fontSize="md">
-            <Image
-                onClick={() => window.open("https://wa.me/5547992184165")}
-                position="fixed"
-                bottom="20px"
-                right="20px"
-                zIndex="100"
-                src="/imgs/whats.png"
-                w="70px"
-                h="70px"
-                alt="Whatsapp"
-                cursor={"pointer"}
-            />
-        </Tooltip>
-    );
-};
+// const WhatsappButton = () => {
+//     return (
+//         <Tooltip label="Entre em contato" fontSize="md">
+//             <Image
+//                 onClick={() => window.open("https://wa.me/5547992184165")}
+//                 position="fixed"
+//                 bottom="20px"
+//                 right="20px"
+//                 zIndex="100"
+//                 src="/imgs/whats.png"
+//                 w="70px"
+//                 h="70px"
+//                 alt="Whatsapp"
+//                 cursor={"pointer"}
+//             />
+//         </Tooltip>
+//     );
+// };
