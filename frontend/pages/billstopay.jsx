@@ -30,8 +30,10 @@ import {
     FormControl,
     FormLabel,
     Checkbox,
-    CheckboxGroup,
+    CheckboxGroup
 } from "@chakra-ui/react";
+import { Select  } from "chakra-react-select";
+
 
 import { EditIcon } from "@chakra-ui/icons";
 
@@ -128,6 +130,14 @@ const DataTable = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [isPartiallyPaid, setIsPartiallyPaid] = useState(false);
     const [isPaid, setIsPaid] = useState(false);
+    const [queryFindSuppliers, setQueryFindSuppliers] = useState("");
+    const [selectedSupplier, setSelectedSupplier] = useState(null);
+    const [suppliers, setSuppliers] = useState([]);
+    
+    
+
+
+
 
 
     const handleCheckboxChange = (setFunction) => (event) => {
@@ -279,7 +289,40 @@ const DataTable = () => {
         return () => {
             socket.disconnect();
         };
-    }, []);
+
+
+        const delayDebounceFn = setTimeout(() => {
+            if (queryFindSuppliers) {
+                performSearch();
+            }
+        }, 300);
+
+
+    }, [queryFindSuppliers]);
+    const performSearch = async () => {
+        try {
+            await axios
+                .get(`${urlApi}/suppliers/filter`, {
+                    headers: {
+                        token: localStorage.getItem("token"),
+                    },
+                    params: {
+                        filter: queryFindSuppliers,
+                    },
+                })
+                .then((response) => {
+                    console.log(response.data);
+                    setSuppliers(
+                        response.data.map((s) => ({
+                            value: s.id,
+                            label: s.sampleName,
+                        })),
+                    );
+                });
+        } catch (error) {
+            console.error("Erro na busca:", error);
+        }
+    };
     return (
         <Box
             maxH="100vh"
@@ -305,14 +348,33 @@ const DataTable = () => {
                                     <Box>
                                         <FormLabel>
                                             Vencimento inicial
-                                            <Input type="date" onChange={(e) => setDtStartFilter(e.target.value)}/>
+                                            <Input type="date" value={dtStartFilter} onChange={(e) => setDtStartFilter(e.target.value)}/>
                                             </FormLabel>
                                         <FormLabel>
                                             Vencimento final
-                                        <Input type="date" mt="1" onChange={(e) => setDtEndFilter(e.target.value)} />
+                                        <Input type="date" value={dtEndFilter} mt="1" onChange={(e) => setDtEndFilter(e.target.value)} />
                                         </FormLabel>
 
-                                        <CheckboxGroup m="5" colorScheme="green" defaultChecked>
+                                        {/* <FormControl>
+                            <FormLabel>Fornecedor</FormLabel>
+                            <Box
+                                onChange={(e) =>
+                                    setQueryFindSuppliers(e.target.value)
+                                }
+                            >
+                                <Select
+                                    placeholder="Busque pelo fornecedor"
+                                    value={selectedSupplier}
+                                    options={suppliers}
+                                    onChange={setSelectedSupplier}
+                                />
+                            </Box>
+                        </FormControl> */}
+
+                                        <CheckboxGroup colorScheme="purple" m="5" defaultChecked>
+                                        <FormLabel>
+                                            Status                                      
+                                        </FormLabel>
 
                                         <Checkbox onChange={handleCheckboxChange(setIsOpen)}>
                                             Em aberto
@@ -326,7 +388,7 @@ const DataTable = () => {
                                         </CheckboxGroup>
                                     </Box>
                                     <Box mt="5">
-                                        <Button w="100%" colorScheme="blue" mr={3} onClick={() => filterBillsToPay()}>
+                                        <Button w="100%" colorScheme="purple" mr={3} onClick={() => filterBillsToPay()}>
                                             Filtrar
                                         </Button>
                                         
@@ -455,17 +517,12 @@ const DataTable = () => {
                         >
                             <Box
                                 fontWeight="bold"
-                                color={
-                                    totalAmount < 0 ? "green.500" : "red.500"
-                                }
+                                
                             >
                                 Total:
                             </Box>
                             <Box
                                 fontWeight="bold"
-                                color={
-                                    totalAmount < 0 ? "green.500" : "red.500"
-                                }
                             >
                                 {totalAmount.toLocaleString("pt-br", {
                                     style: "currency",

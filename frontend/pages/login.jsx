@@ -1,5 +1,7 @@
 import { useState } from "react";
 import urlApi from "../utils/urlApi";
+import LoginBtn from "./components/LoginBtn";
+
 
 import {
     Button,
@@ -102,6 +104,7 @@ const Login = () => {
                     >
                         LOGIN
                     </Button>
+                    <LoginBtn />
                 </VStack>
             </FormControl>
             <ButtonBack />
