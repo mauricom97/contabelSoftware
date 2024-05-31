@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import CreateEntity from "./components/CreateEntity";
 import urlApi from "../utils/urlApi";
-
+import axios from "axios";
 import {
     Box,
     Heading,
@@ -31,7 +31,6 @@ const ListagemEntidades = () => {
     };
 
     async function fetEntities() {
-        const axios = require("axios");
         let config = {
             method: "get",
             maxBodyLength: Infinity,

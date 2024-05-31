@@ -46,7 +46,6 @@ async function verifyToken(token: string) {
   }
   return decodedToken;
 }
-
 async function findUser(decodedToken: {
   id: number;
   email: string;
@@ -57,6 +56,7 @@ async function findUser(decodedToken: {
       id: decodedToken.id,
     },
   });
+  console.log(user);
   if (!user) {
     throw new Error("This token does not match any user");
   }

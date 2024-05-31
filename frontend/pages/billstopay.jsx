@@ -5,7 +5,7 @@ import { DeleteIcon } from "@chakra-ui/icons";
 import io from "socket.io-client";
 import urlApi from "../utils/urlApi";
 import InputMask from "react-input-mask";
-
+import ImportBillToPay from "./components/financial/ImportBillToPay";
 import {
     Table,
     Thead,
@@ -30,10 +30,9 @@ import {
     FormControl,
     FormLabel,
     Checkbox,
-    CheckboxGroup
+    CheckboxGroup,
 } from "@chakra-ui/react";
-import { Select  } from "chakra-react-select";
-
+import { Select } from "chakra-react-select";
 
 import { EditIcon } from "@chakra-ui/icons";
 
@@ -44,6 +43,15 @@ const status = {
     2: "Parcialmente pago",
     3: "Pago",
 };
+
+function handleFileChange(event) {
+    const file = event.target.files[0];
+    if (file) {
+        // Faça algo com o arquivo aqui
+        console.log(file.name);
+    }
+}
+
 const InputsEditInstallment = (item) => {
     return (
         <Box p={5}>
@@ -124,8 +132,12 @@ const DataTable = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [billData, setBillData] = useState([]);
     const [totalAmount, setTotalAmount] = useState(0);
-    const [dtStartFilter, setDtStartFilter] = useState(moment().startOf('month').format("YYYY-MM-DD"));
-    const [dtEndFilter, setDtEndFilter] = useState(moment().endOf('month').format("YYYY-MM-DD"));
+    const [dtStartFilter, setDtStartFilter] = useState(
+        moment().startOf("month").format("YYYY-MM-DD"),
+    );
+    const [dtEndFilter, setDtEndFilter] = useState(
+        moment().endOf("month").format("YYYY-MM-DD"),
+    );
     let [statusFilter, setStatusFilter] = useState([1, 2, 3]);
     const [isOpen, setIsOpen] = useState(false);
     const [isPartiallyPaid, setIsPartiallyPaid] = useState(false);
@@ -133,18 +145,10 @@ const DataTable = () => {
     const [queryFindSuppliers, setQueryFindSuppliers] = useState("");
     const [selectedSupplier, setSelectedSupplier] = useState(null);
     const [suppliers, setSuppliers] = useState([]);
-    
-    
-
-
-
-
 
     const handleCheckboxChange = (setFunction) => (event) => {
         setFunction(event.target.checked);
-      };
-
-    
+    };
 
     const handleOpenModal = () => {
         setIsModalOpen(true);
@@ -158,9 +162,9 @@ const DataTable = () => {
         token = window.localStorage.getItem("token");
     }
 
-    console.log(statusFilter)
+    console.log(statusFilter);
 
-    const filterBillsToPay = async () => { 
+    const filterBillsToPay = async () => {
         let statusFilter = [];
         if (isOpen) {
             statusFilter.push(1);
@@ -173,7 +177,6 @@ const DataTable = () => {
         }
 
         try {
-            
             let config = {
                 method: "get",
                 maxBodyLength: Infinity,
@@ -183,7 +186,12 @@ const DataTable = () => {
                 headers: {
                     token: token,
                 },
-                params: { company: localStorage.getItem("company"), dtStart: dtStartFilter, dtEnd: dtEndFilter, status: statusFilter},
+                params: {
+                    company: localStorage.getItem("company"),
+                    dtStart: dtStartFilter,
+                    dtEnd: dtEndFilter,
+                    status: statusFilter,
+                },
             };
 
             const response = await axios
@@ -194,7 +202,6 @@ const DataTable = () => {
                 .catch((error) => {
                     console.log(error);
                 });
-            
 
             setBillData(response.data.length > 0 ? response.data : []);
             // Atualize os totais sempre que os dados da conta mudarem
@@ -206,8 +213,7 @@ const DataTable = () => {
         } catch (error) {
             console.error("Error fetching data:", error);
         }
-    }
-
+    };
 
     const formatarData = (dueDate) => {
         // Converte a string de data para um objeto Date
@@ -255,7 +261,12 @@ const DataTable = () => {
                 headers: {
                     token: token,
                 },
-                params: { company: localStorage.getItem("company"), dtStart: dtStartFilter, dtEnd: dtEndFilter, status: statusFilter},
+                params: {
+                    company: localStorage.getItem("company"),
+                    dtStart: dtStartFilter,
+                    dtEnd: dtEndFilter,
+                    status: statusFilter,
+                },
             };
 
             const response = await axios
@@ -290,14 +301,11 @@ const DataTable = () => {
             socket.disconnect();
         };
 
-
         const delayDebounceFn = setTimeout(() => {
             if (queryFindSuppliers) {
                 performSearch();
             }
         }, 300);
-
-
     }, [queryFindSuppliers]);
     const performSearch = async () => {
         try {
@@ -329,30 +337,47 @@ const DataTable = () => {
             display="flex"
             flexDirection={{ base: "column", md: "row" }}
         >
-            
             <Box flex="1" p={{ base: "10px", md: "40px" }} height="100vh">
                 <Box>
                     <Flex justifyContent="flex-end">
-                        <Button mb="4" mr="3" onClick={handleOpenModal}>
+                        <ImportBillToPay />
+                        <Button mb="4" mr="3" ml="3" onClick={handleOpenModal}>
                             Lançar conta(s)
                         </Button>
                         <Popover>
-                        <PopoverTrigger>
-                            <Button>Filtros</Button>
-                        </PopoverTrigger>
-                        <PopoverContent>
-                            <PopoverArrow />
-                            <PopoverCloseButton />
-                            <PopoverHeader>Filtro de contas</PopoverHeader>
+                            <PopoverTrigger>
+                                <Button>Filtros</Button>
+                            </PopoverTrigger>
+                            <PopoverContent>
+                                <PopoverArrow />
+                                <PopoverCloseButton />
+                                <PopoverHeader>Filtro de contas</PopoverHeader>
                                 <PopoverBody>
                                     <Box>
                                         <FormLabel>
                                             Vencimento inicial
-                                            <Input type="date" value={dtStartFilter} onChange={(e) => setDtStartFilter(e.target.value)}/>
-                                            </FormLabel>
+                                            <Input
+                                                type="date"
+                                                value={dtStartFilter}
+                                                onChange={(e) =>
+                                                    setDtStartFilter(
+                                                        e.target.value,
+                                                    )
+                                                }
+                                            />
+                                        </FormLabel>
                                         <FormLabel>
                                             Vencimento final
-                                        <Input type="date" value={dtEndFilter} mt="1" onChange={(e) => setDtEndFilter(e.target.value)} />
+                                            <Input
+                                                type="date"
+                                                value={dtEndFilter}
+                                                mt="1"
+                                                onChange={(e) =>
+                                                    setDtEndFilter(
+                                                        e.target.value,
+                                                    )
+                                                }
+                                            />
                                         </FormLabel>
 
                                         {/* <FormControl>
@@ -371,30 +396,49 @@ const DataTable = () => {
                             </Box>
                         </FormControl> */}
 
-                                        <CheckboxGroup colorScheme="purple" m="5" defaultChecked>
-                                        <FormLabel>
-                                            Status                                      
-                                        </FormLabel>
+                                        <CheckboxGroup
+                                            colorScheme="purple"
+                                            m="5"
+                                            defaultChecked
+                                        >
+                                            <FormLabel>Status</FormLabel>
 
-                                        <Checkbox onChange={handleCheckboxChange(setIsOpen)}>
-                                            Em aberto
-                                        </Checkbox>
-                                        <Checkbox ml="5" onChange={handleCheckboxChange(setIsPartiallyPaid)}>
-                                            Pago parcialmente
-                                        </Checkbox>
-                                        <Checkbox onChange={handleCheckboxChange(setIsPaid)}>
-                                            Pago
-                                        </Checkbox>
+                                            <Checkbox
+                                                onChange={handleCheckboxChange(
+                                                    setIsOpen,
+                                                )}
+                                            >
+                                                Em aberto
+                                            </Checkbox>
+                                            <Checkbox
+                                                ml="5"
+                                                onChange={handleCheckboxChange(
+                                                    setIsPartiallyPaid,
+                                                )}
+                                            >
+                                                Pago parcialmente
+                                            </Checkbox>
+                                            <Checkbox
+                                                onChange={handleCheckboxChange(
+                                                    setIsPaid,
+                                                )}
+                                            >
+                                                Pago
+                                            </Checkbox>
                                         </CheckboxGroup>
                                     </Box>
                                     <Box mt="5">
-                                        <Button w="100%" colorScheme="purple" mr={3} onClick={() => filterBillsToPay()}>
+                                        <Button
+                                            w="100%"
+                                            colorScheme="purple"
+                                            mr={3}
+                                            onClick={() => filterBillsToPay()}
+                                        >
                                             Filtrar
                                         </Button>
-                                        
                                     </Box>
-                            </PopoverBody>
-                        </PopoverContent>
+                                </PopoverBody>
+                            </PopoverContent>
                         </Popover>
                         <Input
                             w="15"
@@ -465,7 +509,7 @@ const DataTable = () => {
                                             else return "Status desconhecido";
                                         })()}
                                     </Td>
-                                    
+
                                     <Td>
                                         <Center>
                                             <Popover>
@@ -515,15 +559,8 @@ const DataTable = () => {
                             justifyContent="space-between"
                             mb={2}
                         >
-                            <Box
-                                fontWeight="bold"
-                                
-                            >
-                                Total:
-                            </Box>
-                            <Box
-                                fontWeight="bold"
-                            >
+                            <Box fontWeight="bold">Total:</Box>
+                            <Box fontWeight="bold">
                                 {totalAmount.toLocaleString("pt-br", {
                                     style: "currency",
                                     currency: "BRL",
