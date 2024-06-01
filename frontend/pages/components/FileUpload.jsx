@@ -110,7 +110,6 @@ const FileUpload = () => {
     return (
         <Box
             p={5}
-            shadow="md"
             borderWidth="1px"
             borderRadius="md"
             maxWidth="500px"
