@@ -8,7 +8,10 @@ import fs from "fs";
 //   fs.mkdirSync(sheetsDir, { recursive: true });
 // }
 
-const pathToFiles = path.resolve(__dirname, "../files/sheets");
+const pathToFiles =
+  process.env.NODE_ENV === "prod"
+    ? path.resolve(__dirname, "../src/files/sheets")
+    : path.resolve(__dirname, "../files/sheets");
 console.log("=====================CAMINHO DA PASTA=======================");
 console.log(pathToFiles);
 
