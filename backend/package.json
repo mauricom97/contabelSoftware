@@ -7,7 +7,7 @@
     "dev": "npx nodemon src/app.ts --watch 'src/' -e ts",
     "compile": "npx tsc",
     "start": "node ./dist/app.js",
-    "build": "tsc",
+    "build": "tsc && copyfiles -u 1 src/**/*.json dist/",
     "prisma": "npx prisma"
   },
   "keywords": [],
