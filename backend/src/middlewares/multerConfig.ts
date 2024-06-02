@@ -3,16 +3,14 @@ import path from "path";
 import fs from "fs";
 
 // Verifique se o diretório existe e, se não existir, crie-o
-// const sheetsDir = path.resolve(__dirname, "../files/sheets");
-// if (!fs.existsSync(sheetsDir)) {
-//   fs.mkdirSync(sheetsDir, { recursive: true });
-// }
-
-const pathToFiles = path.resolve(__dirname, "../files/sheets");
+const sheetsDir = path.resolve(__dirname, "../files/sheets");
+if (!fs.existsSync(sheetsDir)) {
+  fs.mkdirSync(sheetsDir, { recursive: true });
+}
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, pathToFiles);
+    cb(null, sheetsDir);
   },
   filename: (req, file, cb) => {
     cb(null, `${Date.now()}-${file.originalname}`);
