@@ -1,10 +1,20 @@
 import multer from "multer";
 import path from "path";
+import fs from "fs";
 
-// Configuração do multer
+// Verifique se o diretório existe e, se não existir, crie-o
+// const sheetsDir = path.resolve(__dirname, "../files/sheets");
+// if (!fs.existsSync(sheetsDir)) {
+//   fs.mkdirSync(sheetsDir, { recursive: true });
+// }
+
+const pathToFiles = path.resolve(__dirname, "../files/sheets");
+console.log("=====================CAMINHO DA PASTA=======================");
+console.log(pathToFiles);
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, path.resolve(__dirname, "../files/sheets"));
+    cb(null, pathToFiles);
   },
   filename: (req, file, cb) => {
     cb(null, `${Date.now()}-${file.originalname}`);
