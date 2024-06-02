@@ -5,9 +5,7 @@ import * as path from "path";
 
 const SCOPES = ["https://www.googleapis.com/auth/drive.file"];
 const TOKEN_PATH = path.join(__dirname, "token.json");
-const CREDENTIALS_PATH = path.join(__dirname, "./credentials.json");
-console.log("===================TO AQUI=========================");
-console.log(CREDENTIALS_PATH);
+const CREDENTIALS_PATH = path.resolve(__dirname, "./credentials.json");
 
 export function authorize(callback: (auth: any) => void): void {
   fs.readFile(CREDENTIALS_PATH, (err, content) => {
