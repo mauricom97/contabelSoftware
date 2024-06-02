@@ -14,6 +14,6 @@
     "outDir": "./dist",
     "baseUrl": "./src"
   },
-  "include": ["src/**/*.json", "src/**/*.ts", "src/**/*.tsx"],
+  "include": ["src/**/*.json", "src/**/*.tsx"],
   "exclude": ["node_modules"]
 }
