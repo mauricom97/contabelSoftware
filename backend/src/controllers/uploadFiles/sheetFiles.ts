@@ -17,8 +17,8 @@ export const sheetFiles = async (req: any, res: Response) => {
     );
     await uploadFilesDrive(req.file.filename, filePath, (fileId: string) => {
       console.log("Arquivo enviado para o Google Drive com sucesso.");
+      fs.unlinkSync(filePath);
     });
-    fs.unlinkSync(filePath);
     res.send("Arquivo enviado e processado com sucesso.");
   } catch (error) {
     console.error(error);

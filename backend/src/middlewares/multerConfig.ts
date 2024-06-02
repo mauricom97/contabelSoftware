@@ -2,7 +2,6 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 
-// Verifique se o diretório existe e, se não existir, crie-o
 const sheetsDir = path.resolve(__dirname, "../files/sheets");
 if (!fs.existsSync(sheetsDir)) {
   fs.mkdirSync(sheetsDir, { recursive: true });
