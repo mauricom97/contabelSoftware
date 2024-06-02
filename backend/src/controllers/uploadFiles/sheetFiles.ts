@@ -1,21 +1,20 @@
 import { uploadFilesDrive } from "../../utils/google/drive/gdrive";
 import { Request, Response } from "express";
 import path from "path";
-import fs from "fs";
-import XLSX from "xlsx";
+// import fs from "fs";
+// import XLSX from "xlsx";
 
 export const sheetFiles = async (req: any, res: Response) => {
-  if (!req.file) {
-    return res.status(400).send("Nenhum arquivo foi enviado.");
-  }
-
-  const filePath = path.resolve(
-    __dirname,
-    "../../files/sheets",
-    req.file.filename
-  );
-
   try {
+    if (!req.file) {
+      return res.status(400).send("Nenhum arquivo foi enviado.");
+    }
+
+    const filePath = path.resolve(
+      __dirname,
+      "../../files/sheets",
+      req.file.filename
+    );
     await uploadFilesDrive(req.file.filename, filePath, (fileId: string) => {
       console.log("Arquivo enviado para o Google Drive com sucesso.");
     });
