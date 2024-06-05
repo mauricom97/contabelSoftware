@@ -1,5 +1,5 @@
 # Use a imagem oficial do Node.js como base
-FROM node:16
+FROM node:20
 
 # Crie um diretório de trabalho dentro do container
 WORKDIR /usr/src/app
@@ -9,7 +9,7 @@ COPY package*.json ./
 
 # Instale as dependências
 RUN npm install
-RUN npm install cors
+RUN npm install cors nodemon -g
 
 # Copie todos os arquivos do projeto para o diretório de trabalho
 COPY . .
@@ -21,7 +21,5 @@ RUN cd src && npx prisma generate
 # Exponha a porta 3000, que é a porta padrão do Next.js
 EXPOSE 4356
 
-RUN npm run build
-
-# Comando para iniciar o servidor
-CMD ["npm", "start"]
+# Comando para iniciar o servidor no modo desenvolvimento
+CMD ["npm", "run", "dev"]
