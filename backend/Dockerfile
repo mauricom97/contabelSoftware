@@ -17,5 +17,8 @@ COPY . .
 RUN cd src && npx prisma format
 RUN cd src && npx prisma generate
 
+COPY entrypoint.sh /usr/src/app/entrypoint.sh
+RUN chmod +x /usr/src/app/entrypoint.sh
+
 EXPOSE 4356
 ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
