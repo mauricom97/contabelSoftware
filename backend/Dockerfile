@@ -14,8 +14,6 @@ RUN npm install cors nodemon -g
 
 COPY . .
 
-RUN npm run build
-
 RUN cd src && npx prisma format
 RUN cd src && npx prisma generate
 
