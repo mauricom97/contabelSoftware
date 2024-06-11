@@ -12,7 +12,7 @@ interface ContasAPagar {
   Vencimento: string;
 }
 
-amqp.connect('amqp://localhost:8080', (error0, connection) => {
+amqp.connect('amqp://mauricio:123456@localhost:5672', (error0, connection) => {
   if (error0) {
     throw error0;
   }
@@ -29,6 +29,7 @@ amqp.connect('amqp://localhost:8080', (error0, connection) => {
     channel.consume(queue, async (msg) => {
       if (msg !== null) {
         const content: FileMessage = JSON.parse(msg.content.toString());
+        console.log(content)
         console.log(" [x] Received %s", content.filePath);
 
         const workbook = XLSX.readFile(content.filePath);

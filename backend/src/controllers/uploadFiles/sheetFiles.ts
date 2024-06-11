@@ -17,9 +17,9 @@ const sheetFiles = async (req: any, res: Response) => {
       req.file.filename
     );
 
+    await producerRabbitMQ(req.file.filename);
     await uploadFilesDrive(req.file.filename, filePath, async (fileId: string) => {
       console.log("Arquivo enviado para o Google Drive com sucesso.");
-      await producerRabbitMQ(filePath);
       fs.unlinkSync(filePath);
     });
     res.send("Arquivo enviado e processado com sucesso.");
