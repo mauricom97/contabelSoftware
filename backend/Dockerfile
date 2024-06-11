@@ -1,27 +1,24 @@
 # Use a imagem oficial do Node.js como base
-FROM node:16
+FROM node:20
 
 # Crie um diretório de trabalho dentro do container
 WORKDIR /usr/src/app
 
-# Copie o package.json e o package-lock.json (ou yarn.lock) para o diretório de trabalho
+ARG NODE_ENV
+ENV NODE_ENV=$NODE_ENV
+
 COPY package*.json ./
 
-# Instale as dependências
 RUN npm install
-RUN npm install cors
+RUN npm install cors nodemon -g
 
-# Copie todos os arquivos do projeto para o diretório de trabalho
 COPY . .
 
-# Gere os artefatos do Prisma
 RUN cd src && npx prisma format
 RUN cd src && npx prisma generate
 
-# Exponha a porta 3000, que é a porta padrão do Next.js
+COPY entrypoint.sh /usr/src/app/entrypoint.sh
+RUN chmod +x /usr/src/app/entrypoint.sh
+
 EXPOSE 4356
-
-RUN npm run build
-
-# Comando para iniciar o servidor
-CMD ["npm", "start"]
+ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
