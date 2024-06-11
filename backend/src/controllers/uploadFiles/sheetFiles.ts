@@ -1,10 +1,11 @@
 import { uploadFilesDrive } from "../../utils/google/drive/gdrive";
 import { Request, Response } from "express";
+import producerRabbitMQ from "../../rabbitmq/producer";
 import path from "path";
 import fs from "fs";
 // import XLSX from "xlsx";
 
-export const sheetFiles = async (req: any, res: Response) => {
+const sheetFiles = async (req: any, res: Response) => {
   try {
     if (!req.file) {
       return res.status(400).send("Nenhum arquivo foi enviado.");
@@ -15,8 +16,10 @@ export const sheetFiles = async (req: any, res: Response) => {
       "../../files/sheets",
       req.file.filename
     );
-    await uploadFilesDrive(req.file.filename, filePath, (fileId: string) => {
+
+    await uploadFilesDrive(req.file.filename, filePath, async (fileId: string) => {
       console.log("Arquivo enviado para o Google Drive com sucesso.");
+      await producerRabbitMQ(filePath);
       fs.unlinkSync(filePath);
     });
     res.send("Arquivo enviado e processado com sucesso.");
