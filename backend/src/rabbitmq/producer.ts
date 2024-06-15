@@ -17,6 +17,7 @@ const producerRabbitMQ = async (nameFile: string) => {
           if (error1) {
             throw error1;
           }
+
           const queue = "file_upload";
 
           channel.assertQueue(queue, {
@@ -29,7 +30,7 @@ const producerRabbitMQ = async (nameFile: string) => {
             nameFile
           );
 
-          const message: FileMessage = { filePath: filePath };
+          const message: { filePath: string } = { filePath: filePath };
 
           channel.sendToQueue(queue, Buffer.from(JSON.stringify(message)), {
             persistent: true,
@@ -40,8 +41,7 @@ const producerRabbitMQ = async (nameFile: string) => {
       }
     );
   } catch (error) {
-    console.log(error);
-    throw error;
+    console.log("Failed to connect to RabbitMQ", error);
   }
 };
 
