@@ -10,7 +10,7 @@
     "build": "tsc",
     "prisma": "npx prisma",
     "start:producer": "node dist/rabbitmq/producer.js",
-    "start:consumer": "node dist/rabbitmq/consumer.js"
+    "start:consumer": "node dist/controllers/uploadFiles/consumer.js"
   },
   "keywords": [],
   "author": "",
