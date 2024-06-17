@@ -16,7 +16,6 @@ const sheetFiles = async (req: any, res: Response) => {
       req.file.filename
     );
     const data = readXlsxFile(filePath);
-    console.log(data);
     await sendMessages(data);
     return res.send("Arquivo enviado e processado com sucesso.");
   } catch (error) {
@@ -32,6 +31,8 @@ interface AccountPayable {
   description: string;
   amount: number;
   dueDate: string;
+  idCompany: string;
+  supplierId: string;
 }
 
 const readXlsxFile = (filePath: string): AccountPayable[] => {
