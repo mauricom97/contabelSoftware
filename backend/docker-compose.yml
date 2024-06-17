@@ -1,14 +1,36 @@
 version: "3.8"
 
 services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: mauricio
+      RABBITMQ_DEFAULT_PASS: 123456
+    networks:
+      - network_containers
+
   web:
     build:
       context: .
       dockerfile: Dockerfile
       args:
         NODE_ENV: production
+    depends_on:
+      - rabbitmq
+    environment:
+      RABBITMQ_URL: amqp://mauricio:123456@rabbitmq
+    networks:
+      - network_containers
     ports:
       - "4356:4356"
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
+
+networks:
+  network_containers:
+    driver: bridge

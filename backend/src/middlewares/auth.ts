@@ -1,17 +1,6 @@
-import { PrismaClient } from "@prisma/client";
-const pgDatabase =
-  process.env.NODE_ENV === "prod"
-    ? process.env.DATABASE_URL
-    : process.env.PG_DATABASE_DEV;
-const prisma = new PrismaClient({
-  datasources: {
-    db: {
-      url: pgDatabase,
-    },
-  },
-});
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import prisma from "./connPrisma"
 
 async function auth(req: any, res: Response, next: NextFunction) {
   try {

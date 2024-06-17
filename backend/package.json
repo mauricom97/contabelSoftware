@@ -8,7 +8,9 @@
     "compile": "npx tsc",
     "start": "node ./dist/app.js",
     "build": "tsc",
-    "prisma": "npx prisma"
+    "prisma": "npx prisma",
+    "start:producer": "node dist/rabbitmq/producer.js",
+    "start:consumer": "node dist/controllers/uploadFiles/consumer.js"
   },
   "keywords": [],
   "author": "",
