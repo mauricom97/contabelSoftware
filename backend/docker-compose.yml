@@ -22,7 +22,7 @@ services:
     depends_on:
       - rabbitmq
     environment:
-      RABBITMQ_URL: amqp://mauricio:123456@rabbitmq
+      RABBITMQ_URL: amqps://boraehzx:m2Oo3r5clrM2AtpRsMm1LwUnjL1fS261@shrimp.rmq.cloudamqp.com/boraehzx
     networks:
       - network_containers
     ports:
