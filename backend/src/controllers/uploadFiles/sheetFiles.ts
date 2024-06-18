@@ -1,7 +1,7 @@
 // import { uploadFilesDrive } from "../../utils/google/drive/gdrive";
 import { Request, Response } from "express";
 import path from "path";
-// import fs from "fs";
+import fs from "fs";
 import * as XLSX from "xlsx";
 import { connectRabbitMQ } from "../../rabbitmq/RabbitMQ";
 
@@ -16,6 +16,7 @@ const sheetFiles = async (req: any, res: Response) => {
       req.file.filename
     );
     const data = readXlsxFile(filePath);
+    fs.unlinkSync(filePath);
     await sendMessages(data);
     return res.send("Arquivo enviado e processado com sucesso.");
   } catch (error) {
