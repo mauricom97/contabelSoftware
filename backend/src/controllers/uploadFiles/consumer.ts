@@ -1,5 +1,7 @@
 import { Channel, ConsumeMessage } from "amqplib";
 import { connectRabbitMQ } from "../../rabbitmq/RabbitMQ";
+import { getCpfCnpj } from "../entity/utils/getCpfCnpj";
+import createEntity from "../entity/service/create";
 
 import prisma from "../../middlewares/connPrisma"
 const QUEUE_NAME = "accounts_payable";
@@ -16,12 +18,18 @@ const processMessage = async (msg: ConsumeMessage | null) => {
   }
 };
 
-const formatAccount = (account: any) => {
+const formatAccount = async (account: any) => {
   const statusValues: any = {
     "Em aberto": 1,
     "Parcialmente pago": 2,
     "Pago": 3,
   };
+
+  console.log(account["CPF/CNPJ"].replace(/\D/g, ''))
+
+  const entity = await getCpfCnpj(account["CPF/CNPJ"].replace(/\D/g, ''));
+  const entityFormatted = formatEntity(entity);
+  const entityCreated = await createEntity(entityFormatted);
 
   return {
     description: account["DESCRIÇÃO"],
@@ -33,6 +41,25 @@ const formatAccount = (account: any) => {
   };
 };
 
+function formatEntity(entity: any) {
+  return {
+    "ie": "",
+    "phone": entity.telefone1,
+    "email": entity.email,
+    "address": entity.endereco.logradouro,
+    "city": entity.endereco.municipio,
+    "state": entity.endereco.uf,
+    "cpfCnpj": entity.cnpj,
+    "registerName": entity.razao_social,
+    "sampleName": entity.nome_fantasia,
+    "type": entity.cnpj > 10 ? "J" : "F",
+    "cep": entity.endereco.cep,
+    "complement": entity.endereco.complemento,
+    "neighborhood": entity.endereco.bairro,
+    "number": entity.endereco.numero,
+    "observation": entity.endereco.observacao ? entity.endereco.observacao : ""
+  }
+}
 
 const main = async () => {
   try {

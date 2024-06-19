@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { io } from "../../app";
-
+import prisma from "../../middlewares/connPrisma"
 async function createAccountPayable(req: Request, res: Response) {
   try {
     const requestData = extractData(req);
@@ -30,7 +30,7 @@ function extractData(req: any) {
 async function createAccount(req: any, newAccount: any) {
   try {
     console.log(newAccount);
-    const accountPayable = await req.prisma.BillsToPay.createMany({
+    const accountPayable = await prisma.billsToPay.createMany({
       data: newAccount,
     });
     return accountPayable;

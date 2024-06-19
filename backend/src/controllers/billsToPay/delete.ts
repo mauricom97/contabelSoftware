@@ -1,9 +1,10 @@
 import { Request, Response } from "express";
+import prisma from "../../middlewares/connPrisma";
 
 async function del(req: any, res: Response) {
   try {
     const { id } = req.query;
-    const deletedAccount = await req.prisma.BillsToPay.delete({
+    const deletedAccount = await prisma.billsToPay.delete({
       where: {
         id: Number(id),
       },
