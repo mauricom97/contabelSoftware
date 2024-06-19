@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import prisma from "../../middlewares/connPrisma";
 
 export default async (req: Request, res: Response) => {
   try {
@@ -43,7 +44,7 @@ async function getBillsToPay(req: any, filters: any) {
   }
   filter.companyId = parseInt(req.company);
   console.log(filter)
-  const billsToPay = await req.prisma.BillsToPay.findMany({
+  const billsToPay = await prisma.billsToPay.findMany({
     where: filter,
     select: {
       id: true,
