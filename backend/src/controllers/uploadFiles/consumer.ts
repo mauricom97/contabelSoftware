@@ -4,6 +4,7 @@ import { getCpfCnpj } from "../entity/utils/getCpfCnpj";
 import createEntity from "../entity/service/create";
 import createSupplier from "../suppliers/service/create"
 import createEntityCompany from "../companyEntity/services/create"
+import getCompany from "../entity/service/get"
 
 import prisma from "../../middlewares/connPrisma"
 const QUEUE_NAME = "accounts_payable";
@@ -25,18 +26,25 @@ const formatAccount = async (account: any) => {
     "Parcialmente pago": 2,
     "Pago": 3,
   };
+
+  let entity = await getCompany({cpfCnpj: account["CPF/CNPJ"].replace(/\D/g, '')});
+  let supplier:any = {}
+  if(entity) {
+    supplier.idEntity = entity.id;
+  } else {
+    entity = await getCpfCnpj(account["CPF/CNPJ"].replace(/\D/g, ''));
+    const entityFormatted = formatEntity(entity);
+    const entityCreated = await createEntity(entityFormatted);    
+    supplier = await createSupplier(entityCreated);    
+    const entityCompany = {
+      idCompany: account.company,
+      idEntity: supplier.idEntity
+    }  
+    await createEntityCompany(entityCompany);
+  }
   
 
-  const entity = await getCpfCnpj(account["CPF/CNPJ"].replace(/\D/g, ''));
-  const entityFormatted = formatEntity(entity);
-  const entityCreated = await createEntity(entityFormatted);    
-  const supplier = await createSupplier(entityCreated);    
 
-  const entityCompany = {
-    idCompany: account.company,
-    idEntity: supplier.idEntity
-  }  
-  await createEntityCompany(entityCompany);
 
   return {
     description: account["DESCRIÇÃO"],
