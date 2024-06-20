@@ -17,7 +17,8 @@ const sheetFiles = async (req: any, res: Response) => {
     );
     const data = readXlsxFile(filePath);
     fs.unlinkSync(filePath);
-    await sendMessages(data);
+    const company = req.company;
+    await sendMessages(data, company);
     return res.send("Arquivo enviado e processado com sucesso.");
   } catch (error) {
     console.error(error);
@@ -44,10 +45,11 @@ const readXlsxFile = (filePath: string): AccountPayable[] => {
   return jsonData;
 };
 
-const sendMessages = async (data: AccountPayable[]) => {
+const sendMessages = async (data: AccountPayable[], company: any) => {
   const channel = await connectRabbitMQ();
   await channel.assertQueue(QUEUE_NAME, { durable: true });
-  data.forEach((account) => {
+  data.forEach((account: any) => {
+    account.company = parseInt(company);
     channel.sendToQueue(QUEUE_NAME, Buffer.from(JSON.stringify(account)), {
       persistent: true,
     });
