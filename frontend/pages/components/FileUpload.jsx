@@ -50,8 +50,11 @@ const FileUpload = () => {
         setIsLoading(true); // Set loading to true
 
         try {
+            const apiUrl = new URL(`${urlApi}/upload/sheetFiles`);
+            apiUrl.searchParams.append('company', localStorage.getItem('company'));
+
             const response = await axios.post(
-                `${urlApi}/upload/sheetFiles`,
+                apiUrl.toString(),
                 formData,
                 {
                     headers: {
