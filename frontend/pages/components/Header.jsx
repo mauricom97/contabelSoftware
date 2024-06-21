@@ -15,7 +15,7 @@ const Header = () => {
             zIndex={10}
         >
             <Heading as="h1" fontSize="2xl">
-                FinTrack
+                Controle Prático
             </Heading>
             <Stack direction="row" spacing={2}>
                 <Link href="/login">
