@@ -21,7 +21,7 @@ const main = async () => {
     });    
   } catch (error) {
     await sendMessage({text: `Erro ao consumir a fila ${QUEUE_NAME}`}, "bugs");
-    console.error(error);
+    console.log(error);
   }
 };
 
