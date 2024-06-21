@@ -5,6 +5,7 @@ import createEntity from "../entity/service/create";
 import createSupplier from "../suppliers/service/create"
 import createEntityCompany from "../companyEntity/services/create"
 import getCompany from "../entity/service/get"
+import sendMessage from "../../utils/slack/services/sendMessage"
 
 import prisma from "../../middlewares/connPrisma"
 const QUEUE_NAME = "accounts_payable";
@@ -19,6 +20,7 @@ const main = async () => {
       }
     });    
   } catch (error) {
+    await sendMessage({text: `Erro ao consumir a fila ${QUEUE_NAME}`}, "bugs");
     console.error(error);
   }
 };
