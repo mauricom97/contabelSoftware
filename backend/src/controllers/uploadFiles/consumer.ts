@@ -8,52 +8,78 @@ import getCompany from "../entity/service/get"
 
 import prisma from "../../middlewares/connPrisma"
 const QUEUE_NAME = "accounts_payable";
+const main = async () => {
+  try {
+    const channel: Channel = await connectRabbitMQ();
+    await channel.assertQueue(QUEUE_NAME, { durable: true });
+    channel.consume(QUEUE_NAME, (msg) => {
+      processMessage(msg);
+      if (msg) {
+        channel.ack(msg);
+      }
+    });    
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+main();
 
 const processMessage = async (msg: ConsumeMessage | null) => {
-  if (msg) {
-    const content = msg.content.toString();
-    let account = JSON.parse(content);    
-    account = await formatAccount(account);    
-    await prisma.billsToPay.create({
-      data: account
-    })
+  try {
+    if (msg) {
+      const content = msg.content.toString();
+      let account = JSON.parse(content);    
+      account = await formatAccount(account);    
+      await prisma.billsToPay.create({
+        data: account
+      })
+    }
+  } catch (error) {
+    console.log("Error in processing message", error);
+    throw new Error("Error in processing message");
   }
 };
 
 const formatAccount = async (account: any) => {
-  const statusValues: any = {
-    "Em aberto": 1,
-    "Parcialmente pago": 2,
-    "Pago": 3,
-  };
 
-  let entity = await getCompany({cpfCnpj: account["CPF/CNPJ"].replace(/\D/g, '')});
-  let supplier:any = {}
-  if(entity) {
-    supplier.idEntity = entity.id;
-  } else {
-    entity = await getCpfCnpj(account["CPF/CNPJ"].replace(/\D/g, ''));
-    const entityFormatted = formatEntity(entity);
-    const entityCreated = await createEntity(entityFormatted);    
-    supplier = await createSupplier(entityCreated);    
-    const entityCompany = {
-      idCompany: account.company,
-      idEntity: supplier.idEntity
-    }  
-    await createEntityCompany(entityCompany);
-  }
+  try {
+    const statusValues: any = {
+      "Em aberto": 1,
+      "Parcialmente pago": 2,
+      "Pago": 3,
+    };
   
+    let entity = await getCompany({cpfCnpj: account["CPF/CNPJ"].replace(/\D/g, '')});
+    let supplier:any = {}
+    if(entity) {
+      supplier.idEntity = entity.id;
+    } else {
+      entity = await getCpfCnpj(account["CPF/CNPJ"].replace(/\D/g, ''));
+      const entityFormatted = formatEntity(entity);
+      const entityCreated = await createEntity(entityFormatted);    
+      supplier = await createSupplier(entityCreated);    
+      const entityCompany = {
+        idCompany: account.company,
+        idEntity: supplier.idEntity
+      }  
+      await createEntityCompany(entityCompany);
+    }
+      
+    return {
+      description: account["DESCRIÇÃO"],
+      value: account["VALOR"],
+      status: statusValues[account["STATUS"]],
+      companyId: account.company,
+      idSupplier: supplier.idEntity,
+      dueDate: new Date(account["VENCIMENTO"] ?? new Date()).toISOString()
+    };
+    
+  } catch (error) {
+    console.log("Error in formatting account", error);
+    throw new Error("Error in formatting account");
+  }
 
-
-
-  return {
-    description: account["DESCRIÇÃO"],
-    value: account["VALOR"],
-    status: statusValues[account["STATUS"]],
-    companyId: account.company,
-    idSupplier: supplier.idEntity,
-    dueDate: new Date(account["VENCIMENTO"] ?? new Date()).toISOString()
-  };
 };
 
 function formatEntity(entity: any) {
@@ -76,19 +102,3 @@ function formatEntity(entity: any) {
   }
 }
 
-const main = async () => {
-  try {
-    const channel: Channel = await connectRabbitMQ();
-    await channel.assertQueue(QUEUE_NAME, { durable: true });
-    channel.consume(QUEUE_NAME, (msg) => {
-      processMessage(msg);
-      if (msg) {
-        channel.ack(msg);
-      }
-    });    
-  } catch (error) {
-    console.error("Error in consuming messages", error);
-  }
-};
-
-main();
