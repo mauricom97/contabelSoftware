@@ -25,7 +25,7 @@ const sheetFiles = async (req: any, res: Response) => {
       from: '"Jacynthe 👻" <jacynthe.kihn66@ethereal.email>',
       to: req.user.email,
       subject: "Recebemos seu arquivo! 🎉",
-      template: "success-import-bills-to-pay"
+      template: "success-upload-file-bills-to-pay"
     };
     await sendMail(mailToConfig)
     return res.send("Arquivo enviado e processado com sucesso.");
