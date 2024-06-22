@@ -5,7 +5,6 @@ import fs from "fs";
 import * as XLSX from "xlsx";
 import { connectRabbitMQ } from "../../rabbitmq/RabbitMQ";
 import sendMail from "../../utils/email/services/sendMail";
-import ejs from 'ejs';
 
 const sheetFiles = async (req: any, res: Response) => {
   try {
@@ -21,13 +20,11 @@ const sheetFiles = async (req: any, res: Response) => {
     fs.unlinkSync(filePath);
     const company = req.company;
     await sendMessages(data, company);
-    console.log(req.user)
     const mailToConfig = {
       userName: req.user.firstname,
       from: '"Jacynthe 👻" <jacynthe.kihn66@ethereal.email>',
       to: req.user.email,
-      subject: "Arquivo processado",
-      text: "Seu arquivo foi processado com sucesso.",
+      subject: "Recebemos seu arquivo! 🎉",
       template: "success-import-bills-to-pay"
     };
     await sendMail(mailToConfig)

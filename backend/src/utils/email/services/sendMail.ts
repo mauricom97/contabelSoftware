@@ -15,7 +15,6 @@ export default async function sendMail(mailToConfig: any) {
         userName: mailToConfig.userName
     };
     const html = await ejs.renderFile(templatesPath[mailToConfig.template], mailContent);
-    console.log(html)
 
   return await transporter.sendMail({
     from: mailToConfig.from,
