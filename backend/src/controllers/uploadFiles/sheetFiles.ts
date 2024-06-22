@@ -24,8 +24,7 @@ const sheetFiles = async (req: any, res: Response) => {
       userName: req.user.firstname,
       from: '"Jacynthe 👻" <jacynthe.kihn66@ethereal.email>',
       to: req.user.email,
-      subject: "Arquivo processado",
-      text: "Seu arquivo foi processado com sucesso.",
+      subject: "Recebemos seu arquivo! 🎉",
       template: "success-import-bills-to-pay"
     };
     await sendMail(mailToConfig)
