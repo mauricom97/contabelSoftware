@@ -9,7 +9,7 @@ interface TemplatesPath {
 export default async function sendMail(mailToConfig: any) {
 
     const templatesPath: TemplatesPath = {
-        "success-import-bills-to-pay": path.resolve(__dirname, "../templates/importBillsToPaySuccess.ejs")
+        "success-upload-file-bills-to-pay": path.resolve(__dirname, "../templates/uploadFileBillsToPaySuccess.ejs")
     }
     const mailContent = {
         userName: mailToConfig.userName

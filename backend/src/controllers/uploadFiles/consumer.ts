@@ -6,36 +6,63 @@ import createSupplier from "../suppliers/service/create"
 import createEntityCompany from "../companyEntity/services/create"
 import getCompany from "../entity/service/get"
 import sendMessage from "../../utils/slack/services/sendMessage"
+import sendEmail from "../../utils/email/services/sendMail"
 
 import prisma from "../../middlewares/connPrisma"
-const QUEUE_NAME = "accounts_payable";
 const main = async () => {
   try {
-    const channel: Channel = await connectRabbitMQ();
-    await channel.assertQueue(QUEUE_NAME, { durable: true });
-    channel.consume(QUEUE_NAME, (msg) => {
-      processMessage(msg);
-      if (msg) {
-        channel.ack(msg);
-      }
-    });
+    console.log("==========O CONSUMER ESTÁ RODANDO==========")
+    const queue_accounts_payable = "accounts_payable";
+    const queue_notifications = "notifications";
+    await consumer(queue_accounts_payable);
+    await consumer(queue_notifications);
+    return;
   } catch (error) {
-    await sendMessage({text: `Erro ao consumir a fila ${QUEUE_NAME}`}, "bugs");
+    await sendMessage({ text: "Erro ao importar contas a pagar" }, "bugs");
     console.log(error);
   }
 };
 
 main();
 
+async function consumer(queue_name: string) {
+  try {
+    const { channel } = await connectRabbitMQ();
+    await channel.assertQueue(queue_name, { durable: true });
+    channel.consume(queue_name, (msg) => {
+      processMessage(msg);
+      if (msg) {
+        channel.ack(msg);
+      }
+    });
+
+  } catch (error) {
+    await sendMessage({ text: `Erro ao consumir a fila ${queue_name}` }, "bugs");
+    console.log(error);
+  }
+};
+
 const processMessage = async (msg: ConsumeMessage | null) => {
   try {
     if (msg) {
       const content = msg.content.toString();
-      let account = JSON.parse(content);    
-      account = await formatAccount(account);    
-      await prisma.billsToPay.create({
-        data: account
-      })
+      let account = JSON.parse(content);
+      if (account.type === 'IMPORT_COMPLETE') {
+        console.log(account.user)
+        const mailToConfig = {
+          from: process.env.EMAIL_USER,
+          to: account.user.email,
+          subject: "Importação de contas concluída 🎊🎉",
+          userName: account.user.firstname,
+          template: "success-upload-file-bills-to-pay"
+        }
+        await sendEmail(mailToConfig);
+      } else {
+        account = await formatAccount(account);
+        await prisma.billsToPay.create({
+          data: account
+        })
+      }
     }
   } catch (error) {
     console.log("Error in processing message", error);
@@ -51,23 +78,23 @@ const formatAccount = async (account: any) => {
       "Parcialmente pago": 2,
       "Pago": 3,
     };
-  
-    let entity = await getCompany({cpfCnpj: account["CPF/CNPJ"].replace(/\D/g, '')});
-    let supplier:any = {}
-    if(entity) {
+
+    let entity = await getCompany({ cpfCnpj: account["CPF/CNPJ"].replace(/\D/g, '') });
+    let supplier: any = {}
+    if (entity) {
       supplier.idEntity = entity.id;
     } else {
       entity = await getCpfCnpj(account["CPF/CNPJ"].replace(/\D/g, ''));
       const entityFormatted = formatEntity(entity);
-      const entityCreated = await createEntity(entityFormatted);    
-      supplier = await createSupplier(entityCreated);    
+      const entityCreated = await createEntity(entityFormatted);
+      supplier = await createSupplier(entityCreated);
       const entityCompany = {
         idCompany: account.company,
         idEntity: supplier.idEntity
-      }  
+      }
       await createEntityCompany(entityCompany);
     }
-      
+
     return {
       description: account["DESCRIÇÃO"],
       value: account["VALOR"],
@@ -76,7 +103,7 @@ const formatAccount = async (account: any) => {
       idSupplier: supplier.idEntity,
       dueDate: new Date(account["VENCIMENTO"] ?? new Date()).toISOString()
     };
-    
+
   } catch (error) {
     console.log("Error in formatting account", error);
     throw new Error("Error in formatting account");

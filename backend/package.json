@@ -7,10 +7,10 @@
     "dev": "nodemon src/app.ts --watch 'src/' -e ts",
     "compile": "npx tsc",
     "start": "node ./dist/app.js",
-    "build": "tsc",
+    "build": "tsc && npm run copy-templates",
     "prisma": "npx prisma",
-    "start:producer": "node dist/rabbitmq/producer.js",
-    "start:consumer": "node dist/controllers/uploadFiles/consumer.js"
+    "start:consumer": "node ./dist/controllers/uploadFiles/consumer.js",
+    "copy-templates": "cpx 'src/utils/email/templates/**/*.ejs' dist/utils/email/templates"
   },
   "keywords": [],
   "author": "",
@@ -50,8 +50,10 @@
     "@types/morgan": "^1.9.9",
     "@types/node": "^20.14.2",
     "@types/nodemailer": "^6.4.15",
+    "cpx": "^1.5.0",
     "prisma": "^5.5.2",
-    "ts-node": "^10.9.1",
+    "shelljs": "^0.8.5",
+    "ts-node": "^10.9.2",
     "typescript": "^5.4.5"
   }
 }
