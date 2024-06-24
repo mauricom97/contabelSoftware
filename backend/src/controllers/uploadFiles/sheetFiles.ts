@@ -4,9 +4,9 @@ import path from "path";
 import fs from "fs";
 import * as XLSX from "xlsx";
 import { connectRabbitMQ } from "../../rabbitmq/RabbitMQ";
-import sendMail from "../../utils/email/services/sendMail";
 
 const sheetFiles = async (req: any, res: Response) => {
+  const { channel, connection } = await connectRabbitMQ();
   try {
     if (!req.file) {
       return res.status(400).send("Nenhum arquivo foi enviado.");
@@ -16,27 +16,34 @@ const sheetFiles = async (req: any, res: Response) => {
       "../../files/sheets",
       req.file.filename
     );
-    const data = readXlsxFile(filePath);
+    let data = readXlsxFile(filePath);
     fs.unlinkSync(filePath);
-    const company = req.company;
-    await sendMessages(data, company);
-    const mailToConfig = {
-      userName: req.user.firstname,
-      from: '"Jacynthe 👻" <jacynthe.kihn66@ethereal.email>',
-      to: req.user.email,
-      subject: "Recebemos seu arquivo! 🎉",
-      template: "success-upload-file-bills-to-pay"
+    data = data.map((account: any) => {
+      account.company = parseInt(req.company);
+      account.user = req.user
+      return account;
+    });
+    
+    await sendBillsToPayForQueue(data, channel);
+    const rabbitmqConfig = {
+      channel, 
+      connection
+    }
+
+    const notificationMessage = {
+      type: 'IMPORT_COMPLETE',
+      user: req.user
     };
-    await sendMail(mailToConfig)
+
+
+    await sendNotificationToRabbitMQ(rabbitmqConfig, notificationMessage)
     return res.send("Arquivo enviado e processado com sucesso.");
   } catch (error) {
     console.error(error);
     res.status(500).send("Erro ao processar o arquivo.");
   }
+  
 };
-
-const QUEUE_NAME = "accounts_payable";
-
 interface AccountPayable {
   id: string;
   description: string;
@@ -54,16 +61,31 @@ const readXlsxFile = (filePath: string): AccountPayable[] => {
   return jsonData;
 };
 
-const sendMessages = async (data: AccountPayable[], company: any) => {
-  const channel = await connectRabbitMQ();
+const sendBillsToPayForQueue = async (data: AccountPayable[], channel: any) => {
+const QUEUE_NAME = "accounts_payable";
   await channel.assertQueue(QUEUE_NAME, { durable: true });
   data.forEach((account: any) => {
-    account.company = parseInt(company);
     channel.sendToQueue(QUEUE_NAME, Buffer.from(JSON.stringify(account)), {
       persistent: true,
     });
     console.log("Sent:", account);
   });
 };
+
+const sendNotificationToRabbitMQ = async (rabbitmqConfig: any, notificationMessage: any) => {
+  const { channel, connection } = rabbitmqConfig;
+  const notificationQueue = 'notifications';
+  await channel.assertQueue(notificationQueue, {
+    durable: true
+  });
+
+  channel.sendToQueue(notificationQueue, Buffer.from(JSON.stringify(notificationMessage)), {
+    persistent: true
+  });
+
+  setTimeout(() => {
+    connection.close();
+  }, 500)
+}
 
 export default sheetFiles;
