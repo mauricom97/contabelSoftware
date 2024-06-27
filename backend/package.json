@@ -8,7 +8,7 @@
     "start": "node ./dist/app.js",
     "build": "tsc",
     "prisma": "npx prisma",
-    "start:consumer": "node ./dist/controllers/uploadFiles/consumer.js",
+    "start:consumer": "node ./dist/controllers/uploadFiles/consumer.js"
   },
   "keywords": [],
   "author": "",
