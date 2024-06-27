@@ -4,12 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon src/app.ts --watch 'src/' -e ts && npm run copy-templates",
-    "start": "node ./dist/app.js && npm run copy-templates",
+    "dev": "nodemon src/app.ts --watch 'src/' -e ts",
+    "start": "node ./dist/app.js",
     "build": "tsc",
     "prisma": "npx prisma",
     "start:consumer": "node ./dist/controllers/uploadFiles/consumer.js",
-    "copy-templates": "cpx 'src/utils/email/templates/**/*.ejs' dist/utils/email/templates"
   },
   "keywords": [],
   "author": "",
