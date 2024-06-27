@@ -20,8 +20,5 @@ RUN cd src && npx prisma generate
 COPY entrypoint.sh /usr/src/app/entrypoint.sh
 RUN chmod +x /usr/src/app/entrypoint.sh
 
-# Certifique-se de copiar os arquivos EJS
-RUN npm run build
-
 EXPOSE 4356
 ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
