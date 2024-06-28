@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "outDir": "./dist",
     "target": "es5",
     "module": "commonjs",
     "strict": true,
@@ -9,11 +10,8 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "jsx": "react",
-    "declaration": true,
-    "sourceMap": true,
-    "outDir": "./dist",
     "baseUrl": "./src"
   },
-  "include": ["src/**/*.json", "src/**/*.ts", "src/**/*.tsx"],
+  "include": ["src/**/*"],
   "exclude": ["node_modules"]
 }
