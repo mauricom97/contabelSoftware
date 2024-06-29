@@ -7,12 +7,10 @@ import createEntityCompany from "../companyEntity/services/create"
 import getCompany from "../entity/service/get"
 import sendMessage from "../../utils/slack/services/sendMessage"
 import sendEmail from "../../utils/email/services/sendMail"
+import prisma from "../../middlewares/connPrisma"
 
-import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
 const main = async () => {
   try {
-    console.log(prisma)
     const queue_accounts_payable = "accounts_payable";
     const queue_notifications = "notifications";
     await consumer(queue_accounts_payable);
