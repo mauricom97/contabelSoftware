@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import prisma from "./connPrisma"
+import { PrismaClient } from "@prisma/client";
+const prisma = new PrismaClient();
 
 async function auth(req: any, res: Response, next: NextFunction) {
   try {
@@ -40,6 +41,7 @@ async function findUser(decodedToken: {
   email: string;
   iat: number;
 }) {
+  console.log(decodedToken.id)
   const user = await prisma.user.findUnique({
     where: {
       id: decodedToken.id,

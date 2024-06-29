@@ -1,4 +1,4 @@
-import { Channel, ConsumeMessage } from "amqplib";
+import { ConsumeMessage } from "amqplib";
 import { connectRabbitMQ } from "../../rabbitmq/RabbitMQ";
 import { getCpfCnpj } from "../entity/utils/getCpfCnpj";
 import createEntity from "../entity/service/create";
@@ -8,10 +8,11 @@ import getCompany from "../entity/service/get"
 import sendMessage from "../../utils/slack/services/sendMessage"
 import sendEmail from "../../utils/email/services/sendMail"
 
-import prisma from "../../middlewares/connPrisma"
+import { PrismaClient } from "@prisma/client";
+const prisma = new PrismaClient();
 const main = async () => {
   try {
-    console.log("==========O CONSUMER ESTÁ RODANDO==========")
+    console.log(prisma)
     const queue_accounts_payable = "accounts_payable";
     const queue_notifications = "notifications";
     await consumer(queue_accounts_payable);
@@ -48,7 +49,6 @@ const processMessage = async (msg: ConsumeMessage | null) => {
       const content = msg.content.toString();
       let account = JSON.parse(content);
       if (account.type === 'IMPORT_COMPLETE') {
-        console.log(account.user)
         const mailToConfig = {
           from: process.env.EMAIL_USER,
           to: account.user.email,
