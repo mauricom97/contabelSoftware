@@ -1,11 +1,12 @@
 import { Request, Response } from "express";
 import { interfaceEntity } from "../../interfaces";
 import { io } from "../../app";
+import prisma from "../../middlewares/connPrisma"
 
 const create = async (req: Request, res: Response) => {
   try {
     const requestData = extractData(req);
-    const entity = await createEntity(req, requestData);
+    const entity = await createEntity(requestData);
     await createCompanyEntity(req, entity);
     if (requestData.isSupplier) await createSupplier(req, entity);
     io.emit("newEntity", entity);
@@ -55,9 +56,9 @@ function extractData(request: any) {
   };
 }
 
-async function createEntity(req: any, requestData: interfaceEntity) {
+async function createEntity(requestData: interfaceEntity) {
   try {
-    return await req.prisma.Entity.create({
+    return await prisma.entity.create({
       data: {
         type: requestData.type,
         registerName: requestData.registerName,
@@ -83,7 +84,7 @@ async function createEntity(req: any, requestData: interfaceEntity) {
 
 async function createCompanyEntity(req: any, entityCompany: any) {
   try {
-    return await req.prisma.CompanyEntity.create({
+    return await prisma.companyEntity.create({
       data: {
         idCompany: parseInt(req.company),
         idEntity: entityCompany.id,
@@ -97,7 +98,7 @@ async function createCompanyEntity(req: any, entityCompany: any) {
 
 async function createSupplier(req: any, entity: any) {
   try {
-    return await req.prisma.Supplier.create({
+    return await prisma.supplier.create({
       data: {
         idEntity: entity.id,
       },

@@ -1,5 +1,4 @@
-import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
+import prisma from "../../middlewares/connPrisma"
 import bcrypt from "bcrypt";
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";

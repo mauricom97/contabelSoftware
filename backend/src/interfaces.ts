@@ -1,5 +1,5 @@
 interface interfaceEntity {
-  type: number;
+  type: string;
   registerName: string;
   sampleName: string;
   cpfCnpj: string;
@@ -8,7 +8,7 @@ interface interfaceEntity {
   email: string;
   cep: string;
   address: string;
-  number: string;
+  number: number;
   complement: string;
   neighborhood: string;
   city: string;

@@ -57,9 +57,10 @@ const processMessage = async (msg: ConsumeMessage | null) => {
         await sendEmail(mailToConfig);
       } else {
         account = await formatAccount(account);
-        await prisma.billsToPay.create({
+        const accountCreated = await prisma.billsToPay.create({
           data: account
         })
+        console.log(accountCreated)
       }
     }
   } catch (error) {
