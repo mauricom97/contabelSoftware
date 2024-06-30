@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import prisma from "../../middlewares/connPrisma"
 async function filtersSuppliers(req: Request, res: Response) {
   try {
     const requestData = extractData(req);
@@ -24,7 +25,7 @@ async function analyseData(request: any) {
 
 async function getSuppliers(req: any, request: any) {
   try {
-    let suppliers = await req.prisma.Supplier.findMany({
+    let suppliers = await prisma.supplier.findMany({
       where: {
         Entity: {
           sampleName: {

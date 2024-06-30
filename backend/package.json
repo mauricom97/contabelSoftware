@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "nodemon src/app.ts --watch 'src/' -e ts",
     "start": "node ./dist/app.js",
-    "build": "tsc",
+    "build": "tsc && npm run copy-ejs",
+    "copy-ejs": "cpx 'src/**/*.ejs' dist",
     "prisma": "npx prisma"
   },
   "keywords": [],
@@ -47,6 +48,7 @@
     "@types/morgan": "^1.9.9",
     "@types/node": "^20.14.2",
     "@types/nodemailer": "^6.4.15",
+    "cpx": "^1.5.0",
     "prisma": "^5.5.2",
     "typescript": "^5.4.5"
   }

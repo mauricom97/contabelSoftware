@@ -1,14 +1,12 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
+import prisma from "./connPrisma"
 
 async function auth(req: any, res: Response, next: NextFunction) {
   try {
     const token: string = extractToken(req);
     const decodedToken = await verifyToken(token);
     const user = await findUser(decodedToken);
-    req.prisma = prisma;
     req.user = user;
     req.company = req.query.company;
     next();

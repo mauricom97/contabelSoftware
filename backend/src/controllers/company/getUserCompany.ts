@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import prisma from "../../middlewares/connPrisma"
 const getCompany = async (req: Request, res: Response) => {
   try {
     const companiesUser = await getUserCompany(req);
@@ -11,7 +12,7 @@ const getCompany = async (req: Request, res: Response) => {
 
 async function getUserCompany(req: any) {
   try {
-    let companies = await req.prisma.UserCompany.findMany({
+    let companies = await prisma.userCompany.findMany({
       where: {
         idUser: req.user.id,
       },

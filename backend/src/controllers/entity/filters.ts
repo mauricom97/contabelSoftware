@@ -1,4 +1,7 @@
 import { Request, Response } from "express";
+import prisma from "../../middlewares/connPrisma"
+
+
 const filters = async (req: Request, res: Response) => {
   try {
     const requestData = extractData(req);
@@ -17,7 +20,7 @@ function extractData(request: Request) {
 
 async function findEntity(req: any, requestData: any) {
   try {
-    return await req.prisma.entity.findMany({
+    return await prisma.entity.findMany({
       where: {
         OR: [
           {

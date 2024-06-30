@@ -1,8 +1,9 @@
-import { Request, Response } from "express";
+import { Response } from "express";
+import prisma from "../../middlewares/connPrisma"
 
-export default async (req: any, res: Response) => {
+export default async (res: Response) => {
   try {
-    const billsToPay = await req.prisma.accountsPayable.findMany({
+    const billsToPay = await prisma.billsToPay.findMany({
       orderBy: {
         dueDate: "asc",
       },

@@ -1,6 +1,8 @@
+import prisma from "../../middlewares/connPrisma"
+
 const index = async (req: any, res: any) => {
   try {
-    let entities = await req.prisma.CompanyEntity.findMany({
+    let entities = await prisma.companyEntity.findMany({
       where: {
         idCompany: parseInt(req.company),
       },

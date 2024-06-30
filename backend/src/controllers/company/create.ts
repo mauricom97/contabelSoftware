@@ -1,8 +1,7 @@
-import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
-import { Request, Response, NextFunction } from "express";
+import prisma from "../../middlewares/connPrisma"
+import { Request, Response } from "express";
 
-async function create(req: any, res: Response, next: NextFunction) {
+async function create(req: any, res: Response) {
   try {
     const requestData = extractData(req);
     await analyseData(requestData);
@@ -104,7 +103,7 @@ async function createNewCompany(
     state,
   } = requestData;
 
-  const newCompany = await req.prisma.company.create({
+  const newCompany = await prisma.company.create({
     data: {
       sampleName,
       registerName,
@@ -121,8 +120,7 @@ async function createNewCompany(
 }
 
 async function associateCompanyWithUser(req: any, companyId: number) {
-  console.log(req.user);
-  await req.prisma.UserCompany.create({
+  await prisma.userCompany.create({
     data: {
       idUser: req.user.id,
       idCompany: companyId,
@@ -131,7 +129,7 @@ async function associateCompanyWithUser(req: any, companyId: number) {
     },
   });
 
-  await req.prisma.UserCompany.updateMany({
+  await prisma.userCompany.updateMany({
     where: {
       idUser: req.user.id,
       idCompany: { not: companyId },
