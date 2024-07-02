@@ -21,4 +21,5 @@ COPY entrypoint.sh /usr/src/app/entrypoint.sh
 RUN chmod +x /usr/src/app/entrypoint.sh
 
 EXPOSE 4356
+RUN npm run build
 ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
