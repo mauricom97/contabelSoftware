@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import becrypt from "bcrypt";
-import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
+import prisma from "../../middlewares/connPrisma"
 import jwt from "jsonwebtoken";
 
 async function login(req: Request, res: Response) {
