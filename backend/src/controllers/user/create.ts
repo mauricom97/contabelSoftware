@@ -1,8 +1,9 @@
 import prisma from "../../middlewares/connPrisma"
 import bcrypt from "bcrypt";
-import { Request, Response, NextFunction } from "express";
+import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import becrypt from "bcrypt";
+import sendMessage from "../../utils/slack/services/sendMessage"
 
 async function create(req: Request, res: Response) {
   try {
@@ -13,7 +14,7 @@ async function create(req: Request, res: Response) {
     const { id } = newUser;
     return res.send({ token: token, id });
   } catch (error: any) {
-    console.log(error);
+    await sendMessage({ text: `Erro ao criar usuario: ${JSON.stringify(error)}` }, "bugs");
     return res.status(400).send({ error: error.message });
   }
 }
