@@ -8,13 +8,16 @@ async function login(req: Request, res: Response) {
     const requestData = extractData(req);
     await analyseData(requestData);
     const user = await findUser(requestData);
+    let company = user.UserCompany.find((company) => company.defaultCompany)
+    const companyId = company?.idCompany
     const isPasswordValid = await comparePassword(requestData, user);
     if (!isPasswordValid) {
       throw new Error("Password is not valid");
     }
+    console.log(user)
     const token = generateToken(user);
     const { id } = user;
-    return res.send({ token: token, id });
+    return res.send({ token: token, id, companyId });
   } catch (error: any) {
     console.log(error);
     return res.status(400).send({ error: error.message });
@@ -44,6 +47,7 @@ async function findUser(requestData: { email: string }) {
       id: true,
       email: true,
       password: true,
+      UserCompany: true
     },
   });
   if (!user) {

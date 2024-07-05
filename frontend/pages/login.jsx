@@ -38,6 +38,7 @@ const Login = () => {
             console.log(response.data);
             localStorage.setItem("token", response.data.token);
             localStorage.setItem("user", response.data.id);
+            localStorage.setItem("company", response.data.companyId);
             router.push("/dashboard");
 
             // Add additional logic after login if necessary
