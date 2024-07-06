@@ -14,6 +14,7 @@ async function create(req: Request, res: Response) {
     const { id } = newUser;
     return res.send({ token: token, id });
   } catch (error: any) {
+    console.log(error)
     await sendMessage({ text: `Erro ao criar usuario: ${JSON.stringify(error)}` }, "bugs");
     return res.status(400).send({ error: error.message });
   }
