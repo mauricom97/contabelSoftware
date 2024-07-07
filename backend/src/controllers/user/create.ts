@@ -8,6 +8,7 @@ import sendMessage from "../../utils/slack/services/sendMessage"
 async function create(req: Request, res: Response) {
   try {
     console.log(process.env.DATABASE_URL)
+    console.log(`===================${process.env.NODE_ENV}======================`)
     const requestData = extractData(req);
     await analyseData(requestData);
     const newUser = await createNewUser(requestData);
