@@ -3,6 +3,7 @@ const pgDatabase =
 process.env.NODE_ENV === "production"
 ? process.env.DATABASE_URL
 : process.env.PG_DATABASE_DEV;
+console.log(`########################${pgDatabase}##########################`)
 
 const prisma = new PrismaClient({
   datasources: {
