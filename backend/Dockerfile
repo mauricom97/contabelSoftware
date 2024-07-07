@@ -16,7 +16,7 @@ COPY . .
 
 RUN cd src && npx prisma format
 RUN cd src && npx prisma generate
-
+RUN npx prisma migrate deploy
 
 COPY entrypoint.sh /usr/src/app/entrypoint.sh
 RUN chmod +x /usr/src/app/entrypoint.sh
