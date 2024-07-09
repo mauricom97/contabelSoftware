@@ -17,7 +17,7 @@ const main = async () => {
     await consumer(queue_notifications);
     return;
   } catch (error) {
-    await sendMessage({ text: "Erro ao importar contas a pagar" }, "bugs");
+    await sendMessage({ text: `Erro ao importar contas a pagar:\n${JSON.stringify(error)}` }, "bugs");
     console.log(error);
   }
 };
@@ -65,7 +65,7 @@ const processMessage = async (msg: ConsumeMessage | null) => {
     }
   } catch (error) {
     console.log("Error in processing message", error);
-    throw new Error("Error in processing message");
+    throw new Error("Erro ao processar mensagem na importacao de contas");
   }
 };
 
@@ -105,28 +105,32 @@ const formatAccount = async (account: any) => {
 
   } catch (error) {
     console.log("Error in formatting account", error);
-    throw new Error("Error in formatting account");
+    throw new Error("Erro ao formatar contas na importacao de contas");
   }
 
 };
 
 function formatEntity(entity: any) {
-  return {
-    "ie": "",
-    "phone": entity.telefone1,
-    "email": entity.email,
-    "address": entity.endereco.logradouro,
-    "city": entity.endereco.municipio,
-    "state": entity.endereco.uf,
-    "cpfCnpj": entity.cnpj,
-    "registerName": entity.razao_social,
-    "sampleName": entity.nome_fantasia ? entity.nome_fantasia : entity.razao_social,
-    "type": entity.cnpj > 10 ? "J" : "F",
-    "cep": entity.endereco.cep,
-    "complement": entity.endereco.complemento,
-    "neighborhood": entity.endereco.bairro,
-    "number": entity.endereco.numero ? parseInt(entity.endereco.numero) : null,
-    "observation": entity.endereco.observacao ? entity.endereco.observacao : ""
+  try {
+    return {
+      "ie": "",
+      "phone": entity.telefone1,
+      "email": entity.email,
+      "address": entity.endereco.logradouro,
+      "city": entity.endereco.municipio,
+      "state": entity.endereco.uf,
+      "cpfCnpj": entity.cnpj,
+      "registerName": entity.razao_social,
+      "sampleName": entity.nome_fantasia ? entity.nome_fantasia : entity.razao_social,
+      "type": entity.cnpj > 10 ? "J" : "F",
+      "cep": entity.endereco.cep,
+      "complement": entity.endereco.complemento,
+      "neighborhood": entity.endereco.bairro,
+      "number": entity.endereco.numero ? parseInt(entity.endereco.numero) : null,
+      "observation": entity.endereco.observacao ? entity.endereco.observacao : ""
+    }
+  } catch (error) {
+    throw new Error("Erro ao formatar entidade na importacao de contas a pagar")
   }
 }
 
