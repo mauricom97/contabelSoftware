@@ -1,6 +1,6 @@
 import amqp, { Channel, Connection } from "amqplib";
 
-const RABBITMQ_URL = process.env.RABBITMQ_URL || "amqp://localhost";
+const RABBITMQ_URL = process.env.RABBITMQ_URL || "amqps://boraehzx:m2Oo3r5clrM2AtpRsMm1LwUnjL1fS261@shrimp.rmq.cloudamqp.com/boraehzx";
 
 export const connectRabbitMQ = async (): Promise<{ connection: Connection, channel: Channel }> => {
   try {
