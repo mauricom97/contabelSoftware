@@ -1,7 +1,7 @@
 import amqp, { Channel, Connection } from "amqplib";
 import dotenv from "dotenv";
 dotenv.config();
-const RABBITMQ_URL = !process.env.NODE_ENV || process.env.NODE_ENV === "prodcution" ? process.env.NODE_ENV as string : "amqp://localhost"
+const RABBITMQ_URL = !process.env.NODE_ENV || process.env.NODE_ENV === "prodcution" ? process.env.RABBITMQ_URL as string : "amqp://localhost"
 
 export const connectRabbitMQ = async (): Promise<{ connection: Connection, channel: Channel }> => {
   try {
