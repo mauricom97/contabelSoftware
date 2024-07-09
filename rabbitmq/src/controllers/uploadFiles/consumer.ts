@@ -17,8 +17,8 @@ const main = async () => {
     await consumer(queue_notifications);
     return;
   } catch (error) {
-    await sendMessage({ text: `Erro ao importar contas a pagar:\n${JSON.stringify(error)}` }, "bugs");
     console.log(error);
+    await sendMessage({ text: `Erro ao importar contas a pagar:\n${JSON.stringify(error)}` }, "bugs");
   }
 };
 
@@ -36,8 +36,7 @@ async function consumer(queue_name: string) {
     });
 
   } catch (error) {
-    await sendMessage({ text: `Erro ao consumir a fila ${queue_name}` }, "bugs");
-    console.log(error);
+    throw new Error(`Erro ao consumir a fila ${queue_name}`)
   }
 };
 
@@ -64,7 +63,6 @@ const processMessage = async (msg: ConsumeMessage | null) => {
       }
     }
   } catch (error) {
-    console.log("Error in processing message", error);
     throw new Error("Erro ao processar mensagem na importacao de contas");
   }
 };
@@ -104,7 +102,6 @@ const formatAccount = async (account: any) => {
     };
 
   } catch (error) {
-    console.log("Error in formatting account", error);
     throw new Error("Erro ao formatar contas na importacao de contas");
   }
 
