@@ -1,0 +1,100 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          Int           @id @default(autoincrement())
+  email       String        @unique @db.VarChar
+  birthdate   DateTime      @db.Date
+  firstname   String        @db.VarChar
+  lastname    String        @db.VarChar
+  password    String        @db.VarChar
+  phone       String        @unique @db.VarChar
+  UserCompany UserCompany[]
+}
+
+model Company {
+  id            Int             @id @default(autoincrement())
+  sampleName    String          @db.VarChar
+  registerName  String          @unique @db.VarChar
+  cnpj          String          @unique @db.VarChar
+  ie            String?         @db.VarChar
+  phone         String?         @db.VarChar
+  email         String?         @db.VarChar
+  address       String?         @db.VarChar
+  city          String?         @db.VarChar
+  state         String?         @db.VarChar
+  billsToPay    BillsToPay[]
+  CompanyEntity CompanyEntity[]
+  UserCompany   UserCompany[]
+}
+
+model Entity {
+  id            Int             @id @default(autoincrement())
+  ie            String?         @db.VarChar
+  phone         String?         @db.VarChar
+  email         String?         @db.VarChar
+  address       String?         @db.VarChar
+  city          String?         @db.VarChar
+  state         String?         @db.VarChar
+  cpfCnpj       String          @unique @db.VarChar
+  registerName  String          @unique @db.VarChar
+  sampleName    String          @db.VarChar
+  type          String          @db.VarChar
+  cep           String?         @db.VarChar
+  complement    String?         @db.VarChar
+  neighborhood  String?         @db.VarChar
+  number        Int?
+  observation   String?         @db.VarChar
+  Client        Client?
+  CompanyEntity CompanyEntity[]
+  Supplier      Supplier?
+}
+
+model CompanyEntity {
+  idCompany Int
+  idEntity  Int
+  Company   Company @relation(fields: [idCompany], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  Entity    Entity  @relation(fields: [idEntity], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([idCompany, idEntity])
+}
+
+model Client {
+  idEntity Int    @id
+  Entity   Entity @relation(fields: [idEntity], references: [id])
+}
+
+model Supplier {
+  idEntity   Int          @id
+  BillsToPay BillsToPay[]
+  Entity     Entity       @relation(fields: [idEntity], references: [id])
+}
+
+model UserCompany {
+  idUser         Int
+  idCompany      Int
+  permission     Int
+  defaultCompany Boolean
+  Company        Company @relation(fields: [idCompany], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  User           User    @relation(fields: [idUser], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([idUser, idCompany])
+}
+
+model BillsToPay {
+  id          Int      @id @default(autoincrement())
+  description String?
+  dueDate     DateTime
+  value       Float
+  status      Int
+  companyId   Int
+  idSupplier  Int      @default(0)
+  Company     Company  @relation(fields: [companyId], references: [id])
+  Supplier    Supplier @relation(fields: [idSupplier], references: [idEntity])
+}
