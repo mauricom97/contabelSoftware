@@ -7,7 +7,7 @@ process.env.NODE_ENV === "production"
 const prisma = new PrismaClient({
   datasources: {
     db: {
-      url: "postgresql://controle_pratico_bd_user:mBQSxAbVDEd0pJ082kQhP1nEG3n1qNGr@dpg-cpvmiv6ehbks73e06na0-a.oregon-postgres.render.com/controle_pratico_bd?schema=test",
+      url: pgDatabase,
     },
   },
 });
