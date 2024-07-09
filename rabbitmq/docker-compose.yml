@@ -1,0 +1,16 @@
+version: "3.8"
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NODE_ENV: production
+    environment:
+      RABBITMQ_URL: amqps://boraehzx:m2Oo3r5clrM2AtpRsMm1LwUnjL1fS261@shrimp.rmq.cloudamqp.com/boraehzx
+    ports:
+      - "6577:6577"
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
