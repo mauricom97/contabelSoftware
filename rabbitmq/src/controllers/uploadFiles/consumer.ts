@@ -1,3 +1,8 @@
+import express from "express";
+const app = express()
+import dotenv from "dotenv";
+dotenv.config();
+const port = process.env.PORT || 3988;
 import { ConsumeMessage } from "amqplib";
 import { connectRabbitMQ } from "../../rabbitmq/RabbitMQ";
 import { getCpfCnpj } from "../entity/utils/getCpfCnpj";
@@ -130,3 +135,6 @@ function formatEntity(entity: any) {
   }
 }
 
+app.listen(port, () => {
+  console.log(`Example app listening on port ${port}`)
+})
