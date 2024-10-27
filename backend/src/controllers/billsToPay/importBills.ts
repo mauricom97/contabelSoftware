@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import * as XLSX from "xlsx";
 import path from "path";
-import PlanilhaBillsToPay from "../../interfaces/PlanilhaBillsToPay";
+import PlanilhaBillsToPay from "../../interfaces/PlanilhaBillsToPayInterface";
 
 export default async (req: Request, res: Response) => {
   const filePath = path.resolve(__dirname, "template_importacao.xlsx");

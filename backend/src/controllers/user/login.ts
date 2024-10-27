@@ -1,20 +1,23 @@
 import { Request, Response } from "express";
 import becrypt from "bcrypt";
-import prisma from "../../middlewares/connPrisma"
+import prisma from "../../middlewares/connPrisma";
 import jwt from "jsonwebtoken";
+// import { CompanyInterface } from "interfaces/CompanyInterface";
 
 async function login(req: Request, res: Response) {
   try {
     const requestData = extractData(req);
     await analyseData(requestData);
     const user = await findUser(requestData);
-    let company = user.UserCompany.find((company) => company.defaultCompany)
-    const companyId = company?.idCompany
+    let company = user.UserCompany.find(
+      (company: any) => company.defaultCompany
+    );
+    const companyId = company?.idCompany;
     const isPasswordValid = await comparePassword(requestData, user);
     if (!isPasswordValid) {
       throw new Error("Password is not valid");
     }
-    console.log(user)
+    console.log(user);
     const token = generateToken(user);
     const { id } = user;
     return res.send({ token: token, id, companyId });
@@ -47,7 +50,7 @@ async function findUser(requestData: { email: string }) {
       id: true,
       email: true,
       password: true,
-      UserCompany: true
+      UserCompany: true,
     },
   });
   if (!user) {
