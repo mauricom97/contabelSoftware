@@ -1,4 +1,6 @@
 import { PrismaClient } from "@prisma/client";
+import dotenv from "dotenv";
+dotenv.config();
 const pgDatabase = !process.env.NODE_ENV ||
 process.env.NODE_ENV === "production"
 ? process.env.DATABASE_URL

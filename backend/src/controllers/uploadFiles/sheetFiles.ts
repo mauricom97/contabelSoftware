@@ -1,9 +1,10 @@
 // import { uploadFilesDrive } from "../../utils/google/drive/gdrive";
-import { Request, Response } from "express";
+import { Response } from "express";
 import path from "path";
 import fs from "fs";
 import * as XLSX from "xlsx";
 import { connectRabbitMQ } from "../../rabbitmq/RabbitMQ";
+import moment from 'moment';
 
 const sheetFiles = async (req: any, res: Response) => {
   const { channel, connection } = await connectRabbitMQ();
@@ -23,10 +24,10 @@ const sheetFiles = async (req: any, res: Response) => {
       account.user = req.user
       return account;
     });
-    
+
     await sendBillsToPayForQueue(data, channel);
     const rabbitmqConfig = {
-      channel, 
+      channel,
       connection
     }
 
@@ -42,7 +43,7 @@ const sheetFiles = async (req: any, res: Response) => {
     console.error(error);
     res.status(500).send("Erro ao processar o arquivo.");
   }
-  
+
 };
 interface AccountPayable {
   id: string;
@@ -62,13 +63,14 @@ const readXlsxFile = (filePath: string): AccountPayable[] => {
 };
 
 const sendBillsToPayForQueue = async (data: AccountPayable[], channel: any) => {
-const QUEUE_NAME = "accounts_payable";
+  const QUEUE_NAME = "accounts_payable";
   await channel.assertQueue(QUEUE_NAME, { durable: true });
   data.forEach((account: any) => {
+    console.log(account["VENCIMENTO"]);
+    account.dueDate = new Date(moment(account["VENCIMENTO"], "DD/MM/YYYY").format()).toISOString();
     channel.sendToQueue(QUEUE_NAME, Buffer.from(JSON.stringify(account)), {
       persistent: true,
     });
-    console.log("Sent:", account);
   });
 };
 
