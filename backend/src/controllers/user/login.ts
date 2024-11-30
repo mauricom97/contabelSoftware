@@ -8,7 +8,7 @@ async function login(req: Request, res: Response) {
     const requestData = extractData(req);
     await analyseData(requestData);
     const user = await findUser(requestData);
-    let company = user.UserCompany.find((company) => company.defaultCompany)
+    let company = user.UserCompany.find((company: any) => company.defaultCompany)
     const companyId = company?.idCompany
     const isPasswordValid = await comparePassword(requestData, user);
     if (!isPasswordValid) {
