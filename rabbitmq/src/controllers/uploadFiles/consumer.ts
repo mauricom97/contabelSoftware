@@ -1,3 +1,8 @@
+import express from "express";
+const app = express()
+import dotenv from "dotenv";
+dotenv.config();
+const port = process.env.PORT || 3988;
 import { ConsumeMessage } from "amqplib";
 import { connectRabbitMQ } from "../../rabbitmq/RabbitMQ";
 import { getCpfCnpj } from "../entity/utils/getCpfCnpj";
@@ -59,7 +64,6 @@ const processMessage = async (msg: ConsumeMessage | null) => {
         const accountCreated = await prisma.billsToPay.create({
           data: account
         })
-        console.log(accountCreated)
       }
     }
   } catch (error) {
@@ -98,7 +102,7 @@ const formatAccount = async (account: any) => {
       status: statusValues[account["STATUS"]],
       companyId: account.company,
       idSupplier: supplier.idEntity,
-      dueDate: new Date(account["VENCIMENTO"] ?? new Date()).toISOString()
+      dueDate: account.dueDate
     };
 
   } catch (error) {
@@ -131,3 +135,6 @@ function formatEntity(entity: any) {
   }
 }
 
+// app.listen(port, () => {
+//   console.log(`Example app listening on port ${port}`)
+// })
