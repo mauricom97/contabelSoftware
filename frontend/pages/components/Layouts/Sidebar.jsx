@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import Link from "next/link";
 import axios from "axios";
 import urlApi from "../../../utils/urlApi";
+import api from "../../../middlewares/interceptors/api";
 
 import CreateCompany from "../../components/company/create";
 import {
@@ -11,13 +12,10 @@ import {
     MenuItem,
     Button,
     Text,
-    Avatar,
-    WrapItem,
     Box,
     Center,
     Flex,
-    AvatarBadge,
-    Stack,
+    Image,
 } from "@chakra-ui/react";
 import { TbBuilding } from "react-icons/tb";
 import { FaRegPlusSquare, FaHome } from "react-icons/fa";
@@ -25,7 +23,8 @@ import { GiReceiveMoney, GiPayMoney } from "react-icons/gi";
 import { MdAttachMoney } from "react-icons/md";
 import { FaMoneyBillTrendUp } from "react-icons/fa6";
 import { BiSolidUserCircle } from "react-icons/bi";
-import { SettingsIcon } from "@chakra-ui/icons";
+import { AiOutlineApi } from "react-icons/ai";
+
 
 const Sidebar = () => {
     const sidebarRef = useRef();
@@ -33,43 +32,50 @@ const Sidebar = () => {
     const [companiesList, setCompaniesList] = useState([]);
     const [companyName, setCompanyName] = useState("");
     const [user, setUser] = useState({});
-    const [isOpen, setIsOpen] = useState(true); // Adiciona um estado para controlar a visibilidade da barra lateral
+    const [isOpen, setIsOpen] = useState(true);
 
+    
+    const { data: session } = useSession();
+    
+    const logOut = () => {
+        signOut();
+        localStorage.clear();
+    };
+    
     const handleOpenModal = () => {
         setIsModalOpen(true);
     };
-
+    
     const handleCloseModal = () => {
         setIsModalOpen(false);
     };
-
+    
     const setCompany = (e) => {
         localStorage.setItem("company", e);
         window.location.reload();
     };
 
-    let token;
-    if (typeof window !== "undefined") {
-        token = window.localStorage.getItem("token");
-    }
-    useEffect(() => {
-        let configCompany = {
-            method: "get",
-            maxBodyLength: Infinity,
-            url: `${urlApi}/company`,
-            headers: {
-                token: token,
-            },
-        };
+    useEffect(async () => {
+        // let configCompany = {
+        //     method: "get",
+        //     maxBodyLength: Infinity,
+        //     url: `${urlApi}/company`,
+        //     headers: {
+        //         token: token,
+        //     },
+        // };
 
-        axios
-            .request(configCompany)
-            .then((response) => {
-                setCompaniesList(response.data);
-            })
-            .catch((error) => {
-                console.log(error);
-            });
+        // axios
+        //     .request(configCompany)
+        //     .then((response) => {
+        //         console.log(response.data)
+        //         setCompaniesList(response.data);
+        //     })
+        //     .catch((error) => {
+        //         console.log(error);
+        //     });
+        const company = await api.get("/company");
+        alert(JSON.stringify(company.data));
 
         const companyId = window.localStorage.getItem("company");
         let configFindCompany = {
@@ -85,7 +91,7 @@ const Sidebar = () => {
             .request(configFindCompany)
             .then((response) => {
                 console.log(JSON.stringify(response.data));
-                setCompanyName(response.data.sampleName);
+                setCompanyName(response?.data?.sampleName);
             })
             .catch((error) => {
                 console.log(error);
@@ -135,7 +141,7 @@ const Sidebar = () => {
                     key={company.id}
                 >
                     <TbBuilding />
-                    <Text m="3"> {company.sampleName} </Text>
+                    <Text m="3"> {company?.sampleName} </Text>
                 </MenuItem>
             ))
         ) : (
@@ -157,14 +163,27 @@ const Sidebar = () => {
             zIndex={10}
             transition="left 0.5s ease-in-out"
         >
+            <Box
+                // onClick={() => setShowLogout(!showLogout)}
+                onClick={() => logOut()}
+                style={{
+                    top: "5px",
+                    cursor: "pointer",
+                }}
+            >
+                <AiOutlineApi
+                    size={25}
+                    style={{
+                        color: "black",
+                    }}
+                />
+            </Box>
             <Center mb="4">
-                <WrapItem>
-                    <Stack direction="row" spacing={4} cursor={"pointer"}>
-                        <Avatar size="lg">
-                            <AvatarBadge boxSize="1.25em" bg="green.500" />
-                        </Avatar>
-                    </Stack>
-                </WrapItem>
+                <Image
+                    src={session?.user.image}
+                    borderRadius="full"
+                    boxSize="100px"
+                />
             </Center>
             <Center mb="5">
                 <span
@@ -174,7 +193,9 @@ const Sidebar = () => {
                         fontWeight: "bold",
                     }}
                 >
-                    {user.firstname}
+                    {session?.user.name.split(" ")[0]
+                        ? session?.user.name.split(" ")[0]
+                        : user.firstname}
                 </span>
             </Center>
             <Menu>

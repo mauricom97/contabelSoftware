@@ -1,7 +1,7 @@
 import { useState } from "react";
 import urlApi from "../utils/urlApi";
 import LoginBtn from "./components/LoginBtn";
-
+import { LoginBtnGoogle } from "./components/LoginBtnGoogle";
 
 import {
     Button,
@@ -17,8 +17,8 @@ import { ExternalLinkIcon } from "@chakra-ui/icons";
 import ButtonBack from "./components/ButtonBack";
 import { InputGroup, InputRightElement, IconButton } from "@chakra-ui/react";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
-import axios from "axios";
 import { useRouter } from "next/router";
+import authUtils from "../utils/authUtils";
 
 const Login = () => {
     const [email, setEmail] = useState("");
@@ -28,24 +28,11 @@ const Login = () => {
     const handleClick = () => setShowPassword(!showPassword);
     const router = useRouter();
 
-    const handleLogin = async () => {
-        try {
-            const response = await axios.post(`${urlApi}/user/login`, {
-                email,
-                password,
-            });
-
-            console.log(response.data);
-            localStorage.setItem("token", response.data.token);
-            localStorage.setItem("user", response.data.id);
-            localStorage.setItem("company", response.data.companyId);
-            router.push("/dashboard");
-
-            // Add additional logic after login if necessary
-        } catch (error) {
-            console.error(error);
-            // Handle errors as needed
-        }
+    const emailLogin = async () => {
+        const response = await authUtils("email", { email, password });
+        if (response?.data?.token) {
+            return router.push("/dashboard");
+        };
     };
 
     return (
@@ -73,7 +60,7 @@ const Login = () => {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             onKeyUp={(e) => {
-                                if (e.key === "Enter") handleLogin();
+                                if (e.key === "Enter") emailLogin();
                             }}
                             placeholder="Password"
                         />
@@ -97,15 +84,15 @@ const Login = () => {
                             Esqueci minha senha <ExternalLinkIcon mx="2px" />
                         </Link>
                     </Box>
+                    <LoginBtnGoogle />
                     <Button
                         color={"white"}
                         bg="#8046A2"
-                        onClick={handleLogin}
+                        onClick={emailLogin}
                         _hover={{ bg: "#B186C7" }}
                     >
                         LOGIN
                     </Button>
-                    <LoginBtn />
                 </VStack>
             </FormControl>
             <ButtonBack />
