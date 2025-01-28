@@ -2,7 +2,10 @@ import React, { useRef, useState, useEffect } from "react";
 import Link from "next/link";
 import axios from "axios";
 import urlApi from "../../../utils/urlApi";
-import api from "../../../middlewares/interceptors/api";
+import { useSession, signOut } from "next-auth/react";
+import { InfoIcon, ExternalLinkIcon } from '@chakra-ui/icons';
+
+import { SettingsIcon, ChevronDownIcon } from "@chakra-ui/icons";
 
 import CreateCompany from "../../components/company/create";
 import {
@@ -10,6 +13,11 @@ import {
     MenuButton,
     MenuList,
     MenuItem,
+    MenuItemOption,
+    MenuGroup,
+    MenuOptionGroup,
+    MenuDivider,
+    IconButton,
     Button,
     Text,
     Box,
@@ -24,7 +32,7 @@ import { MdAttachMoney } from "react-icons/md";
 import { FaMoneyBillTrendUp } from "react-icons/fa6";
 import { BiSolidUserCircle } from "react-icons/bi";
 import { AiOutlineApi } from "react-icons/ai";
-
+import { m } from "framer-motion";
 
 const Sidebar = () => {
     const sidebarRef = useRef();
@@ -34,98 +42,91 @@ const Sidebar = () => {
     const [user, setUser] = useState({});
     const [isOpen, setIsOpen] = useState(true);
 
-    
     const { data: session } = useSession();
-    
+
     const logOut = () => {
         signOut();
         localStorage.clear();
     };
-    
+
     const handleOpenModal = () => {
         setIsModalOpen(true);
     };
-    
+
     const handleCloseModal = () => {
         setIsModalOpen(false);
     };
-    
+
     const setCompany = (e) => {
         localStorage.setItem("company", e);
         window.location.reload();
     };
 
-    useEffect(async () => {
-        // let configCompany = {
-        //     method: "get",
-        //     maxBodyLength: Infinity,
-        //     url: `${urlApi}/company`,
-        //     headers: {
-        //         token: token,
-        //     },
-        // };
+    useEffect(() => {
+        const fetchData = async () => {
+            if (typeof window !== "undefined") {
+                const token = localStorage.getItem("token");
+                const companyId = localStorage.getItem("company");
+                const userId = localStorage.getItem("user");
 
-        // axios
-        //     .request(configCompany)
-        //     .then((response) => {
-        //         console.log(response.data)
-        //         setCompaniesList(response.data);
-        //     })
-        //     .catch((error) => {
-        //         console.log(error);
-        //     });
-        const company = await api.get("/company");
-        alert(JSON.stringify(company.data));
+                if (token) {
+                    let config = {
+                        method: "get",
+                        maxBodyLength: Infinity,
+                        url: `${urlApi}/company`,
+                        headers: {
+                            token,
+                        },
+                    };
 
-        const companyId = window.localStorage.getItem("company");
-        let configFindCompany = {
-            method: "get",
-            maxBodyLength: Infinity,
-            url: `${urlApi}/company/findCompany?id=${companyId}`,
-            headers: {
-                token: token,
-            },
+                    axios
+                        .request(config)
+                        .then((response) => {
+                            setCompaniesList(response.data);
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                        });
+                }
+
+                if (token && companyId) {
+                    try {
+                        const companyResponse = await axios.get(
+                            `${urlApi}/company/findCompany?id=${companyId}`,
+                            { headers: { token } },
+                        );
+                        setCompanyName(
+                            companyResponse.data?.sampleName || "Empresa",
+                        );
+                    } catch (error) {
+                        console.error("Erro ao buscar empresa:", error);
+                    }
+                }
+
+                if (token && userId) {
+                    try {
+                        const userResponse = await axios.get(
+                            `${urlApi}/user/getUser?id=${userId}`,
+                            { headers: { token } },
+                        );
+                        setUser(userResponse.data || {});
+                    } catch (error) {
+                        console.error("Erro ao buscar usuário:", error);
+                    }
+                }
+            }
         };
 
-        axios
-            .request(configFindCompany)
-            .then((response) => {
-                console.log(JSON.stringify(response.data));
-                setCompanyName(response?.data?.sampleName);
-            })
-            .catch((error) => {
-                console.log(error);
-            });
-
-        const userId = window.localStorage.getItem("user");
-
-        let configGetUser = {
-            method: "get",
-            maxBodyLength: Infinity,
-            url: `${urlApi}/user/getUser?id=${userId}`,
-            headers: {
-                token: token,
-            },
-        };
-
-        axios
-            .request(configGetUser)
-            .then((response) => {
-                console.log(JSON.stringify(response.data));
-                setUser(response.data);
-            })
-            .catch((error) => {
-                console.log(error);
-            });
-
-        function handleClickOutside(event) {
+        const handleClickOutside = (event) => {
             if (
                 sidebarRef.current &&
                 !sidebarRef.current.contains(event.target)
             ) {
                 setIsOpen(false);
             }
-        }
+        };
+
+        fetchData();
 
         document.addEventListener("mousedown", handleClickOutside);
         return () => {
@@ -163,7 +164,7 @@ const Sidebar = () => {
             zIndex={10}
             transition="left 0.5s ease-in-out"
         >
-            <Box
+            {/* <Box
                 // onClick={() => setShowLogout(!showLogout)}
                 onClick={() => logOut()}
                 style={{
@@ -177,7 +178,15 @@ const Sidebar = () => {
                         color: "black",
                     }}
                 />
-            </Box>
+            </Box> */}
+
+            <Menu>
+                <MenuButton as={IconButton} icon={<SettingsIcon />} />
+                <MenuList>
+                    <MenuItem icon={<InfoIcon />}> Painel de Controle </MenuItem>
+                    <MenuItem icon={<ExternalLinkIcon />} onClick={logOut}>Sair</MenuItem>
+                </MenuList>
+            </Menu>
             <Center mb="4">
                 <Image
                     src={session?.user.image}

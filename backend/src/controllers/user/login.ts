@@ -6,9 +6,8 @@ import jwt from "jsonwebtoken";
 async function login(req: Request, res: Response) {
   try {
     const requestData = extractData(req);
-    await analyseData(requestData);
-    console.log("==========================================")
     console.log(requestData)
+    await analyseData(requestData);
     const user = await findUser(requestData);
     let company = user.UserCompany.find((company: any) => company.defaultCompany)
     const companyId = company?.idCompany
@@ -28,9 +27,8 @@ async function login(req: Request, res: Response) {
 }
 
 function extractData(req: Request) {
-  const { body } = req;
-  const { type } = body;
-  const { email, password } = body.content;
+  const { type } = req.body;
+  const { email, password } = req.body.contentAuth;
   return { type, email, password };
 }
 

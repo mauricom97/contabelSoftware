@@ -12,13 +12,13 @@ import {
     Link,
     Box,
     Heading,
+    Flex,
+    Divider,
+    Text,
 } from "@chakra-ui/react";
-import { ExternalLinkIcon } from "@chakra-ui/icons";
-import ButtonBack from "./components/ButtonBack";
+import { ExternalLinkIcon, ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import { InputGroup, InputRightElement, IconButton } from "@chakra-ui/react";
-import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import { useRouter } from "next/router";
-import authUtils from "../utils/authUtils";
 
 const Login = () => {
     const [email, setEmail] = useState("");
@@ -29,22 +29,55 @@ const Login = () => {
     const router = useRouter();
 
     const emailLogin = async () => {
-        const response = await authUtils("email", { email, password });
-        if (response?.data?.token) {
-            return router.push("/dashboard");
+        const configAuth = {
+            type: "email",
+            contentAuth: { email, password },
         };
+        await fetch(urlApi + "/user/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(configAuth),
+        }).then(async (response) => {
+            if (response.ok) {
+                const data = await response.json();
+                localStorage.setItem("token", data.token);
+                localStorage.setItem("user", data.id);
+                localStorage.setItem("company", data.companyId);
+                router.push("/dashboard");
+            } else {
+                console.error("Erro ao fazer login:", response.statusText);
+            }
+        });
     };
 
     return (
-        <VStack justify="center" height="100vh" bg="#F5F5F5">
-            <FormControl w="full" maxW="md" p={8} rounded="md">
+        <Flex
+            direction={{ base: "column", md: "row" }} // Coluna em telas pequenas, linha em grandes
+            justify="center"
+            align="center"
+            height="100vh"
+            bg="#F5F5F5"
+            p={{ base: 4, md: 8 }} // Padding adaptativo
+            gap={8} // Espaçamento entre os blocos
+        >
+            {/* Lado esquerdo - Formulário de Login */}
+            <Box
+                flex="1"
+                maxW={{ base: "100%", md: "400px" }} // Ajuste de largura
+                w="full"
+                p={8}
+                bg="white"
+                rounded="md"
+                boxShadow="lg"
+            >
                 <VStack spacing={4}>
                     <Image
                         borderRadius="full"
-                        boxSize="250px"
+                        boxSize={{ base: "100px", md: "150px" }} // Tamanho adaptativo da imagem
                         src="/imgs/avatar.png"
+                        alt="Avatar"
                     />
-                    <Heading fontSize="3xl" mb={6}>
+                    <Heading fontSize={{ base: "xl", md: "2xl" }} mb={4}>
                         ENTRAR
                     </Heading>
                     <Input
@@ -59,9 +92,7 @@ const Login = () => {
                             type={showPassword ? "text" : "password"}
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            onKeyUp={(e) => {
-                                if (e.key === "Enter") emailLogin();
-                            }}
+                            onKeyUp={(e) => e.key === "Enter" && emailLogin()}
                             placeholder="Password"
                         />
                         <InputRightElement width="4.5rem">
@@ -69,34 +100,58 @@ const Login = () => {
                                 h="1.75rem"
                                 size="sm"
                                 onClick={handleClick}
-                                icon={
-                                    showPassword ? (
-                                        <ViewOffIcon />
-                                    ) : (
-                                        <ViewIcon />
-                                    )
-                                }
+                                icon={showPassword ? <ViewOffIcon /> : <ViewIcon />}
                             />
                         </InputRightElement>
                     </InputGroup>
-                    <Box textAlign="left">
-                        <Link href="https://chakra-ui.com" isExternal>
+                    <Box textAlign="left" w="full">
+                        <Link onClick={() => router.push("/recoveryPassword")} color="blue.500" fontSize="sm">
                             Esqueci minha senha <ExternalLinkIcon mx="2px" />
                         </Link>
                     </Box>
-                    <LoginBtnGoogle />
                     <Button
-                        color={"white"}
+                        color="white"
                         bg="#8046A2"
                         onClick={emailLogin}
                         _hover={{ bg: "#B186C7" }}
+                        w="full"
                     >
                         LOGIN
                     </Button>
                 </VStack>
-            </FormControl>
-            <ButtonBack />
-        </VStack>
+            </Box>
+
+            {/* Divisor Vertical (apenas em telas maiores) */}
+            <Divider
+                orientation="vertical"
+                display={{ base: "none", md: "block" }}
+                h="80%"
+            />
+
+            {/* Lado direito - Formas de autenticação */}
+            <Box
+                flex="1"
+                maxW={{ base: "100%", md: "400px" }}
+                w="full"
+                p={8}
+                bg="white"
+                rounded="md"
+                boxShadow="lg"
+            >
+                <VStack spacing={4}>
+                    <Heading fontSize={{ base: "lg", md: "xl" }} mb={4} textAlign="center">
+                        Ou entre com
+                    </Heading>
+                    <LoginBtnGoogle />
+                    <Text fontSize="sm" color="gray.600" textAlign="center">
+                        Não possui uma conta?{" "}
+                        <Link color="blue.500" onClick={() => router.push("/CreateUser")}>
+                            Cadastre-se
+                        </Link>
+                    </Text>
+                </VStack>
+            </Box>
+        </Flex>
     );
 };
 

@@ -12,8 +12,10 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
         "/CreateUser",
         "/createcompany",
         "/SucessLogin",
+        "/recoveryPassword",
     ];
-    const showSidebar = !pagesWithoutSidebar.includes(router.pathname) && getAuthToken();
+    const showSidebar =
+        !pagesWithoutSidebar.includes(router.pathname);
 
     useEffect(() => {
         if (redirectLogin()) router.push("/login");
@@ -42,11 +44,6 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
         );
         if (pageWithAuthenticated && !token) return true;
     }
-}
-
-function getAuthToken() {
-    const token = localStorage.getItem("token");
-    return token ? token : null;
 }
 
 export default MyApp;
