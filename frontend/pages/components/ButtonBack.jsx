@@ -8,7 +8,6 @@ const ButtonBack = () => {
             position={"fixed"}
             top={4}
             left={4}
-            onClick={() => window.history.back()}
         />
     );
 };

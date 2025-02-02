@@ -6,15 +6,17 @@ import jwt from "jsonwebtoken";
 async function login(req: Request, res: Response) {
   try {
     const requestData = extractData(req);
+    console.log(requestData)
     await analyseData(requestData);
     const user = await findUser(requestData);
     let company = user.UserCompany.find((company: any) => company.defaultCompany)
     const companyId = company?.idCompany
-    const isPasswordValid = await comparePassword(requestData, user);
-    if (!isPasswordValid) {
-      throw new Error("Password is not valid");
+    if(requestData.type === "email") {
+      const isPasswordValid = await comparePassword(requestData, user);
+      if (!isPasswordValid && requestData.type === "email") {
+        throw new Error("Password is not valid");
+      }
     }
-    console.log(user)
     const token = generateToken(user);
     const { id } = user;
     return res.send({ token: token, id, companyId });
@@ -25,14 +27,14 @@ async function login(req: Request, res: Response) {
 }
 
 function extractData(req: Request) {
-  const { body } = req;
-  const { email, password } = body;
-  return { email, password };
+  const { type } = req.body;
+  const { email, password } = req.body.contentAuth;
+  return { type, email, password };
 }
 
-async function analyseData(requestData: { email: string; password: string }) {
-  const { email, password } = requestData;
-  if (!email || !password) {
+async function analyseData(requestData: { type: string, email: string; password: string }) {
+  const { type, email } = requestData;
+  if (!type || !email) {
     throw new Error("Missing data");
   }
 }

@@ -2,6 +2,11 @@ import React, { useRef, useState, useEffect } from "react";
 import Link from "next/link";
 import axios from "axios";
 import urlApi from "../../../utils/urlApi";
+import { useSession, signOut } from "next-auth/react";
+import { InfoIcon, ExternalLinkIcon } from '@chakra-ui/icons';
+
+import { SettingsIcon, ChevronDownIcon } from "@chakra-ui/icons";
+import { useRouter } from "next/router";
 
 import CreateCompany from "../../components/company/create";
 import {
@@ -9,15 +14,13 @@ import {
     MenuButton,
     MenuList,
     MenuItem,
+    IconButton,
     Button,
     Text,
-    Avatar,
-    WrapItem,
     Box,
     Center,
     Flex,
-    AvatarBadge,
-    Stack,
+    Image,
 } from "@chakra-ui/react";
 import { TbBuilding } from "react-icons/tb";
 import { FaRegPlusSquare, FaHome } from "react-icons/fa";
@@ -25,7 +28,6 @@ import { GiReceiveMoney, GiPayMoney } from "react-icons/gi";
 import { MdAttachMoney } from "react-icons/md";
 import { FaMoneyBillTrendUp } from "react-icons/fa6";
 import { BiSolidUserCircle } from "react-icons/bi";
-import { SettingsIcon } from "@chakra-ui/icons";
 
 const Sidebar = () => {
     const sidebarRef = useRef();
@@ -33,7 +35,17 @@ const Sidebar = () => {
     const [companiesList, setCompaniesList] = useState([]);
     const [companyName, setCompanyName] = useState("");
     const [user, setUser] = useState({});
-    const [isOpen, setIsOpen] = useState(true); // Adiciona um estado para controlar a visibilidade da barra lateral
+    const [isOpen, setIsOpen] = useState(true);
+    const router = useRouter();
+
+    const { data: session } = useSession();
+
+    const logOut = () => {
+        router.push("/login");
+        signOut();
+        localStorage.clear();
+        
+    };
 
     const handleOpenModal = () => {
         setIsModalOpen(true);
@@ -48,78 +60,71 @@ const Sidebar = () => {
         window.location.reload();
     };
 
-    let token;
-    if (typeof window !== "undefined") {
-        token = window.localStorage.getItem("token");
-    }
     useEffect(() => {
-        let configCompany = {
-            method: "get",
-            maxBodyLength: Infinity,
-            url: `${urlApi}/company`,
-            headers: {
-                token: token,
-            },
+        const fetchData = async () => {
+            if (typeof window !== "undefined") {
+                const token = localStorage.getItem("token");
+                const companyId = localStorage.getItem("company");
+                const userId = localStorage.getItem("user");
+
+                if (token) {
+                    let config = {
+                        method: "get",
+                        maxBodyLength: Infinity,
+                        url: `${urlApi}/company`,
+                        headers: {
+                            token,
+                        },
+                    };
+
+                    axios
+                        .request(config)
+                        .then((response) => {
+                            setCompaniesList(response.data);
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                        });
+                }
+
+                if (token && companyId) {
+                    try {
+                        const companyResponse = await axios.get(
+                            `${urlApi}/company/findCompany?id=${companyId}`,
+                            { headers: { token } },
+                        );
+                        setCompanyName(
+                            companyResponse.data?.sampleName || "Empresa",
+                        );
+                    } catch (error) {
+                        console.error("Erro ao buscar empresa:", error);
+                    }
+                }
+
+                if (token && userId) {
+                    try {
+                        const userResponse = await axios.get(
+                            `${urlApi}/user/getUser?id=${userId}`,
+                            { headers: { token } },
+                        );
+                        setUser(userResponse.data || {});
+                    } catch (error) {
+                        console.error("Erro ao buscar usuário:", error);
+                    }
+                }
+            }
         };
 
-        axios
-            .request(configCompany)
-            .then((response) => {
-                setCompaniesList(response.data);
-            })
-            .catch((error) => {
-                console.log(error);
-            });
-
-        const companyId = window.localStorage.getItem("company");
-        let configFindCompany = {
-            method: "get",
-            maxBodyLength: Infinity,
-            url: `${urlApi}/company/findCompany?id=${companyId}`,
-            headers: {
-                token: token,
-            },
-        };
-
-        axios
-            .request(configFindCompany)
-            .then((response) => {
-                console.log(JSON.stringify(response.data));
-                setCompanyName(response.data.sampleName);
-            })
-            .catch((error) => {
-                console.log(error);
-            });
-
-        const userId = window.localStorage.getItem("user");
-
-        let configGetUser = {
-            method: "get",
-            maxBodyLength: Infinity,
-            url: `${urlApi}/user/getUser?id=${userId}`,
-            headers: {
-                token: token,
-            },
-        };
-
-        axios
-            .request(configGetUser)
-            .then((response) => {
-                console.log(JSON.stringify(response.data));
-                setUser(response.data);
-            })
-            .catch((error) => {
-                console.log(error);
-            });
-
-        function handleClickOutside(event) {
+        const handleClickOutside = (event) => {
             if (
                 sidebarRef.current &&
                 !sidebarRef.current.contains(event.target)
             ) {
                 setIsOpen(false);
             }
-        }
+        };
+
+        fetchData();
 
         document.addEventListener("mousedown", handleClickOutside);
         return () => {
@@ -135,7 +140,7 @@ const Sidebar = () => {
                     key={company.id}
                 >
                     <TbBuilding />
-                    <Text m="3"> {company.sampleName} </Text>
+                    <Text m="3"> {company?.sampleName} </Text>
                 </MenuItem>
             ))
         ) : (
@@ -157,14 +162,20 @@ const Sidebar = () => {
             zIndex={10}
             transition="left 0.5s ease-in-out"
         >
+
+            <Menu>
+                <MenuButton as={IconButton} icon={<SettingsIcon />} />
+                <MenuList>
+                    <MenuItem icon={<InfoIcon />}> Painel de Controle </MenuItem>
+                    <MenuItem icon={<ExternalLinkIcon />} onClick={logOut}>Sair</MenuItem>
+                </MenuList>
+            </Menu>
             <Center mb="4">
-                <WrapItem>
-                    <Stack direction="row" spacing={4} cursor={"pointer"}>
-                        <Avatar size="lg">
-                            <AvatarBadge boxSize="1.25em" bg="green.500" />
-                        </Avatar>
-                    </Stack>
-                </WrapItem>
+                <Image
+                    src={session?.user.image}
+                    borderRadius="full"
+                    boxSize="100px"
+                />
             </Center>
             <Center mb="5">
                 <span
@@ -174,7 +185,9 @@ const Sidebar = () => {
                         fontWeight: "bold",
                     }}
                 >
-                    {user.firstname}
+                    {session?.user.name.split(" ")[0]
+                        ? session?.user.name.split(" ")[0]
+                        : user.firstname}
                 </span>
             </Center>
             <Menu>

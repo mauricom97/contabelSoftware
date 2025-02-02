@@ -14,6 +14,7 @@ import {
     Button,
     VStack,
     Image,
+    Link,
 } from "@chakra-ui/react";
 
 const SignUp = () => {
@@ -148,8 +149,9 @@ const SignUp = () => {
                     CREATE ACCOUNT
                 </Button>
             </VStack>
-
-            <ButtonBack />
+            <Link onClick={() => window.history.back()}>
+                <ButtonBack />
+            </Link>
         </Box>
     );
 };
