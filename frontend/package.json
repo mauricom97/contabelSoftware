@@ -4,7 +4,8 @@
     "private": true,
     "scripts": {
         "dev": "next dev",
-        "build": "sudo rm -rf .next && next build",
+        "build": "next build",
+        "postbuild": "echo 'Build concluído!'",
         "start": "next start"
     },
     "dependencies": {
