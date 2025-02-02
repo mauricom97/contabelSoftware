@@ -3,7 +3,7 @@ import Image from "next/image";
 import { Button } from "@chakra-ui/react";
 import { signIn } from "next-auth/react";
 
-export const LoginBtnGoogle = () => {
+export default LoginBtnGoogle = () => {
 
     return (
         <Button
