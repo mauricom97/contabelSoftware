@@ -4,6 +4,7 @@ import {
     Box,
     Input,
     Button,
+    Link,
     Heading,
     Text,
     useToast,
@@ -11,6 +12,8 @@ import {
     FormLabel,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
+import ButtonBack from "./components/ButtonBack";
+
 
 const PasswordRecovery = () => {
     const [email, setEmail] = useState("");
@@ -80,7 +83,7 @@ const PasswordRecovery = () => {
                 bg="white"
                 p={8}
                 rounded="md"
-                boxShadow="lg"
+                borderBlock={{ base: "none", md: "1px solid #E2E8F0" }}
             >
                 <Heading as="h1" size="lg" mb={4} textAlign="center">
                     Recuperação de Senha
@@ -107,6 +110,9 @@ const PasswordRecovery = () => {
                     Enviar
                 </Button>
             </Box>
+            <Link onClick={() => router.push("/")}>
+                <ButtonBack />
+            </Link>
         </VStack>
     );
 };

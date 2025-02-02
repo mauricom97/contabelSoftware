@@ -2,6 +2,8 @@ import { useState } from "react";
 import urlApi from "../utils/urlApi";
 import LoginBtn from "./components/LoginBtn";
 import { LoginBtnGoogle } from "./components/LoginBtnGoogle";
+import ButtonBack from "./components/ButtonBack";
+
 
 import {
     Button,
@@ -66,9 +68,9 @@ const Login = () => {
                 maxW={{ base: "100%", md: "400px" }} // Ajuste de largura
                 w="full"
                 p={8}
+                borderBlock={{ base: "none", md: "1px solid #E2E8F0" }}
                 bg="white"
                 rounded="md"
-                boxShadow="lg"
             >
                 <VStack spacing={4}>
                     <Image
@@ -136,11 +138,11 @@ const Login = () => {
                 p={8}
                 bg="white"
                 rounded="md"
-                boxShadow="lg"
+                borderBlock={{ base: "none", md: "1px solid #E2E8F0" }}
             >
                 <VStack spacing={4}>
-                    <Heading fontSize={{ base: "lg", md: "xl" }} mb={4} textAlign="center">
-                        Ou entre com
+                    <Heading textTransform="uppercase" fontSize={{ base: "lg", md: "xl"}} mb={4} textAlign="center">
+                        ou entre com
                     </Heading>
                     <LoginBtnGoogle />
                     <Text fontSize="sm" color="gray.600" textAlign="center">
@@ -151,6 +153,9 @@ const Login = () => {
                     </Text>
                 </VStack>
             </Box>
+            <Link onClick={() => router.push("/")}>
+                <ButtonBack />
+            </Link>
         </Flex>
     );
 };

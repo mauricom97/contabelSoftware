@@ -6,6 +6,7 @@ import { useSession, signOut } from "next-auth/react";
 import { InfoIcon, ExternalLinkIcon } from '@chakra-ui/icons';
 
 import { SettingsIcon, ChevronDownIcon } from "@chakra-ui/icons";
+import { useRouter } from "next/router";
 
 import CreateCompany from "../../components/company/create";
 import {
@@ -13,10 +14,6 @@ import {
     MenuButton,
     MenuList,
     MenuItem,
-    MenuItemOption,
-    MenuGroup,
-    MenuOptionGroup,
-    MenuDivider,
     IconButton,
     Button,
     Text,
@@ -31,8 +28,6 @@ import { GiReceiveMoney, GiPayMoney } from "react-icons/gi";
 import { MdAttachMoney } from "react-icons/md";
 import { FaMoneyBillTrendUp } from "react-icons/fa6";
 import { BiSolidUserCircle } from "react-icons/bi";
-import { AiOutlineApi } from "react-icons/ai";
-import { m } from "framer-motion";
 
 const Sidebar = () => {
     const sidebarRef = useRef();
@@ -41,12 +36,15 @@ const Sidebar = () => {
     const [companyName, setCompanyName] = useState("");
     const [user, setUser] = useState({});
     const [isOpen, setIsOpen] = useState(true);
+    const router = useRouter();
 
     const { data: session } = useSession();
 
     const logOut = () => {
+        router.push("/login");
         signOut();
         localStorage.clear();
+        
     };
 
     const handleOpenModal = () => {
@@ -164,21 +162,6 @@ const Sidebar = () => {
             zIndex={10}
             transition="left 0.5s ease-in-out"
         >
-            {/* <Box
-                // onClick={() => setShowLogout(!showLogout)}
-                onClick={() => logOut()}
-                style={{
-                    top: "5px",
-                    cursor: "pointer",
-                }}
-            >
-                <AiOutlineApi
-                    size={25}
-                    style={{
-                        color: "black",
-                    }}
-                />
-            </Box> */}
 
             <Menu>
                 <MenuButton as={IconButton} icon={<SettingsIcon />} />
