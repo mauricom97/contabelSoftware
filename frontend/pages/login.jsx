@@ -1,7 +1,6 @@
 import { useState } from "react";
 import urlApi from "../utils/urlApi";
-import LoginBtn from "./components/LoginBtn";
-import { LoginBtnGoogle } from "./components/LoginBtnGoogle";
+import LoginBtnGoogle from './components/LoginBtnGoogle';
 import ButtonBack from "./components/ButtonBack";
 
 
