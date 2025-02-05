@@ -22,7 +22,7 @@ import { ExternalLinkIcon, ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import { InputGroup, InputRightElement, IconButton } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 
-const Login = () => {
+export default function Login () {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
@@ -160,4 +160,3 @@ const Login = () => {
     );
 };
 
-export default Login;
