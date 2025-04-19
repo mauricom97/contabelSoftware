@@ -1,0 +1,47 @@
+[
+  {
+    "id": 1,
+    "description": "Pagamento de aluguel",
+    "dueDate": "2025-04-30T00:00:00Z",
+    "value": 1500.00,
+    "status": 1,
+    "companyId": 1,
+    "idSupplier": 2
+  },
+  {
+    "id": 2,
+    "description": "Compra de materiais de escritório",
+    "dueDate": "2025-05-10T00:00:00Z",
+    "value": 300.50,
+    "status": 0,
+    "companyId": 1,
+    "idSupplier": 3
+  },
+  {
+    "id": 3,
+    "description": "Serviços de manutenção",
+    "dueDate": "2025-04-25T00:00:00Z",
+    "value": 800.00,
+    "status": 1,
+    "companyId": 2,
+    "idSupplier": 4
+  },
+  {
+    "id": 4,
+    "description": "Pagamento de energia elétrica",
+    "dueDate": "2025-04-20T00:00:00Z",
+    "value": 450.75,
+    "status": 0,
+    "companyId": 2,
+    "idSupplier": 5
+  },
+  {
+    "id": 5,
+    "description": "Serviços de consultoria",
+    "dueDate": "2025-05-15T00:00:00Z",
+    "value": 2000.00,
+    "status": 1,
+    "companyId": 3,
+    "idSupplier": 6
+  }
+]
