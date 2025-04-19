@@ -37,11 +37,56 @@
   },
   {
     "id": 5,
-    "description": "Serviços de consultoria",
+    "description": "Compra de software",
     "dueDate": "2025-05-15T00:00:00Z",
-    "value": 2000.00,
+    "value": 1200.00,
     "status": 1,
     "companyId": 3,
     "idSupplier": 6
+  },
+  {
+    "id": 6,
+    "description": "Pagamento de internet",
+    "dueDate": "2025-04-28T00:00:00Z",
+    "value": 200.00,
+    "status": 0,
+    "companyId": 3,
+    "idSupplier": 7
+  },
+  {
+    "id": 7,
+    "description": "Serviços de limpeza",
+    "dueDate": "2025-05-05T00:00:00Z",
+    "value": 350.00,
+    "status": 1,
+    "companyId": 4,
+    "idSupplier": 8
+  },
+  {
+    "id": 8,
+    "description": "Pagamento de telefone",
+    "dueDate": "2025-04-22T00:00:00Z",
+    "value": 100.50,
+    "status": 0,
+    "companyId": 4,
+    "idSupplier": 9
+  },
+  {
+    "id": 9,
+    "description": "Compra de equipamentos",
+    "dueDate": "2025-05-12T00:00:00Z",
+    "value": 2500.00,
+    "status": 1,
+    "companyId": 5,
+    "idSupplier": 10
+  },
+  {
+    "id": 10,
+    "description": "Serviços de consultoria",
+    "dueDate": "2025-04-18T00:00:00Z",
+    "value": 900.00,
+    "status": 0,
+    "companyId": 5,
+    "idSupplier": 11
   }
 ]
