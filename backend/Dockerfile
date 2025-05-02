@@ -9,7 +9,7 @@ ENV NODE_ENV=$NODE_ENV
 
 COPY package*.json ./
 
-RUN npm install
+RUN npm install --include=dev
 RUN npm install cors nodemon -g
 
 COPY . .
