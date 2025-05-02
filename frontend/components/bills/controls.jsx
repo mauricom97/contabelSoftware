@@ -1,12 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import CreateBillToPay from './components/financial/CreateBillToPay';
-import { DeleteIcon } from '@chakra-ui/icons';
-import io from 'socket.io-client';
-import urlApi from '../utils/urlApi';
-import InputMask from 'react-input-mask';
-import ImportBillToPay from './components/financial/ImportBillToPay';
-import ControlsBills from '../components/bills/controls';
+import moment from 'moment';
 import {
     Table,
     Thead,
@@ -33,301 +26,33 @@ import {
     Checkbox,
     CheckboxGroup,
 } from '@chakra-ui/react';
-import { Select } from 'chakra-react-select';
+import ImportBillToPay from '../../pages/components/financial/ImportBillToPay';
+import CreateBillToPay from '../../pages/components/financial/CreateBillToPay';
 
-import { EditIcon } from '@chakra-ui/icons';
-
-import moment from 'moment';
-
-const status = {
-    1: 'Em aberto',
-    2: 'Parcialmente pago',
-    3: 'Pago',
-};
-
-function handleFileChange(event) {
-    const file = event.target.files[0];
-    if (file) {
-        // Faça algo com o arquivo aqui
-        console.log(file.name);
-    }
-}
-
-const InputsEditInstallment = (item) => {
-    return (
-        <Box p={5}>
-            <FormControl id="supplier">
-                <FormLabel>Fornecedor</FormLabel>
-                <Input
-                    placeholder="Fornecedor"
-                    size="md"
-                    mb="2"
-                    defaultValue={item.Supplier.Entity.sampleName}
-                />
-            </FormControl>
-            <FormControl id="description">
-                <FormLabel>Descrição</FormLabel>
-                <Input
-                    placeholder="Descrição"
-                    size="md"
-                    mb="2"
-                    defaultValue={item.description}
-                />
-            </FormControl>
-            <FormControl id="value">
-                <FormLabel>Valor</FormLabel>
-                <InputMask
-                    mask="9999999999.99"
-                    maskChar={null}
-                    defaultValue={item.value}
-                >
-                    {() => (
-                        <Input
-                            placeholder="Valor"
-                            size="md"
-                            mb="2"
-                            defaultValue={item.value}
-                        />
-                    )}
-                </InputMask>
-            </FormControl>
-            <FormControl id="dueDate">
-                <FormLabel>Data de vencimento</FormLabel>
-
-                <InputMask
-                    mask="99/99/9999"
-                    maskChar={null}
-                    defaultValue={moment(item.dueDate).format('DD/MM/YYYY')}
-                >
-                    {() => (
-                        <Input
-                            placeholder="Data de vencimento"
-                            size="md"
-                            mb="2"
-                        />
-                    )}
-                </InputMask>
-            </FormControl>
-            <FormControl id="status">
-                <FormLabel>Status</FormLabel>
-                <Input
-                    placeholder="Status"
-                    size="md"
-                    mb="2"
-                    defaultValue={status[item.status]}
-                />
-            </FormControl>
-            <Button colorScheme="blue" mr={3}>
-                Salvar
-            </Button>
-            <Button colorScheme="red">Cancelar</Button>
-        </Box>
-    );
-};
-
-const DataTable = () => {
+const ControlsBills = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [billData, setBillData] = useState([]);
-    const [totalAmount, setTotalAmount] = useState(0);
+
+    const handleCheckboxChange = (setFunction) => (event) => {
+        setFunction(event.target.checked);
+    };
+    const handleOpenModal = () => {
+        setIsModalOpen(true);
+    };
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+    };
     const [dtStartFilter, setDtStartFilter] = useState(
         moment().startOf('month').format('YYYY-MM-DD')
     );
     const [dtEndFilter, setDtEndFilter] = useState(
         moment().endOf('month').format('YYYY-MM-DD')
     );
-    let [statusFilter, setStatusFilter] = useState([1, 2, 3]);
     const [isOpen, setIsOpen] = useState(false);
     const [isPartiallyPaid, setIsPartiallyPaid] = useState(false);
     const [isPaid, setIsPaid] = useState(false);
-    const [queryFindSuppliers, setQueryFindSuppliers] = useState('');
-    const [selectedSupplier, setSelectedSupplier] = useState(null);
-    const [suppliers, setSuppliers] = useState([]);
+    const [billData, setBillData] = useState([]);
+    const [totalAmount, setTotalAmount] = useState(0);
 
-    const handleCheckboxChange = (setFunction) => (event) => {
-        setFunction(event.target.checked);
-    };
-
-    const handleOpenModal = () => {
-        setIsModalOpen(true);
-    };
-
-    const handleCloseModal = () => {
-        setIsModalOpen(false);
-    };
-    let token;
-    if (typeof window !== 'undefined') {
-        token = window.localStorage.getItem('token');
-    }
-
-    console.log(statusFilter);
-
-    const filterBillsToPay = async () => {
-        let statusFilter = [];
-        if (isOpen) {
-            statusFilter.push(1);
-        }
-        if (isPartiallyPaid) {
-            statusFilter.push(2);
-        }
-        if (isPaid) {
-            statusFilter.push(3);
-        }
-
-        try {
-            let config = {
-                method: 'get',
-                maxBodyLength: Infinity,
-                url: `${urlApi}/billstopay/filters?companyId=${window.localStorage.getItem(
-                    'company'
-                )}`,
-                headers: {
-                    token: token,
-                },
-                params: {
-                    company: localStorage.getItem('company'),
-                    dtStart: dtStartFilter,
-                    dtEnd: dtEndFilter,
-                    status: statusFilter,
-                },
-            };
-
-            const response = await axios
-                .request(config)
-                .then((response) => {
-                    return response;
-                })
-                .catch((error) => {
-                    console.log(error);
-                });
-
-            setBillData(response.data.length > 0 ? response.data : []);
-            // Atualize os totais sempre que os dados da conta mudarem
-            let total = 0;
-            response.data.forEach((item) => {
-                total += parseFloat(item.value);
-            });
-            setTotalAmount(total > 0 ? total : 0);
-        } catch (error) {
-            console.error('Error fetching data:', error);
-        }
-    };
-
-    const formatarData = (dueDate) => {
-        // Converte a string de data para um objeto Date
-        dueDate = moment(dueDate.slice(0, 10), 'YYYY-MM-DD').format(
-            'DD/MM/YYYY'
-        );
-        return dueDate;
-    };
-
-    const deleteBill = async (id) => {
-        try {
-            let config = {
-                method: 'delete',
-                maxBodyLength: Infinity,
-                url: `${urlApi}/billstopay`,
-                headers: {
-                    token: token,
-                },
-                params: { id: id },
-            };
-
-            await axios
-                .request(config)
-                .then((response) => {
-                    return response;
-                })
-                .catch((error) => {
-                    console.log(error);
-                });
-
-            fetchBillData();
-        } catch (error) {
-            console.error('Error fetching data:', error);
-        }
-    };
-
-    const fetchBillData = async () => {
-        try {
-            let config = {
-                method: 'get',
-                maxBodyLength: Infinity,
-                url: `${urlApi}/billstopay/filters?companyId=${window.localStorage.getItem(
-                    'company'
-                )}`,
-                headers: {
-                    token: token,
-                },
-                params: {
-                    company: localStorage.getItem('company'),
-                    dtStart: dtStartFilter,
-                    dtEnd: dtEndFilter,
-                    status: statusFilter,
-                },
-            };
-
-            const response = await axios
-                .request(config)
-                .then((response) => {
-                    return response;
-                })
-                .catch((error) => {
-                    console.log(error);
-                });
-
-            setBillData(response.data.length > 0 ? response.data : []);
-            let total = 0;
-            response.data.forEach((item) => {
-                total += parseFloat(item.value);
-            });
-            setTotalAmount(total);
-        } catch (error) {
-            console.error('Error fetching data:', error);
-        }
-    };
-
-    useEffect(() => {
-        fetchBillData();
-        const socket = io(urlApi);
-
-        socket.on('newAccountPayable', (data) => {
-            console.log(data);
-            fetchBillData();
-        });
-        return () => {
-            socket.disconnect();
-        };
-
-        const delayDebounceFn = setTimeout(() => {
-            if (queryFindSuppliers) {
-                performSearch();
-            }
-        }, 300);
-    }, [queryFindSuppliers]);
-    const performSearch = async () => {
-        try {
-            await axios
-                .get(`${urlApi}/suppliers/filter`, {
-                    headers: {
-                        token: localStorage.getItem('token'),
-                    },
-                    params: {
-                        filter: queryFindSuppliers,
-                    },
-                })
-                .then((response) => {
-                    console.log(response.data);
-                    setSuppliers(
-                        response.data.map((s) => ({
-                            value: s.id,
-                            label: s.sampleName,
-                        }))
-                    );
-                });
-        } catch (error) {
-            console.error('Erro na busca:', error);
-        }
-    };
     return (
         <Box
             maxH="100vh"
@@ -376,22 +101,6 @@ const DataTable = () => {
                                                 }
                                             />
                                         </FormLabel>
-
-                                        {/* <FormControl>
-                            <FormLabel>Fornecedor</FormLabel>
-                            <Box
-                                onChange={(e) =>
-                                    setQueryFindSuppliers(e.target.value)
-                                }
-                            >
-                                <Select
-                                    placeholder="Busque pelo fornecedor"
-                                    value={selectedSupplier}
-                                    options={suppliers}
-                                    onChange={setSelectedSupplier}
-                                />
-                            </Box>
-                        </FormControl> */}
 
                                         <CheckboxGroup
                                             colorScheme="purple"
@@ -577,4 +286,4 @@ const DataTable = () => {
     );
 };
 
-export default DataTable;
+export default ControlsBills;
