@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
-import prisma from "../../middlewares/connPrisma"
+import prisma from "../../middlewares/connPrisma";
 async function filtersSuppliers(req: Request, res: Response) {
   try {
     const requestData = extractData(req);
     await analyseData(requestData);
-    const suppliers = await getSuppliers(req, requestData);
+    const suppliers = await getSuppliers(requestData);
     res.send(suppliers);
   } catch (error) {
     console.log(error);
@@ -23,20 +23,35 @@ async function analyseData(request: any) {
   }
 }
 
-async function getSuppliers(req: any, request: any) {
+async function getSuppliers(request: any) {
   try {
+    const contentFilter = request.toLowerCase();
     let suppliers = await prisma.supplier.findMany({
       where: {
-        Entity: {
-          sampleName: {
-            contains: request,
+        OR: [
+          {
+            Entity: {
+              sampleName: {
+                contains: contentFilter,
+                mode: "insensitive",
+              },
+            },
           },
-        },
+          {
+            Entity: {
+              registerName: {
+                contains: contentFilter,
+                mode: "insensitive",
+              },
+            },
+          },
+        ],
       },
       select: {
         Entity: true,
       },
     });
+    console.log(suppliers);
     suppliers = suppliers.map((supplier: any) => supplier.Entity);
     return suppliers;
   } catch (error: any) {

@@ -195,6 +195,7 @@ const CreateBillToPay = ({ isOpen, onOpen, onClose }) => {
                                 options={typesExpenses}
                                 onChange={setSelectedTypeExpense}
                             />
+                            <small>Caso não encontre sua despesa, crie ela apenas digitando aqui e criaremos pra você, exemplo: "Despesa operacional"</small>
                         </FormControl>
 
                         <FormControl mt={4}>

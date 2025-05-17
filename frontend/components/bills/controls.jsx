@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import moment from 'moment';
+import axios from 'axios';
+import InputMask from 'react-input-mask';
 import {
     Table,
     Thead,
@@ -28,8 +30,83 @@ import {
 } from '@chakra-ui/react';
 import ImportBillToPay from '../../pages/components/financial/ImportBillToPay';
 import CreateBillToPay from '../../pages/components/financial/CreateBillToPay';
+import urlApi from '../../utils/urlApi';
+import { EditIcon } from '@chakra-ui/icons';
+import { DeleteIcon } from '@chakra-ui/icons';
 
-const ControlsBills = () => {
+const InputsEditInstallment = (item) => {
+    return (
+        <Box p={5}>
+            <FormControl id="supplier">
+                <FormLabel>Fornecedor</FormLabel>
+                <Input
+                    placeholder="Fornecedor"
+                    size="md"
+                    mb="2"
+                    defaultValue={item.Supplier.Entity.sampleName}
+                />
+            </FormControl>
+            <FormControl id="description">
+                <FormLabel>Descrição</FormLabel>
+                <Input
+                    placeholder="Descrição"
+                    size="md"
+                    mb="2"
+                    defaultValue={item.description}
+                />
+            </FormControl>
+            <FormControl id="value">
+                <FormLabel>Valor</FormLabel>
+                <InputMask
+                    mask="9999999999.99"
+                    maskChar={null}
+                    defaultValue={item.value}
+                >
+                    {() => (
+                        <Input
+                            placeholder="Valor"
+                            size="md"
+                            mb="2"
+                            defaultValue={item.value}
+                        />
+                    )}
+                </InputMask>
+            </FormControl>
+            <FormControl id="dueDate">
+                <FormLabel>Data de vencimento</FormLabel>
+
+                <InputMask
+                    mask="99/99/9999"
+                    maskChar={null}
+                    defaultValue={moment(item.dueDate).format('DD/MM/YYYY')}
+                >
+                    {() => (
+                        <Input
+                            placeholder="Data de vencimento"
+                            size="md"
+                            mb="2"
+                        />
+                    )}
+                </InputMask>
+            </FormControl>
+            <FormControl id="status">
+                <FormLabel>Status</FormLabel>
+                <Input
+                    placeholder="Status"
+                    size="md"
+                    mb="2"
+                    defaultValue={status[item.status]}
+                />
+            </FormControl>
+            <Button colorScheme="blue" mr={3}>
+                Salvar
+            </Button>
+            <Button colorScheme="red">Cancelar</Button>
+        </Box>
+    );
+};
+
+const ControlsBills = ({ type }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const handleCheckboxChange = (setFunction) => (event) => {
@@ -47,6 +124,118 @@ const ControlsBills = () => {
     const [dtEndFilter, setDtEndFilter] = useState(
         moment().endOf('month').format('YYYY-MM-DD')
     );
+    const formatarData = (dueDate) => {
+        // Converte a string de data para um objeto Date
+        dueDate = moment(dueDate.slice(0, 10), 'YYYY-MM-DD').format(
+            'DD/MM/YYYY'
+        );
+        return dueDate;
+    };
+
+    let token;
+    if (typeof window !== 'undefined') {
+        token = window.localStorage.getItem('token');
+    }
+
+    const filterBillsToPay = async () => {
+        let statusFilter = [];
+        if (isOpen) {
+            statusFilter.push(1);
+        }
+        if (isPartiallyPaid) {
+            statusFilter.push(2);
+        }
+        if (isPaid) {
+            statusFilter.push(3);
+        }
+
+        try {
+            let config = {
+                method: 'get',
+                maxBodyLength: Infinity,
+                url: `${urlApi}/billstopay/filters?companyId=${window.localStorage.getItem(
+                    'company'
+                )}`,
+                headers: {
+                    token: token,
+                },
+                params: {
+                    company: localStorage.getItem('company'),
+                    dtStart: dtStartFilter,
+                    dtEnd: dtEndFilter,
+                    status: statusFilter,
+                },
+            };
+
+            const response = await axios
+                .request(config)
+                .then((response) => {
+                    return response;
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+
+            setBillData(response.data.length > 0 ? response.data : []);
+            // Atualize os totais sempre que os dados da conta mudarem
+            let total = 0;
+            response.data.forEach((item) => {
+                total += parseFloat(item.value);
+            });
+            setTotalAmount(total > 0 ? total : 0);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    };
+
+    const filterBillsToReceive = async () => {
+        let statusFilter = [];
+        if (isOpen) {
+            statusFilter.push(1);
+        }
+        if (isPartiallyPaid) {
+            statusFilter.push(2);
+        }
+        if (isPaid) {
+            statusFilter.push(3);
+        }
+        try {
+            let config = {
+                method: 'get',
+                maxBodyLength: Infinity,
+                url: `${urlApi}/billstoreceive/filters?companyId=${window.localStorage.getItem(
+                    'company'
+                )}`,
+                headers: {
+                    token: token,
+                },
+                params: {
+                    company: localStorage.getItem('company'),
+                    dtStart: dtStartFilter,
+                    dtEnd: dtEndFilter,
+                    status: statusFilter,
+                },
+            };
+            const response = await axios
+                .request(config)
+                .then((response) => {
+                    return response;
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+            setBillData(response.data.length > 0 ? response.data : []);
+            // Atualize os totais sempre que os dados da conta mudarem
+            let total = 0;
+            response.data.forEach((item) => {
+                total += parseFloat(item.value);
+            });
+            setTotalAmount(total > 0 ? total : 0);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    };
+
     const [isOpen, setIsOpen] = useState(false);
     const [isPartiallyPaid, setIsPartiallyPaid] = useState(false);
     const [isPaid, setIsPaid] = useState(false);
@@ -64,7 +253,9 @@ const ControlsBills = () => {
                     <Flex justifyContent="flex-end">
                         <ImportBillToPay />
                         <Button mb="4" mr="3" ml="3" onClick={handleOpenModal}>
-                            Lançar conta(s)
+                            {type === 'billstoreceive'
+                                ? 'Criar conta a receber'
+                                : 'Criar conta a pagar'}
                         </Button>
                         <Popover>
                             <PopoverTrigger>
@@ -138,7 +329,11 @@ const ControlsBills = () => {
                                             w="100%"
                                             colorScheme="purple"
                                             mr={3}
-                                            onClick={() => filterBillsToPay()}
+                                            onClick={() => {
+                                                return type === 'billstoreceive'
+                                                    ? filterBillsToReceive()
+                                                    : filterBillsToPay();
+                                            }}
                                         >
                                             Filtrar
                                         </Button>
@@ -175,7 +370,11 @@ const ControlsBills = () => {
                             <Tr>
                                 <Th>Descrição</Th>
                                 <Th>Valor</Th>
-                                <Th>Fornecedor</Th>
+                                <Th>
+                                    {type === 'billstoreceive'
+                                        ? 'Cliente'
+                                        : 'Fornecedor'}
+                                </Th>
                                 <Th>Data de Vencimento</Th>
                                 <Th>Status</Th>
                                 <Th>Ações</Th>
