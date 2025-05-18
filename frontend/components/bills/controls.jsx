@@ -1,12 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import moment from 'moment';
 import axios from 'axios';
-import CreateBillToPay from './components/financial/CreateBillToPay';
-import { DeleteIcon } from '@chakra-ui/icons';
-import io from 'socket.io-client';
-import urlApi from '../utils/urlApi';
 import InputMask from 'react-input-mask';
-import ImportBillToPay from './components/financial/ImportBillToPay';
-import ControlsBills from '../components/bills/controls';
 import {
     Table,
     Thead,
@@ -33,25 +28,11 @@ import {
     Checkbox,
     CheckboxGroup,
 } from '@chakra-ui/react';
-import { Select } from 'chakra-react-select';
-
+import ImportBillToPay from '../../pages/components/financial/ImportBillToPay';
+import CreateBillToPay from '../../pages/components/financial/CreateBillToPay';
+import urlApi from '../../utils/urlApi';
 import { EditIcon } from '@chakra-ui/icons';
-
-import moment from 'moment';
-
-const status = {
-    1: 'Em aberto',
-    2: 'Parcialmente pago',
-    3: 'Pago',
-};
-
-function handleFileChange(event) {
-    const file = event.target.files[0];
-    if (file) {
-        // Faça algo com o arquivo aqui
-        console.log(file.name);
-    }
-}
+import { DeleteIcon } from '@chakra-ui/icons';
 
 const InputsEditInstallment = (item) => {
     return (
@@ -125,41 +106,36 @@ const InputsEditInstallment = (item) => {
     );
 };
 
-const DataTable = () => {
+const ControlsBills = ({ type }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [billData, setBillData] = useState([]);
-    const [totalAmount, setTotalAmount] = useState(0);
+
+    const handleCheckboxChange = (setFunction) => (event) => {
+        setFunction(event.target.checked);
+    };
+    const handleOpenModal = () => {
+        setIsModalOpen(true);
+    };
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+    };
     const [dtStartFilter, setDtStartFilter] = useState(
         moment().startOf('month').format('YYYY-MM-DD')
     );
     const [dtEndFilter, setDtEndFilter] = useState(
         moment().endOf('month').format('YYYY-MM-DD')
     );
-    let [statusFilter, setStatusFilter] = useState([1, 2, 3]);
-    const [isOpen, setIsOpen] = useState(false);
-    const [isPartiallyPaid, setIsPartiallyPaid] = useState(false);
-    const [isPaid, setIsPaid] = useState(false);
-    const [queryFindSuppliers, setQueryFindSuppliers] = useState('');
-    const [selectedSupplier, setSelectedSupplier] = useState(null);
-    const [suppliers, setSuppliers] = useState([]);
-
-    const handleCheckboxChange = (setFunction) => (event) => {
-        setFunction(event.target.checked);
+    const formatarData = (dueDate) => {
+        // Converte a string de data para um objeto Date
+        dueDate = moment(dueDate.slice(0, 10), 'YYYY-MM-DD').format(
+            'DD/MM/YYYY'
+        );
+        return dueDate;
     };
 
-    const handleOpenModal = () => {
-        setIsModalOpen(true);
-    };
-
-    const handleCloseModal = () => {
-        setIsModalOpen(false);
-    };
     let token;
     if (typeof window !== 'undefined') {
         token = window.localStorage.getItem('token');
     }
-
-    console.log(statusFilter);
 
     const filterBillsToPay = async () => {
         let statusFilter = [];
@@ -212,47 +188,22 @@ const DataTable = () => {
         }
     };
 
-    const formatarData = (dueDate) => {
-        // Converte a string de data para um objeto Date
-        dueDate = moment(dueDate.slice(0, 10), 'YYYY-MM-DD').format(
-            'DD/MM/YYYY'
-        );
-        return dueDate;
-    };
-
-    const deleteBill = async (id) => {
-        try {
-            let config = {
-                method: 'delete',
-                maxBodyLength: Infinity,
-                url: `${urlApi}/billstopay`,
-                headers: {
-                    token: token,
-                },
-                params: { id: id },
-            };
-
-            await axios
-                .request(config)
-                .then((response) => {
-                    return response;
-                })
-                .catch((error) => {
-                    console.log(error);
-                });
-
-            fetchBillData();
-        } catch (error) {
-            console.error('Error fetching data:', error);
+    const filterBillsToReceive = async () => {
+        let statusFilter = [];
+        if (isOpen) {
+            statusFilter.push(1);
         }
-    };
-
-    const fetchBillData = async () => {
+        if (isPartiallyPaid) {
+            statusFilter.push(2);
+        }
+        if (isPaid) {
+            statusFilter.push(3);
+        }
         try {
             let config = {
                 method: 'get',
                 maxBodyLength: Infinity,
-                url: `${urlApi}/billstopay/filters?companyId=${window.localStorage.getItem(
+                url: `${urlApi}/billstoreceive/filters?companyId=${window.localStorage.getItem(
                     'company'
                 )}`,
                 headers: {
@@ -265,7 +216,6 @@ const DataTable = () => {
                     status: statusFilter,
                 },
             };
-
             const response = await axios
                 .request(config)
                 .then((response) => {
@@ -274,60 +224,24 @@ const DataTable = () => {
                 .catch((error) => {
                     console.log(error);
                 });
-
             setBillData(response.data.length > 0 ? response.data : []);
+            // Atualize os totais sempre que os dados da conta mudarem
             let total = 0;
             response.data.forEach((item) => {
                 total += parseFloat(item.value);
             });
-            setTotalAmount(total);
+            setTotalAmount(total > 0 ? total : 0);
         } catch (error) {
             console.error('Error fetching data:', error);
         }
     };
 
-    useEffect(() => {
-        fetchBillData();
-        const socket = io(urlApi);
+    const [isOpen, setIsOpen] = useState(false);
+    const [isPartiallyPaid, setIsPartiallyPaid] = useState(false);
+    const [isPaid, setIsPaid] = useState(false);
+    const [billData, setBillData] = useState([]);
+    const [totalAmount, setTotalAmount] = useState(0);
 
-        socket.on('newAccountPayable', (data) => {
-            console.log(data);
-            fetchBillData();
-        });
-        return () => {
-            socket.disconnect();
-        };
-
-        const delayDebounceFn = setTimeout(() => {
-            if (queryFindSuppliers) {
-                performSearch();
-            }
-        }, 300);
-    }, [queryFindSuppliers]);
-    const performSearch = async () => {
-        try {
-            await axios
-                .get(`${urlApi}/suppliers/filter`, {
-                    headers: {
-                        token: localStorage.getItem('token'),
-                    },
-                    params: {
-                        filter: queryFindSuppliers,
-                    },
-                })
-                .then((response) => {
-                    console.log(response.data);
-                    setSuppliers(
-                        response.data.map((s) => ({
-                            value: s.id,
-                            label: s.sampleName,
-                        }))
-                    );
-                });
-        } catch (error) {
-            console.error('Erro na busca:', error);
-        }
-    };
     return (
         <Box
             maxH="100vh"
@@ -339,7 +253,9 @@ const DataTable = () => {
                     <Flex justifyContent="flex-end">
                         <ImportBillToPay />
                         <Button mb="4" mr="3" ml="3" onClick={handleOpenModal}>
-                            Lançar conta(s)
+                            {type === 'billstoreceive'
+                                ? 'Criar conta a receber'
+                                : 'Criar conta a pagar'}
                         </Button>
                         <Popover>
                             <PopoverTrigger>
@@ -377,22 +293,6 @@ const DataTable = () => {
                                             />
                                         </FormLabel>
 
-                                        {/* <FormControl>
-                            <FormLabel>Fornecedor</FormLabel>
-                            <Box
-                                onChange={(e) =>
-                                    setQueryFindSuppliers(e.target.value)
-                                }
-                            >
-                                <Select
-                                    placeholder="Busque pelo fornecedor"
-                                    value={selectedSupplier}
-                                    options={suppliers}
-                                    onChange={setSelectedSupplier}
-                                />
-                            </Box>
-                        </FormControl> */}
-
                                         <CheckboxGroup
                                             colorScheme="purple"
                                             m="5"
@@ -429,7 +329,11 @@ const DataTable = () => {
                                             w="100%"
                                             colorScheme="purple"
                                             mr={3}
-                                            onClick={() => filterBillsToPay()}
+                                            onClick={() => {
+                                                return type === 'billstoreceive'
+                                                    ? filterBillsToReceive()
+                                                    : filterBillsToPay();
+                                            }}
                                         >
                                             Filtrar
                                         </Button>
@@ -466,7 +370,11 @@ const DataTable = () => {
                             <Tr>
                                 <Th>Descrição</Th>
                                 <Th>Valor</Th>
-                                <Th>Fornecedor</Th>
+                                <Th>
+                                    {type === 'billstoreceive'
+                                        ? 'Cliente'
+                                        : 'Fornecedor'}
+                                </Th>
                                 <Th>Data de Vencimento</Th>
                                 <Th>Status</Th>
                                 <Th>Ações</Th>
@@ -577,4 +485,4 @@ const DataTable = () => {
     );
 };
 
-export default DataTable;
+export default ControlsBills;

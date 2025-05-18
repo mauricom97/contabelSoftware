@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
-import CreateEntity from "./components/CreateEntity";
-import urlApi from "../utils/urlApi";
-import axios from "axios";
+import React, { useState, useEffect } from 'react';
+import CreateEntity from './components/CreateEntity';
+import urlApi from '../utils/urlApi';
+import axios from 'axios';
 import {
     Box,
     Heading,
@@ -11,12 +11,12 @@ import {
     Text,
     Icon,
     Button,
-} from "@chakra-ui/react";
-import io from "socket.io-client";
+} from '@chakra-ui/react';
+import io from 'socket.io-client';
 
-import Sidebar from "../pages/components/Sidebar";
+import Sidebar from '../pages/components/Sidebar';
 
-import { FaPhone, FaEnvelope } from "react-icons/fa";
+import { FaPhone, FaEnvelope } from 'react-icons/fa';
 
 const ListagemEntidades = () => {
     const [entities, setEntities] = useState([]);
@@ -32,15 +32,15 @@ const ListagemEntidades = () => {
 
     async function fetEntities() {
         let config = {
-            method: "get",
+            method: 'get',
             maxBodyLength: Infinity,
             url: `${urlApi}/entity`,
             headers: {
-                token: localStorage.getItem("token"),
-                "Content-Type": "application/json",
+                token: localStorage.getItem('token'),
+                'Content-Type': 'application/json',
             },
             params: {
-                company: localStorage.getItem("company"),
+                company: localStorage.getItem('company'),
             },
         };
         axios
@@ -59,7 +59,7 @@ const ListagemEntidades = () => {
         fetEntities(entities);
 
         const socket = io(urlApi);
-        socket.on("newEntity", (data) => {
+        socket.on('newEntity', (data) => {
             console.log(data);
             fetEntities();
         });
@@ -67,7 +67,6 @@ const ListagemEntidades = () => {
 
     return (
         <Box>
-            {/* <Sidebar /> */}
             <Box
                 p={6}
                 position="absolute"
@@ -97,8 +96,8 @@ const ListagemEntidades = () => {
                             bg="white"
                             transition="transform 0.3s ease-in-out"
                             _hover={{
-                                cursor: "pointer",
-                                transform: "scale(1.05)",
+                                cursor: 'pointer',
+                                transform: 'scale(1.05)',
                             }}
                         >
                             <Heading as="h3" size="md" mb={3}>

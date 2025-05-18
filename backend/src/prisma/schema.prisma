@@ -67,6 +67,7 @@ model CompanyEntity {
 
 model Client {
   idEntity Int    @id
+  BillsToReceive BillsToReceive[]
   Entity   Entity @relation(fields: [idEntity], references: [id])
 }
 
@@ -97,4 +98,16 @@ model BillsToPay {
   idSupplier  Int      @default(0)
   Company     Company  @relation(fields: [companyId], references: [id])
   Supplier    Supplier @relation(fields: [idSupplier], references: [idEntity])
+}
+
+model BillsToReceive {
+  id          Int      @id @default(autoincrement())
+  description String?
+  dueDate     DateTime
+  value       Float
+  status      Int
+  companyId   Int
+  idClient    Int      @default(0)
+  Company     Company  @relation(fields: [companyId], references: [id])
+  Client      Client   @relation(fields: [idClient], references: [idEntity])
 }
