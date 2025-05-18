@@ -23,6 +23,7 @@ import {
     IconButton,
     Popover,
     PopoverTrigger,
+    Select as ChakraSelect,
     PopoverContent,
     PopoverArrow,
     PopoverCloseButton,
@@ -33,7 +34,6 @@ import {
     Checkbox,
     CheckboxGroup,
 } from '@chakra-ui/react';
-import { Select } from 'chakra-react-select';
 
 import { EditIcon } from '@chakra-ui/icons';
 
@@ -53,16 +53,19 @@ function handleFileChange(event) {
     }
 }
 
-const InputsEditInstallment = (item) => {
+const InputsEditInstallment = ({ bill }) => {
+    const [status, setStatus] = useState(bill.status.toString());
+    
     return (
         <Box p={5}>
             <FormControl id="supplier">
                 <FormLabel>Fornecedor</FormLabel>
                 <Input
+                    disabled
                     placeholder="Fornecedor"
                     size="md"
                     mb="2"
-                    defaultValue={item.Supplier.Entity.sampleName}
+                    defaultValue={bill.Supplier.Entity.sampleName}
                 />
             </FormControl>
             <FormControl id="description">
@@ -71,33 +74,32 @@ const InputsEditInstallment = (item) => {
                     placeholder="Descrição"
                     size="md"
                     mb="2"
-                    defaultValue={item.description}
+                    defaultValue={bill.description}
                 />
             </FormControl>
             <FormControl id="value">
                 <FormLabel>Valor</FormLabel>
                 <InputMask
-                    mask="9999999999.99"
+                    mask="R$ 999.999,99"
                     maskChar={null}
-                    defaultValue={item.value}
+                    defaultValue={bill.value}
                 >
                     {() => (
                         <Input
                             placeholder="Valor"
                             size="md"
                             mb="2"
-                            defaultValue={item.value}
+                            defaultValue={bill.value}
                         />
                     )}
                 </InputMask>
             </FormControl>
             <FormControl id="dueDate">
                 <FormLabel>Data de vencimento</FormLabel>
-
                 <InputMask
                     mask="99/99/9999"
                     maskChar={null}
-                    defaultValue={moment(item.dueDate).format('DD/MM/YYYY')}
+                    defaultValue={moment(bill.dueDate).format('DD/MM/YYYY')}
                 >
                     {() => (
                         <Input
@@ -110,12 +112,16 @@ const InputsEditInstallment = (item) => {
             </FormControl>
             <FormControl id="status">
                 <FormLabel>Status</FormLabel>
-                <Input
-                    placeholder="Status"
-                    size="md"
+                <ChakraSelect
+                    placeholder="Selecione o status"
+                    value={status}
+                    onChange={(e) => setStatus(e.target.value)}
                     mb="2"
-                    defaultValue={status[item.status]}
-                />
+                >
+                    <option value="1">Em aberto</option>
+                    <option value="2">Parcialmente pago</option>
+                    <option value="3">Pago</option>
+                </ChakraSelect>
             </FormControl>
             <Button colorScheme="blue" mr={3}>
                 Salvar
@@ -128,6 +134,7 @@ const InputsEditInstallment = (item) => {
 const DataTable = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [billData, setBillData] = useState([]);
+    console.log(JSON.stringify(billData));
     const [totalAmount, setTotalAmount] = useState(0);
     const [dtStartFilter, setDtStartFilter] = useState(
         moment().startOf('month').format('YYYY-MM-DD')
@@ -520,9 +527,7 @@ const DataTable = () => {
                                                 <PopoverContent>
                                                     <PopoverArrow />
                                                     {/* Conteúdo do Popover para edição */}
-                                                    {InputsEditInstallment(
-                                                        item
-                                                    )}
+                                                    <InputsEditInstallment bill={item} />
                                                 </PopoverContent>
                                             </Popover>
                                             <IconButton

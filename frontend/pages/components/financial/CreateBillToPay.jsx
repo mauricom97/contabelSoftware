@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { useToast } from "@chakra-ui/react";
-import urlApi from "../../../utils/urlApi";
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { useToast } from '@chakra-ui/react';
+import urlApi from '../../../utils/urlApi';
 
 import {
     Modal,
@@ -24,26 +24,27 @@ import {
     MenuButton,
     MenuList,
     MenuItem,
-} from "@chakra-ui/react";
+    Flex,
+} from '@chakra-ui/react';
 // import ChevronDownIcon from "@material-ui/icons/ChevronDown";
 
-import { Select } from "chakra-react-select";
-import moment from "moment";
+import { Select } from 'chakra-react-select';
+import moment from 'moment';
 
 const CreateBillToPay = ({ isOpen, onOpen, onClose }) => {
     const initialRef = React.useRef(null);
     const finalRef = React.useRef(null);
 
-    const [description, setDescription] = useState("");
-    const [dueDate, setDueDate] = useState("");
-    const [amount, setAmount] = useState("");
-    const [status, setStatus] = useState("");
-    const [queryFindSuppliers, setQueryFindSuppliers] = useState("");
+    const [description, setDescription] = useState('');
+    const [dueDate, setDueDate] = useState('');
+    const [amount, setAmount] = useState('');
+    const [status, setStatus] = useState('');
+    const [queryFindSuppliers, setQueryFindSuppliers] = useState('');
     const [suppliers, setSuppliers] = useState([]);
     const [selectedSupplier, setSelectedSupplier] = useState(null);
     const [selectedTypeExpense, setSelectedTypeExpense] = useState(null);
     const [typesExpenses, setTypesExpenses] = useState([]);
-    const [intervalBill, setIntervalBill] = useState("Intervalo");
+    const [intervalBill, setIntervalBill] = useState('Intervalo');
     const [numberReleases, setNumberReleases] = useState(1);
 
     useEffect(() => {
@@ -61,7 +62,7 @@ const CreateBillToPay = ({ isOpen, onOpen, onClose }) => {
             await axios
                 .get(`${urlApi}/suppliers/filter`, {
                     headers: {
-                        token: localStorage.getItem("token"),
+                        token: localStorage.getItem('token'),
                     },
                     params: {
                         filter: queryFindSuppliers,
@@ -73,11 +74,11 @@ const CreateBillToPay = ({ isOpen, onOpen, onClose }) => {
                         response.data.map((s) => ({
                             value: s.id,
                             label: s.sampleName,
-                        })),
+                        }))
                     );
                 });
         } catch (error) {
-            console.error("Erro na busca:", error);
+            console.error('Erro na busca:', error);
         }
     };
 
@@ -87,17 +88,17 @@ const CreateBillToPay = ({ isOpen, onOpen, onClose }) => {
 
         let gap = null;
         switch (intervalBill) {
-            case "Dias":
-                gap = "day";
+            case 'Dias':
+                gap = 'day';
                 break;
-            case "Semanas":
-                gap = "week";
+            case 'Semanas':
+                gap = 'week';
                 break;
-            case "Meses":
-                gap = "month";
+            case 'Meses':
+                gap = 'month';
                 break;
-            case "Anos":
-                gap = "year";
+            case 'Anos':
+                gap = 'year';
                 break;
             default:
                 break;
@@ -106,27 +107,27 @@ const CreateBillToPay = ({ isOpen, onOpen, onClose }) => {
         console.log(numberReleases);
 
         for (let i = 0; i < numberReleases; i++) {
-            let day = moment(dueDate).add(i, gap).format("YYYY-MM-DD");
+            let day = moment(dueDate).add(i, gap).format('YYYY-MM-DD');
             releases.push({
                 description: description,
                 value: parseFloat(amount),
                 dueDate: day,
                 status: parseInt(status),
-                companyId: parseInt(window.localStorage.getItem("company")),
+                companyId: parseInt(window.localStorage.getItem('company')),
                 idSupplier: parseInt(selectedSupplier.value),
             });
         }
 
         let token;
-        if (typeof window !== "undefined") {
-            token = window.localStorage.getItem("token");
+        if (typeof window !== 'undefined') {
+            token = window.localStorage.getItem('token');
         }
         const config = {
-            method: "post",
+            method: 'post',
             url: `${urlApi}/billstopay`,
             headers: {
                 token: token,
-                "Content-Type": "application/json",
+                'Content-Type': 'application/json',
             },
             data: releases,
         };
@@ -135,9 +136,9 @@ const CreateBillToPay = ({ isOpen, onOpen, onClose }) => {
             .request(config)
             .then((response) => {
                 toast({
-                    title: "Conta criada com sucesso.",
-                    description: "Sua nova despesa foi criada com sucesso.",
-                    status: "success",
+                    title: 'Conta criada com sucesso.',
+                    description: 'Sua nova despesa foi criada com sucesso.',
+                    status: 'success',
                     duration: 9000,
                     isClosable: true,
                 });
@@ -145,7 +146,7 @@ const CreateBillToPay = ({ isOpen, onOpen, onClose }) => {
                 onClose();
             })
             .catch((error) => {
-                console.error("Erro ao cadastrar despesa:", error);
+                console.error('Erro ao cadastrar despesa:', error);
             });
     };
 
@@ -191,11 +192,30 @@ const CreateBillToPay = ({ isOpen, onOpen, onClose }) => {
                             <FormLabel>Tipo de despesa</FormLabel>
                             <Select
                                 placeholder="Tipo de despesa"
-                                value={selectedTypeExpense}
-                                options={typesExpenses}
-                                onChange={setSelectedTypeExpense}
-                            />
-                            <small>Caso não encontre sua despesa, crie ela apenas digitando aqui e criaremos pra você, exemplo: "Despesa operacional"</small>
+                                value={selectedTypeExpense || ''} // ⚠️ Garanta que não seja undefined
+                                onChange={(e) =>
+                                    setSelectedTypeExpense(e.target.value)
+                                }
+                                flex="1"
+                            >
+                                {typesExpenses?.map(
+                                    (
+                                        option // ⚠️ Use optional chaining
+                                    ) => (
+                                        <option
+                                            key={option.value}
+                                            value={option.value}
+                                        >
+                                            {option.label}
+                                        </option>
+                                    )
+                                )}
+                            </Select>
+                            <small>
+                                Caso não encontre sua despesa, crie ela apenas
+                                digitando aqui e criaremos pra você, exemplo:
+                                "Despesa operacional"
+                            </small>
                         </FormControl>
 
                         <FormControl mt={4}>
@@ -256,28 +276,28 @@ const CreateBillToPay = ({ isOpen, onOpen, onClose }) => {
                                         <MenuList>
                                             <MenuItem
                                                 onClick={() =>
-                                                    setIntervalBill("Dias")
+                                                    setIntervalBill('Dias')
                                                 }
                                             >
                                                 Dias
                                             </MenuItem>
                                             <MenuItem
                                                 onClick={() =>
-                                                    setIntervalBill("Semanas")
+                                                    setIntervalBill('Semanas')
                                                 }
                                             >
                                                 Semanas
                                             </MenuItem>
                                             <MenuItem
                                                 onClick={() =>
-                                                    setIntervalBill("Meses")
+                                                    setIntervalBill('Meses')
                                                 }
                                             >
                                                 Meses
                                             </MenuItem>
                                             <MenuItem
                                                 onClick={() =>
-                                                    setIntervalBill("Anos")
+                                                    setIntervalBill('Anos')
                                                 }
                                             >
                                                 Anos
@@ -293,7 +313,7 @@ const CreateBillToPay = ({ isOpen, onOpen, onClose }) => {
                         <Button
                             onClick={registerBill}
                             colorScheme="purple"
-                            bg={"#8046A2"}
+                            bg={'#8046A2'}
                             mr={3}
                             disabled={
                                 !description || !dueDate || !amount || !status
