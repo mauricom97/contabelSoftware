@@ -104,8 +104,6 @@ const CreateBillToPay = ({ isOpen, onOpen, onClose }) => {
                 break;
         }
 
-        console.log(numberReleases);
-
         for (let i = 0; i < numberReleases; i++) {
             let day = moment(dueDate).add(i, gap).format('YYYY-MM-DD');
             releases.push({

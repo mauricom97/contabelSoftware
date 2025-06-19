@@ -144,7 +144,7 @@ export default function Company() {
                     onClick={handleSubmit}
                     _hover={{ bg: "#B186C7" }}
                 >
-                    CREATE COMPANY
+                    CRIAR EMPRESA
                 </Button>
             </VStack>
             <ButtonBack />

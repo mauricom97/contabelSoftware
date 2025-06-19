@@ -63,6 +63,7 @@ const SignUp = () => {
                 });
         } catch (error) {
             console.error(error);
+            alert("Erro ao criar conta. Tente novamente.", JSON.stringify(error));
             // Handle errors as needed
         }
     };
@@ -146,7 +147,7 @@ const SignUp = () => {
                     onClick={validityDataUser}
                     _hover={{ bg: "#B186C7" }}
                 >
-                    CREATE ACCOUNT
+                    CRIAR CONTA
                 </Button>
             </VStack>
             <Link onClick={() => window.history.back()}>
