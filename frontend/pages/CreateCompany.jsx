@@ -42,7 +42,7 @@ export default function Company() {
                 },
             })
             .then((response) => {
-                router.push("/dashboard");
+                router.push("/Dashboard");
                 localStorage.setItem("company", response.data.id);
             });
     };

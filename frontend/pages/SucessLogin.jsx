@@ -44,7 +44,7 @@ export default function SuccessPage() {
             localStorage.setItem("user", data.id);
             localStorage.setItem("company", data.companyId);
             setSuccess(true);
-            setTimeout(() => router.push("/dashboard"), 1500);
+            setTimeout(() => router.push("/Dashboard"), 1500);
           } else {
             console.error("Erro ao fazer login:", response.statusText);
             setIsLoading(false);

@@ -44,7 +44,7 @@ export default function Login () {
                 localStorage.setItem("token", data.token);
                 localStorage.setItem("user", data.id);
                 localStorage.setItem("company", data.companyId);
-                router.push("/dashboard");
+                router.push("/Dashboard");
             } else {
                 console.error("Erro ao fazer login:", response.statusText);
             }
@@ -106,7 +106,7 @@ export default function Login () {
                         </InputRightElement>
                     </InputGroup>
                     <Box textAlign="left" w="full">
-                        <Link onClick={() => router.push("/recoveryPassword")} color="blue.500" fontSize="sm">
+                        <Link onClick={() => router.push("/RecoveryPassword")} color="blue.500" fontSize="sm">
                             Esqueci minha senha <ExternalLinkIcon mx="2px" />
                         </Link>
                     </Box>

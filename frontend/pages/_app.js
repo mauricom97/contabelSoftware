@@ -8,17 +8,17 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
     const router = useRouter();
     const pagesWithoutSidebar = [
         "/",
-        "/login",
+        "/Login",
         "/CreateUser",
-        "/createcompany",
+        "/CreateCompany",
         "/SucessLogin",
-        "/recoveryPassword",
+        "/RecoveryPassword",
     ];
     const showSidebar =
         !pagesWithoutSidebar.includes(router.pathname);
 
     useEffect(() => {
-        if (redirectLogin()) router.push("/login");
+        if (redirectLogin()) router.push("/Login");
     }, []);
 
     return (
@@ -33,11 +33,11 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
     function redirectLogin() {
         const token = localStorage.getItem("token");
         const pagesWithAuthenticated = [
-            "/createcompany",
-            "/billstopay",
+            "/CreateCompany",
+            "/BillsToPay",
             "/CreateUser",
-            "/dashboard",
-            "/entities",
+            "/Dashboard",
+            "/Entities",
         ];
         const pageWithAuthenticated = pagesWithAuthenticated.includes(
             router.pathname,

@@ -18,7 +18,7 @@ const Header = () => {
                 Controle Prático
             </Heading>
             <Stack direction="row" spacing={2}>
-                <Link href="/login">
+                <Link href="/Login">
                     <Tooltip label="Login" fontSize="md">
                         <IconButton
                             aria-label="Login"
