@@ -59,7 +59,7 @@ const SignUp = () => {
                 .then((response) => {
                     localStorage.setItem("token", response.data.token);
                     localStorage.setItem("user", response.data.id);
-                    router.push("/createcompany");
+                    router.push("/CreateCompany");
                 });
         } catch (error) {
             console.error(error);
