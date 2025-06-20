@@ -55,7 +55,50 @@ function handleFileChange(event) {
 
 const InputsEditInstallment = ({ bill }) => {
     const [status, setStatus] = useState(bill.status.toString());
-    
+    const [description, setDescription] = useState(bill.description);
+    const [value, setValue] = useState(bill.value);
+    const [dueDate, setDueDate] = useState(
+        moment(bill.dueDate).format('DD/MM/YYYY')
+    );
+
+    const editBill = () => {
+        alert(
+            `Descrição: ${description}, Valor: ${value}, Data de vencimento: ${dueDate}, Status: ${status}`
+        );
+        let token;
+        if (typeof window !== 'undefined') {
+            token = window.localStorage.getItem('token');
+        }
+        try {
+            let config = {
+                method: 'put',
+                maxBodyLength: Infinity,
+                url: `${urlApi}/billstopay`,
+                headers: {
+                    token: token,
+                },
+                data: {
+                    id: bill.id,
+                    description: description,
+                    value: value,
+                    dueDate: dueDate,
+                    status: status,
+                },
+            };
+
+            axios
+                .request(config)
+                .then((response) => {
+                    console.log(JSON.stringify(response.data));
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    };
+
     return (
         <Box p={5}>
             <FormControl id="supplier">
@@ -73,6 +116,8 @@ const InputsEditInstallment = ({ bill }) => {
                 <Input
                     placeholder="Descrição"
                     size="md"
+                    onChange={(e) => setDescription(e.target.value)}
+                    value={description}
                     mb="2"
                     defaultValue={bill.description}
                 />
@@ -123,7 +168,14 @@ const InputsEditInstallment = ({ bill }) => {
                     <option value="3">Pago</option>
                 </ChakraSelect>
             </FormControl>
-            <Button colorScheme="blue" mr={3}>
+            <Button
+                colorScheme="blue"
+                mr={3}
+                onClick={() => {
+                    editBill();
+                    window.location.reload();
+                }}
+            >
                 Salvar
             </Button>
             <Button colorScheme="red">Cancelar</Button>
@@ -527,7 +579,9 @@ const DataTable = () => {
                                                 <PopoverContent>
                                                     <PopoverArrow />
                                                     {/* Conteúdo do Popover para edição */}
-                                                    <InputsEditInstallment bill={item} />
+                                                    <InputsEditInstallment
+                                                        bill={item}
+                                                    />
                                                 </PopoverContent>
                                             </Popover>
                                             <IconButton

@@ -7,7 +7,7 @@ const SignupSuccess = () => {
 
     const handleLogin = () => {
         // Redirecionar para a página de login
-        router.push("/login");
+        router.push("/Login");
     };
 
     return (

@@ -229,7 +229,7 @@ const Sidebar = () => {
                     borderRadius="md"
                     _hover={{ bg: "#B186C7" }}
                 >
-                    <Link href="/dashboard">
+                    <Link href="/Dashboard">
                         <Flex align="center">
                             <FaHome size={25} />
                             <Text ml="2">Home</Text>
@@ -244,7 +244,7 @@ const Sidebar = () => {
                     borderRadius="md"
                     _hover={{ bg: "#B186C7" }}
                 >
-                    <Link href="/entities">
+                    <Link href="/Entities">
                         <Flex align="center">
                             <BiSolidUserCircle size={25} />
                             <Text ml="2">Parceiros comerciais</Text>
@@ -260,7 +260,7 @@ const Sidebar = () => {
                     borderRadius="md"
                     _hover={{ bg: "#B186C7" }}
                 >
-                    <Link href="/billstopay">
+                    <Link href="/BillsToPay">
                         <Flex align="center">
                             <GiPayMoney size={25} />
                             <Text ml="2">Contas a Pagar</Text>
@@ -276,7 +276,7 @@ const Sidebar = () => {
                     borderRadius="md"
                     _hover={{ bg: "#B186C7" }}
                 >
-                    <Link href="/billstoreceive">
+                    <Link href="/BillsToReceive">
                         <Flex align="center" cursor="pointer">
                             <GiReceiveMoney size={25} />
                             <Text ml="2">Contas a Receber</Text>
@@ -292,7 +292,7 @@ const Sidebar = () => {
                     borderRadius="md"
                     _hover={{ bg: "#B186C7" }}
                 >
-                    <Link href="/paymentCounter">
+                    <Link href="/PaymentCounter">
                         <Flex align="center">
                             <MdAttachMoney size={25} />
                             <Text ml="2">Caixa</Text>
@@ -308,7 +308,7 @@ const Sidebar = () => {
                     borderRadius="md"
                     _hover={{ bg: "#B186C7" }}
                 >
-                    <Link href="/reports">
+                    <Link href="/Reports">
                         <Flex align="center">
                             <FaMoneyBillTrendUp size={25} />
                             <Text ml="2">Relatorios financeiros</Text>

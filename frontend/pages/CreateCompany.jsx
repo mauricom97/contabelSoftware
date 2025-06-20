@@ -42,7 +42,7 @@ export default function Company() {
                 },
             })
             .then((response) => {
-                router.push("/dashboard");
+                router.push("/Dashboard");
                 localStorage.setItem("company", response.data.id);
             });
     };
@@ -144,7 +144,7 @@ export default function Company() {
                     onClick={handleSubmit}
                     _hover={{ bg: "#B186C7" }}
                 >
-                    CREATE COMPANY
+                    CRIAR EMPRESA
                 </Button>
             </VStack>
             <ButtonBack />
