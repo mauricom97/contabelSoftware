@@ -1,11 +1,11 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect } from "react"; // Adicionado useRef
 import Link from "next/link";
 import axios from "axios";
 import urlApi from "../../../utils/urlApi";
 import { useSession, signOut } from "next-auth/react";
-import { InfoIcon, ExternalLinkIcon } from '@chakra-ui/icons';
+import { InfoIcon, ExternalLinkIcon, HamburgerIcon } from '@chakra-ui/icons';
 
-import { SettingsIcon, ChevronDownIcon } from "@chakra-ui/icons";
+import { SettingsIcon } from "@chakra-ui/icons";
 import { useRouter } from "next/router";
 
 import CreateCompany from "../../components/company/create";
@@ -21,6 +21,13 @@ import {
     Center,
     Flex,
     Image,
+    Drawer,
+    DrawerBody,
+    DrawerHeader,
+    DrawerOverlay,
+    DrawerContent,
+    DrawerCloseButton,
+    useDisclosure
 } from "@chakra-ui/react";
 import { TbBuilding } from "react-icons/tb";
 import { FaRegPlusSquare, FaHome } from "react-icons/fa";
@@ -30,21 +37,22 @@ import { FaMoneyBillTrendUp } from "react-icons/fa6";
 import { BiSolidUserCircle } from "react-icons/bi";
 
 const Sidebar = () => {
-    const sidebarRef = useRef();
+    const sidebarRef = useRef(); // Reintroduzido useRef
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [companiesList, setCompaniesList] = useState([]);
     const [companyName, setCompanyName] = useState("");
     const [user, setUser] = useState({});
-    const [isOpen, setIsOpen] = useState(true);
+    const [isOpen, setIsOpen] = useState(true); // Reintroduzido isOpen para o sidebar fixo
     const router = useRouter();
 
     const { data: session } = useSession();
+    // useDisclosure para o Drawer mobile, renomeado para evitar conflito
+    const { isOpen: isDrawerOpen, onOpen: onOpenDrawer, onClose: onCloseDrawer } = useDisclosure();
 
     const logOut = () => {
         router.push("/Login");
         signOut();
         localStorage.clear();
-        
     };
 
     const handleOpenModal = () => {
@@ -116,11 +124,12 @@ const Sidebar = () => {
         };
 
         const handleClickOutside = (event) => {
-            if (
-                sidebarRef.current &&
-                !sidebarRef.current.contains(event.target)
-            ) {
-                setIsOpen(false);
+            // Apenas aplica a lógica de fechar ao clicar fora para telas maiores (desktop/tablet)
+            // e se o sidebar fixo estiver aberto.
+            if (window.innerWidth >= 768 && isOpen) { // 768px é o breakpoint 'sm' do Chakra UI
+                if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
+                    setIsOpen(false);
+                }
             }
         };
 
@@ -130,7 +139,7 @@ const Sidebar = () => {
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
-    }, [sidebarRef]);
+    }, [sidebarRef, isOpen]); // Adicionado isOpen às dependências
 
     const mappedCompanies =
         companiesList.length > 0 ? (
@@ -147,22 +156,9 @@ const Sidebar = () => {
             <MenuItem>Nenhuma empresa cadastrada</MenuItem>
         );
 
-    return (
-        <Box
-            ref={sidebarRef}
-            color={"#333333"}
-            bg="linear-gradient(to right, #8046A2, #B186C7)"
-            left={isOpen ? "0" : "-280px"}
-            boxShadow="xs"
-            p={{ base: "4", sm: "6" }}
-            w={{ base: "100%", sm: "300px" }} // Tornando o width responsivo
-            h="100vh"
-            rounded="md"
-            position="fixed"
-            zIndex={10}
-            transition="left 0.5s ease-in-out"
-        >
-
+    // Conteúdo do Sidebar (reutilizável para o Box fixo e o Drawer)
+    const sidebarContent = (
+        <>
             <Menu>
                 <MenuButton as={IconButton} icon={<SettingsIcon />} />
                 <MenuList>
@@ -228,7 +224,7 @@ const Sidebar = () => {
             <Box
                 mt={5}
                 maxH={"60vh"}
-                overflow="auto"
+                overflowY="auto"
                 sx={{
                     "&::-webkit-scrollbar": {
                         width: "4px",
@@ -338,32 +334,56 @@ const Sidebar = () => {
                         </Flex>
                     </Link>
                 </Box>
+            </Box>
+        </>
+    );
 
-                {/* <Box
-                    as="div"
-                    p="4"
-                    border="1"
-                    borderRadius="md"
-                    _hover={{ bg: "#B186C7" }}
-                >
-                    <Link href="/reports">
-                        <Flex align="center" cursor="pointer">
-                            <SettingsIcon size={25} />
-                            <Text ml="2">Configurações</Text>
-                        </Flex>
-                    </Link>
-                </Box> */}
+    return (
+        <>
+            {/* Botão de hambúrguer para abrir o sidebar em telas pequenas (dispositivos móveis) */}
+            <IconButton
+                aria-label="Open Sidebar"
+                icon={<HamburgerIcon />}
+                onClick={onOpenDrawer} // Usa a função do useDisclosure
+                display={{ base: "block", sm: "none" }} // Visível apenas em telas pequenas
+                position="fixed"
+                top="1rem"
+                left="1rem"
+                zIndex={11}
+                bg="#8046A2"
+                color="white"
+                _hover={{ bg: "#B186C7" }}
+            />
+
+            {/* Sidebar fixo para telas grandes (tablets e desktops) */}
+            <Box
+                ref={sidebarRef} // Adicionado ref
+                color={"#333333"}
+                bg="linear-gradient(to right, #8046A2, #B186C7)"
+                left={isOpen ? "0" : "-280px"} // Controlado pelo estado isOpen
+                boxShadow="xs"
+                p={{ base: "4", sm: "6" }}
+                w="300px"
+                h="100vh"
+                rounded="md"
+                position="fixed"
+                zIndex={10}
+                transition="left 0.5s ease-in-out"
+                display={{ base: "none", sm: "block" }} // Visível apenas em telas grandes
+            >
+                {sidebarContent}
             </Box>
 
+            {/* Botão de toggle para o sidebar fixo (desktop/tablet) */}
             <Box
                 onClick={() => setIsOpen(!isOpen)}
-                bg={{ base: "none", sm: "white" }}
-                border={{ base: "none", sm: "1px solid #B186C7" }}
+                bg="white"
+                border="1px solid #B186C7"
                 style={{
                     cursor: "pointer",
                     position: "fixed",
                     top: "0",
-                    left: isOpen ? "285px" : "0",
+                    left: isOpen ? "285px" : "0", // Posição dinâmica baseada no estado isOpen
                     marginTop: "1rem",
                     borderRadius: "50%",
                     padding: "0.2rem",
@@ -372,6 +392,7 @@ const Sidebar = () => {
                 }}
                 zIndex={10}
                 transition="left 0.5s ease-in-out"
+                display={{ base: "none", sm: "block" }} // Visível apenas em telas grandes
             >
                 <Text
                     fontSize={10}
@@ -385,7 +406,25 @@ const Sidebar = () => {
                     {isOpen ? "<" : ">"}
                 </Text>
             </Box>
-        </Box>
+
+            {/* Drawer (sidebar deslizante) para telas pequenas (dispositivos móveis) */}
+            <Drawer isOpen={isDrawerOpen} placement="left" onClose={onCloseDrawer}>
+                <DrawerOverlay />
+                <DrawerContent
+                    bg="linear-gradient(to right, #8046A2, #B186C7)"
+                    color={"#333333"}
+                    p={{ base: "4", sm: "6" }}
+                >
+                    <DrawerCloseButton />
+                    <DrawerHeader>
+                        {/* Opcional: Adicione um título ou logo aqui para o Drawer */}
+                    </DrawerHeader>
+                    <DrawerBody>
+                        {sidebarContent}
+                    </DrawerBody>
+                </DrawerContent>
+            </Drawer>
+        </>
     );
 };
 
