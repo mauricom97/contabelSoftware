@@ -23,6 +23,7 @@ const Dashboard = () => {
 
   const barOptions = {
     responsive: true,
+    maintainAspectRatio: false, // Importante: permite que o gráfico ajuste sua altura independentemente da largura
     plugins: {
       legend: {
         position: 'top',
@@ -53,6 +54,7 @@ const Dashboard = () => {
 
   const pieOptions = {
     responsive: true,
+    maintainAspectRatio: false, // Importante: permite que o gráfico ajuste sua altura independentemente da largura
     plugins: {
       legend: {
         position: 'top',
@@ -68,16 +70,21 @@ const Dashboard = () => {
     <Box p={5}>
       <Heading as="h1" mb={5} color={"#8046A2"} textAlign="center">CONTROLE FINANCEIRO</Heading>
       <SimpleGrid columns={{ base: 1, md: 2 }} spacing={10} justifyItems="center">
-        <Center>
-          <Box maxWidth="500px" width="500px" height="400px">
-            <Bar data={barData} options={barOptions} />
-          </Box>
-        </Center>
-        <Center>
-          <Box maxWidth="500px" width="500px" height="400px">
-            <Pie data={pieData} options={pieOptions} />
-          </Box>
-        </Center>
+        {/* Removido o componente <Center> redundante, pois SimpleGrid com justifyItems="center" já centraliza os itens */}
+        <Box
+          width="100%" // Ocupa 100% da largura disponível em seu contêiner pai
+          maxWidth="500px" // Limita a largura máxima para não ficar muito grande em telas largas
+          height={{ base: "300px", md: "400px" }} // Altura responsiva: 300px em telas pequenas, 400px em telas médias/grandes
+        >
+          <Bar data={barData} options={barOptions} />
+        </Box>
+        <Box
+          width="100%"
+          maxWidth="500px"
+          height={{ base: "300px", md: "400px" }}
+        >
+          <Pie data={pieData} options={pieOptions} />
+        </Box>
       </SimpleGrid>
     </Box>
   );

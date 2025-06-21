@@ -1,4 +1,4 @@
-import { ChakraProvider, CSSReset } from "@chakra-ui/react";
+import { ChakraProvider, CSSReset, Box } from "@chakra-ui/react"; // Importe Box
 import Sidebar from "./components/Layouts/Sidebar";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
@@ -26,7 +26,13 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
             <ChakraProvider>
                 {showSidebar ? <Sidebar /> : <></>}
                 <CSSReset />
-                <Component {...pageProps} />
+                {/* Adicione um Box para o conteúdo principal */}
+                <Box
+                    ml={{ base: 0, sm: showSidebar ? "300px" : 0 }} // Adiciona margin-left de 300px (largura do sidebar) em telas sm e maiores, se o sidebar estiver visível
+                    transition="margin-left 0.5s ease-in-out" // Adiciona uma transição suave
+                >
+                    <Component {...pageProps} />
+                </Box>
             </ChakraProvider>
         </SessionProvider>
     );
