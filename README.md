@@ -7,7 +7,7 @@
 
 ## Descrição
 
-O **ContabelSoftware** é uma solução para gerenciamento contábil que oferece funcionalidades específicas para atender às necessidades de pequenos e médios negócios. O objetivo é facilitar o controle financeiro, simplificar processos contábeis e automatizar tarefas administrativas.
+O **Controle Prático** é uma solução para gerenciamento contábil que oferece funcionalidades específicas para atender às necessidades de pequenos e médios negócios. O objetivo é facilitar o controle financeiro, simplificar processos contábeis e automatizar tarefas administrativas.
 
 ## Funcionalidades
 
