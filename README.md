@@ -1,4 +1,4 @@
-# ContabelSoftware
+# Controle Prático
 
 ![JavaScript](https://img.shields.io/badge/JavaScript-66.5%25-yellow)
 ![TypeScript](https://img.shields.io/badge/TypeScript-31%25-blue)
